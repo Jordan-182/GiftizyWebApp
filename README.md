@@ -1,36 +1,117 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Giftizy 🎁
 
-## Getting Started
+Giftizy est une application web de partage de **wishlists** entre amis et famille.  
+L’objectif est de simplifier l’organisation des cadeaux en permettant aux utilisateurs de créer, gérer et partager leurs envies en toute simplicité.
 
-First, run the development server:
+---
+
+## 🚀 Stack technique
+
+- **Framework** : [Next.js 15.5.4](https://nextjs.org/)
+- **UI** : [React 19.1.0](https://react.dev/)
+- **Base de données** : [PostgreSQL](https://www.postgresql.org/)
+- **ORM** : [Prisma](https://www.prisma.io/)
+- **Authentification** : [BetterAuth](https://better-auth.com/)
+- **Emails** : [Nodemailer](https://nodemailer.com/) (vérification de compte & reset password)
+- **Styling** : [Tailwind CSS](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)
+- **Notifications** : [Sonner](https://sonner.emilkowal.ski/)
+
+---
+
+## ⚙️ Installation & lancement
+
+### 1. Cloner le projet
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/ton-compte/giftizy.git
+cd giftizy
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Installer les dépendances
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Variables d’environnement
 
-## Learn More
+Crée un fichier .env à la racine avec le contenu suivant :
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+# Base de données
+DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/giftizy"
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Authentification
+BETTER_AUTH_SECRET="super-secret-key"
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Emails
+SMTP_HOST="smtp.example.com"
+SMTP_PORT=587
+SMTP_USER="user@example.com"
+SMTP_PASS="password"
+SMTP_FROM="Giftizy <no-reply@giftizy.com>"
 
-## Deploy on Vercel
+# Next.js
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 4. Générer le client Prisma
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npx prisma generate
+```
+
+### 5. Exécuter les migrations
+
+```bash
+npx prisma migrate dev
+```
+
+### 6. Lancer le serveur de dev
+
+```bash
+pnpm dev
+```
+
+L’application est maintenant accessible sur http://localhost:3000 🎉
+
+## 📂 Structure du projet
+
+```bash
+.
+├── prisma/            # Schéma et migrations Prisma
+├── src/
+│   ├── app/           # Routes Next.js (App Router)
+│   ├── components/    # Composants UI (shadcn, custom)
+│   ├── lib/           # Utils (auth, db, mail, helpers)
+│   ├── styles/        # Fichiers Tailwind CSS
+│   └── hooks/         # Custom React hooks
+└── ...
+
+```
+
+## 📨 Emails
+
+- Vérification de compte : envoi d’un email avec lien ou code à saisir
+- Mot de passe oublié : envoi d’un email avec lien de réinitialisation
+- Géré via Nodemailer avec un transport SMTP configurable
+
+## 🎨 UI & UX
+
+- Composants accessibles et modernes avec shadcn/ui
+- Thème clair/sombre avec Tailwind
+- Notifications toast avec Sonner
+
+## 🛠️ Scripts utiles
+
+```bash
+pnpm dev        # Lancer en mode dev
+pnpm build      # Build de production
+pnpm start      # Lancer en mode production
+pnpm lint       # Vérifier le code
+
+```
+
+## 📝 Licence
+
+Ce projet est distribué sous licence MIT.
