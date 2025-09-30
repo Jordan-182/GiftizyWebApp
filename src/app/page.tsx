@@ -1,9 +1,12 @@
-import { Button } from "@/components/ui/button";
+import GetStartedButton from "@/components/GetStartedButton";
 
 export default function Home() {
   return (
-    <div>
-      <Button>Hello World</Button>
+    <div className="flex items-center justify-center h-dvh">
+      <div className="flex justify-center gap-8 flex-col items-center">
+        <h1 className="text-6xl font-bold">Homepage</h1>
+        <GetStartedButton />
+      </div>
     </div>
   );
 }

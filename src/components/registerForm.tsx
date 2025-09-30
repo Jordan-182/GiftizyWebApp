@@ -1,41 +1,33 @@
 "use client";
 
+import { signUpEmailAction } from "@/actions/signupEmail.action";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signUp } from "@/lib/auth-client";
+import { Loader } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
 
 export default function RegisterForm() {
+  const [isPending, setIsPending] = useState<boolean>(false);
+  const router = useRouter();
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setIsPending(true);
     const formData = new FormData(event.target as HTMLFormElement);
-
-    const name = String(formData.get("name"));
-    if (!name) return toast.error("Merci d'indiquer votre nom");
-
-    const email = String(formData.get("email"));
-    if (!email) return toast.error("Merci d'indiquer votre adresse email");
-
-    const password = String(formData.get("password"));
-    if (!password) return toast.error("Merci de renseigner un mot de passe");
-
-    await signUp.email(
-      {
-        name,
-        email,
-        password,
-      },
-      {
-        onRequest: () => {},
-        onResponse: () => {},
-        onError: (context) => {
-          toast.error(context.error.message);
-        },
-        onSuccess: () => {},
-      }
-    );
+    const { error } = await signUpEmailAction(formData);
+    if (error) {
+      toast.error(error);
+      setIsPending(false);
+    } else {
+      toast.success("Compte créé avec succès!");
+      router.push("/auth/login");
+    }
+    setIsPending(false);
   }
+
   return (
     <form onSubmit={handleSubmit} className="max-w-sm w-full space-y-4">
       <div className="space-y-2">
@@ -50,8 +42,12 @@ export default function RegisterForm() {
         <Label htmlFor="password">Mot de passe</Label>
         <Input type="password" id="password" name="password" />
       </div>
-      <Button type="submit" className="w-full cursor-pointer">
-        Créer mon compte
+      <Button
+        type="submit"
+        className="w-full cursor-pointer"
+        disabled={isPending}
+      >
+        {isPending ? <Loader /> : "Créer mon compte"}
       </Button>
     </form>
   );
