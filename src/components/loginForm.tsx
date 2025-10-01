@@ -4,6 +4,7 @@ import { signInEmailAction } from "@/actions/signinEmail.action";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -35,7 +36,15 @@ export default function LoginForm() {
         <Input type="email" id="email" name="email" />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="password">Mot de passe</Label>
+        <div className="flex justify-between items-center gap-2">
+          <Label htmlFor="password">Mot de passe</Label>
+          <Link
+            href="/auth/forgot-password"
+            className="text-sm italic text-muted-foreground hover:text-foreground"
+          >
+            Mot de passe oublié
+          </Link>
+        </div>
         <Input type="password" id="password" name="password" />
       </div>
       <Button
