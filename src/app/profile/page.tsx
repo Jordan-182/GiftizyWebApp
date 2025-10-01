@@ -6,13 +6,24 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async function ProfilePage() {
+  const headersList = await headers();
+
   const session = await auth.api.getSession({
-    headers: await headers(),
+    headers: headersList,
   });
 
   if (!session) {
     redirect("/auth/login");
   }
+
+  const FULL_WISHLIST_ACCESS = await auth.api.userHasPermission({
+    headers: headersList,
+    body: {
+      permissions: {
+        wishlists: ["update", "delete"],
+      },
+    },
+  });
 
   return (
     <div className="px-8 py-16 container mx-auto max-w-screen-lg space-y-8">
@@ -26,6 +37,13 @@ export default async function ProfilePage() {
             </Button>
           )}
           <SignOutButton />
+        </div>
+        <h3 className="text-2xl font-bold">Permissions</h3>
+        <div className="space-x-4 space-y-4">
+          <Button size="sm">Gérer mes wishlists</Button>
+          <Button size="sm" disabled={!FULL_WISHLIST_ACCESS.success}>
+            Gérer toutes les wishlists
+          </Button>
         </div>
       </div>
     </div>

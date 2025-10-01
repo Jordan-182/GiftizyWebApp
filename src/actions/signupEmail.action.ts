@@ -29,6 +29,8 @@ export async function signUpEmailAction(formData: FormData) {
       switch (errorCode) {
         case "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL":
           return { error: "Cette adresse email est déjà utilisée." };
+        case "USER_ALREADY_EXISTS":
+          return { error: "Cette adresse email est déjà utilisée." };
         case "PASSWORD_TOO_SHORT":
           return { error: "Le mot de passe est trop court." };
         case "INVALID_DOMAIN":

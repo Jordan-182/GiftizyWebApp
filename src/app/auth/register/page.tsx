@@ -1,5 +1,6 @@
 import RegisterForm from "@/components/registerForm";
 import ReturnButton from "@/components/returnButton";
+import SignInOAuthButton from "@/components/signInOAuthButton";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import Link from "next/link";
@@ -19,13 +20,19 @@ export default async function RegisterPage() {
         <ReturnButton href="/" label="Homepage" />
 
         <h1 className="text-3xl font-bold">Inscription</h1>
-        <RegisterForm />
-        <p className="text-muted-foreground text-sm">
-          Déjà inscrit?{" "}
-          <Link href="/auth/login" className="hover:text-foreground">
-            Se connecter
-          </Link>
-        </p>
+        <div className="space-y-4">
+          <RegisterForm />
+          <p className="text-muted-foreground text-sm">
+            Déjà inscrit?{" "}
+            <Link href="/auth/login" className="hover:text-foreground">
+              Se connecter
+            </Link>
+          </p>
+          <hr className="max-w-sm" />
+        </div>
+        <div className="flex flex-col max-w-sm gap-4">
+          <SignInOAuthButton signUp provider="google" />
+        </div>
       </div>
     </div>
   );

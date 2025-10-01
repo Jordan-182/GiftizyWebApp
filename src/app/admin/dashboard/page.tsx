@@ -2,14 +2,17 @@ import DeleteUserButton, {
   PlaceholderDeleteUserButton,
 } from "@/components/deleteUserButton";
 import ReturnButton from "@/components/returnButton";
+import UserRoleSelect from "@/components/userRoleSelect";
+import { UserRole } from "@/generated/prisma";
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 export default async function AdminDashboard() {
+  const headersList = await headers();
+
   const session = await auth.api.getSession({
-    headers: await headers(),
+    headers: headersList,
   });
 
   if (!session) redirect("/auth/login");
@@ -28,10 +31,17 @@ export default async function AdminDashboard() {
     );
   }
 
-  const users = await prisma.user.findMany({
-    orderBy: {
-      name: "asc",
+  const { users } = await auth.api.listUsers({
+    headers: headersList,
+    query: {
+      sortBy: "name",
     },
+  });
+
+  const sortedUsers = users.sort((a, b) => {
+    if (a.role === "ADMIN" && b.role !== "ADMIN") return -1;
+    if (a.role !== "ADMIN" && b.role === "ADMIN") return 1;
+    return 0;
   });
 
   return (
@@ -53,12 +63,17 @@ export default async function AdminDashboard() {
             </tr>
           </thead>
           <tbody>
-            {users.map((user) => (
+            {sortedUsers.map((user) => (
               <tr key={user.id} className="border-b text-sm text-left">
                 <td className="px-4 py-2">{user.id.slice(0, 8)}</td>
                 <td className="px-4 py-2">{user.name}</td>
                 <td className="px-4 py-2">{user.email}</td>
-                <td className="px-4 py-2 text-center">{user.role}</td>
+                <td className="px-4 py-2 text-center">
+                  <UserRoleSelect
+                    userId={user.id}
+                    role={user.role as UserRole}
+                  />
+                </td>
                 <td className="px-4 py-2 text-center">
                   {user.role === "USER" ? (
                     <DeleteUserButton userId={user.id} />

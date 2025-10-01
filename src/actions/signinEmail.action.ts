@@ -3,6 +3,7 @@
 import { auth, ErrorCode } from "@/lib/auth";
 import { APIError } from "better-auth/api";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 export async function signInEmailAction(formData: FormData) {
   const email = String(formData.get("email"));
@@ -37,10 +38,12 @@ export async function signInEmailAction(formData: FormData) {
           };
         case "PASSWORD_TOO_SHORT":
           return { error: "Le mot de passe est trop court." };
+        case "EMAIL_NOT_VERIFIED":
+          redirect("/auth/verify?error=email_not_verified");
         default:
           return {
             error:
-              "Une erreur est survenue lors de la création du compte, veuillez réessayer.",
+              "Une erreur est survenue lors de la connexion, veuillez réessayer.",
           };
       }
     }

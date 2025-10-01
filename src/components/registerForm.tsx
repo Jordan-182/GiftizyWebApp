@@ -22,8 +22,10 @@ export default function RegisterForm() {
       toast.error(error);
       setIsPending(false);
     } else {
-      toast.success("Compte créé avec succès!");
-      router.push("/auth/login");
+      toast.success(
+        "Compte créé avec succès! Surveillez vos emails pour le lien de vérification."
+      );
+      router.push("/auth/register/success");
     }
     setIsPending(false);
   }
