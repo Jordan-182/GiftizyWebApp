@@ -42,8 +42,14 @@ export default async function ProfilePage() {
         </div>
         <h3 className="text-2xl font-bold">Permissions</h3>
         <div className="space-x-4 space-y-4">
-          <Button size="sm">Gérer mes wishlists</Button>
-          <Button size="sm" disabled={!FULL_WISHLIST_ACCESS.success}>
+          <Button size="sm" className="cursor-pointer">
+            Gérer mes wishlists
+          </Button>
+          <Button
+            size="sm"
+            className="cursor-pointer"
+            disabled={!FULL_WISHLIST_ACCESS.success}
+          >
             Gérer toutes les wishlists
           </Button>
         </div>
