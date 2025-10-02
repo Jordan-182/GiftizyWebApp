@@ -61,7 +61,9 @@ export default function MagicLinkLoginForm() {
             name="email"
             placeholder="Votre email"
           />
-          <Button disabled={isPending}>Envoyer</Button>
+          <Button disabled={isPending} className="cursor-pointer">
+            Envoyer
+          </Button>
         </div>
       </form>
     </details>
