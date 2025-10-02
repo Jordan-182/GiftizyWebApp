@@ -165,6 +165,10 @@ export const auth = betterAuth({
   plugins: [
     ...(options.plugins ?? []),
     customSession(async ({ user, session }) => {
+      const account = await prisma.account.findFirst({
+        where: { userId: user.id },
+        select: { providerId: true },
+      });
       return {
         session: {
           createdAt: session.createdAt,
@@ -188,6 +192,11 @@ export const auth = betterAuth({
           banReason: user.banReason,
           banned: user.banned,
         },
+        account: account
+          ? {
+              providerId: account.providerId,
+            }
+          : null,
       };
     }, options),
   ],

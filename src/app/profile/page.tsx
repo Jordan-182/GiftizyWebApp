@@ -27,8 +27,6 @@ export default async function ProfilePage() {
     },
   });
 
-  console.log(session);
-
   return (
     <div className="px-8 py-16 container mx-auto max-w-screen-lg space-y-8">
       <div className="space-y-8">
@@ -78,7 +76,14 @@ export default async function ProfilePage() {
         </div>
         <div className="space-y-4 p-4 rounded-b-md border border-t-8 border-red-600">
           <h2 className="text-2xl font-bold">Modifier mot de passe</h2>
-          <ChangePasswordForm />
+          {session.account?.providerId === "google" ? (
+            <p>
+              Votre compte a été créé grâce à la connexion avec Google, la
+              modification de mot de passe est impossible.
+            </p>
+          ) : (
+            <ChangePasswordForm />
+          )}
         </div>
       </div>
     </div>
