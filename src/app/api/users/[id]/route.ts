@@ -1,9 +1,5 @@
 import { userService } from "@/services/userService";
-import { NextResponse } from "next/server";
-
-type Params = {
-  params: { id: string };
-};
+import { NextRequest, NextResponse } from "next/server";
 
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error) return error.message;
@@ -11,9 +7,13 @@ function getErrorMessage(error: unknown): string {
   return "Une erreur inconnue est survenue";
 }
 
-export async function GET(_req: Request, { params }: Params) {
+export async function GET(
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  const { id } = await context.params;
   try {
-    const user = await userService.getUserById(params.id);
+    const user = await userService.getUserById(id);
     return NextResponse.json(user, { status: 200 });
   } catch (error) {
     return NextResponse.json(
