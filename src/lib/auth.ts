@@ -4,13 +4,13 @@ import { hashPassword, verifyPassword } from "@/lib/argon2";
 import { ac, roles } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { getValidDomains, normalizeName } from "@/lib/utils";
-import { betterAuth } from "better-auth";
+import { betterAuth, type BetterAuthOptions } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { APIError, createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
-import { admin } from "better-auth/plugins";
+import { admin, customSession, magicLink } from "better-auth/plugins";
 
-export const auth = betterAuth({
+const options = {
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
@@ -72,14 +72,28 @@ export const auth = betterAuth({
           });
         }
 
-        const name = normalizeName(context.body.name);
         return {
           context: {
             ...context,
-            body: {
-              ...context.body,
-              name,
-            },
+            body: { ...context.body, name: normalizeName(context.body.name) },
+          },
+        };
+      }
+
+      if (context.path === "/sign-in/magic-link") {
+        return {
+          context: {
+            ...context,
+            body: { ...context.body, name: normalizeName(context.body.name) },
+          },
+        };
+      }
+
+      if (context.path === "/update-user") {
+        return {
+          context: {
+            ...context,
+            body: { ...context.body, name: normalizeName(context.body.name) },
           },
         };
       }
@@ -108,6 +122,10 @@ export const auth = betterAuth({
   },
   session: {
     expiresIn: 30 * 24 * 60 * 60,
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60,
+    },
   },
   account: {
     accountLinking: {
@@ -127,6 +145,51 @@ export const auth = betterAuth({
       ac,
       roles,
     }),
+    magicLink({
+      sendMagicLink: async ({ email, url }) => {
+        await sendEmailAction({
+          to: email,
+          subject: "Connexion avec le Magic Link",
+          meta: {
+            description: "Cliquez sur le lien ci-dessous pour vous connecter",
+            link: url,
+          },
+        });
+      },
+    }),
+  ],
+} satisfies BetterAuthOptions;
+
+export const auth = betterAuth({
+  ...options,
+  plugins: [
+    ...(options.plugins ?? []),
+    customSession(async ({ user, session }) => {
+      return {
+        session: {
+          createdAt: session.createdAt,
+          updatedAt: session.updatedAt,
+          expiresAt: session.expiresAt,
+          token: session.token,
+          ipAddress: session.ipAddress,
+          userAgent: session.userAgent,
+          userId: session.userId,
+        },
+        user: {
+          id: user.id,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+          name: user.name,
+          email: user.email,
+          emailVerified: user.emailVerified,
+          image: user.image,
+          role: user.role,
+          banExpires: user.banExpires,
+          banReason: user.banReason,
+          banned: user.banned,
+        },
+      };
+    }, options),
   ],
 });
 

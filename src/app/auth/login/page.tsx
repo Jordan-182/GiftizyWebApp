@@ -1,4 +1,5 @@
 import LoginForm from "@/components/loginForm";
+import MagicLinkLoginForm from "@/components/magicLinkLoginForm";
 import ReturnButton from "@/components/returnButton";
 import SignInOAuthButton from "@/components/signInOAuthButton";
 import { auth } from "@/lib/auth";
@@ -20,6 +21,7 @@ export default async function LoginPage() {
         <ReturnButton href="/" label="Homepage" />
         <h1 className="text-3xl font-bold">Connexion</h1>
         <div className="space-y-4">
+          <MagicLinkLoginForm />
           <LoginForm />
           <p className="text-muted-foreground text-sm">
             Pas encore inscrit?{" "}
