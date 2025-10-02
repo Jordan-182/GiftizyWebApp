@@ -38,21 +38,26 @@ pnpm install
 Crée un fichier .env à la racine avec le contenu suivant :
 
 ```bash
+# Url de l'api
+NEXT_PUBLIC_API_URL="http://localhost:3000"
+
 # Base de données
 DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/giftizy"
 
 # Authentification
 BETTER_AUTH_SECRET="super-secret-key"
+BETTER_AUTH_URL="http://localhost:3000"
 
-# Emails
-SMTP_HOST="smtp.example.com"
-SMTP_PORT=587
-SMTP_USER="user@example.com"
-SMTP_PASS="password"
-SMTP_FROM="Giftizy <no-reply@giftizy.com>"
+# Admins : Les mails dont les comptes seront automatiquement ADMIN
+ADMIN_EMAILS="mark@exemple.com;tom@exemple.com;travis@exemple.com"
 
-# Next.js
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
+# Identification avec Google Auth
+GOOGLE_CLIENT_ID="GoogleClientID"
+GOOGLE_CLIENT_SECRET="GoogleClientSecret"
+
+# Nodemailer pour l'envoi des mails (app password à configurer, pas le mdp de base)
+NODEMAILER_USER="mail@exemple.com"
+NODEMAILER_APP_PASSWORD="passwordAPP"
 ```
 
 ### 4. Générer le client Prisma
