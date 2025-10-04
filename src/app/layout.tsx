@@ -1,3 +1,4 @@
+import Header from "@/components/Header";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
@@ -35,7 +36,8 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <Header />
+          <main className="pt-18">{children}</main>
           <Toaster position="top-center" richColors />
         </ThemeProvider>
       </body>
