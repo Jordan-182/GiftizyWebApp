@@ -37,7 +37,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <Header />
-          <main className="pt-18">{children}</main>
+          <main className="pt-29 px-8 pb-8 container mx-auto max-w-screen-lg">
+            {children}
+          </main>
           <Toaster position="top-center" richColors />
         </ThemeProvider>
       </body>

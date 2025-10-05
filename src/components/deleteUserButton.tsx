@@ -28,7 +28,7 @@ export default function DeleteUserButton({ userId }: DeleteUserButtonProps) {
     <Button
       size="icon"
       variant="destructive"
-      className="size-7 rounded-sm"
+      className="size-7 rounded-sm cursor-pointer"
       disabled={isPending}
       onClick={handleClick}
     >
@@ -43,7 +43,7 @@ export const PlaceholderDeleteUserButton = () => {
     <Button
       size="icon"
       variant="destructive"
-      className="size-7 rounded-sm"
+      className="size-7 rounded-sm disabled:cursor-not-allowed"
       disabled
     >
       <span className="sr-only">Supprimer l&apos;utilisateur</span>

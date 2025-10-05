@@ -9,7 +9,7 @@ interface ReturnButtonProps {
 
 export default function ReturnButton({ href, label }: ReturnButtonProps) {
   return (
-    <Button size="sm">
+    <Button size="sm" className="cursor-pointer">
       <ArrowLeftIcon />
       <Link href={href}> {label}</Link>
     </Button>
