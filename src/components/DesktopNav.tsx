@@ -9,6 +9,7 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import { ThemeToggle } from "./theme-toggle";
 
 export default function NavigationMenuDemo() {
   return (
@@ -45,6 +46,10 @@ export default function NavigationMenuDemo() {
           <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
             <Link href="/profile">Profil</Link>
           </NavigationMenuLink>
+        </NavigationMenuItem>
+
+        <NavigationMenuItem>
+          <ThemeToggle />
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>

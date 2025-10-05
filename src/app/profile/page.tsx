@@ -1,6 +1,5 @@
 import ChangePasswordForm from "@/components/changePasswordForm";
 import SignOutButton from "@/components/signOutButton";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import UpdateUserForm from "@/components/updateUserForm";
 import { auth } from "@/lib/auth";
@@ -67,14 +66,14 @@ export default async function ProfilePage() {
           </span>
         </div>
       )}
-      <div className="space-y-4 p-4 rounded-b-md border border-t-8 border-blue-600">
-        <h2 className="text-2xl font-bold">Modifier mon porfil</h2>
+      <div className="space-y-4 p-4 rounded-b-md border border-t-8 border-chart-5">
+        <h2 className="text-2xl font-bold">Modifier mon profil</h2>
         <UpdateUserForm
           name={session.user.name}
           image={session.user.image ?? ""}
         />
       </div>
-      <div className="space-y-4 p-4 rounded-b-md border border-t-8 border-red-600">
+      <div className="space-y-4 p-4 rounded-b-md border border-t-8 border-chart-5">
         <h2 className="text-2xl font-bold">Modifier mot de passe</h2>
         {session.account?.providerId === "google" ? (
           <p>
@@ -85,7 +84,6 @@ export default async function ProfilePage() {
           <ChangePasswordForm />
         )}
       </div>
-      <ThemeToggle />
     </div>
   );
 }
