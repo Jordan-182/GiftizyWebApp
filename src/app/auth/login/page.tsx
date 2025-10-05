@@ -16,8 +16,8 @@ export default async function LoginPage() {
     redirect("/profile");
   }
   return (
-    <div className="px-8 py-16 container mx-auto max-w-screen-lg space-y-8">
-      <div className="space-y-8">
+    <div className="space-y-8">
+      <div className="space-y-8 max-w-sm mx-auto">
         <ReturnButton href="/" label="Accueil" />
         <h1 className="text-3xl font-bold">Connexion</h1>
         <div className="space-y-4">

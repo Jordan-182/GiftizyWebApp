@@ -17,19 +17,7 @@ export default async function AdminDashboard() {
 
   if (!session) redirect("/auth/login");
 
-  if (session.user.role !== "ADMIN") {
-    return (
-      <div className="px-8 py-16 container mx-auto max-w-screen-lg space-y-8">
-        <div className="space-y-8">
-          <ReturnButton href="/profile" label="Profil" />
-          <h1 className="text-3xl font-bold">Panneau d&apos;administration</h1>
-          <p className="p-2 rounded-md text-lg bg-red-700 text-white font-bold">
-            ACCES INTERDIT
-          </p>
-        </div>
-      </div>
-    );
-  }
+  if (session.user.role !== "ADMIN") redirect("/");
 
   const { users } = await auth.api.listUsers({
     headers: headersList,
@@ -45,7 +33,7 @@ export default async function AdminDashboard() {
   });
 
   return (
-    <div className="px-8 py-16 container mx-auto max-w-screen-lg space-y-8">
+    <div className="space-y-8">
       <div className="space-y-8">
         <ReturnButton href="/profile" label="Profil" />
         <h1 className="text-3xl font-bold">Panneau d&apos;administration</h1>
