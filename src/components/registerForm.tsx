@@ -4,10 +4,10 @@ import { signUpEmailAction } from "@/actions/signupEmail.action";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Spinner } from "./ui/spinner";
 
 export default function RegisterForm() {
   const [isPending, setIsPending] = useState<boolean>(false);
@@ -49,7 +49,7 @@ export default function RegisterForm() {
         className="w-full cursor-pointer"
         disabled={isPending}
       >
-        {isPending ? <Loader /> : "Créer mon compte"}
+        {isPending ? <Spinner /> : "Créer mon compte"}
       </Button>
     </form>
   );
