@@ -8,7 +8,7 @@ function getErrorMessage(error: unknown): string {
 }
 
 export async function GET(
-  req: NextRequest,
+  request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
   const { id } = await context.params;
