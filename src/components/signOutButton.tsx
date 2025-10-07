@@ -36,7 +36,7 @@ export default function SignOutButton() {
       onClick={handleClick}
       size="sm"
       variant="destructive"
-      className="cursor-pointer w-46"
+      className="cursor-pointer"
       disabled={isPending}
     >
       {isPending ? <Spinner /> : "Déconnexion"}

@@ -38,31 +38,37 @@ export default async function ProfilePage() {
               <img
                 src={session.user.image}
                 alt="Avatar"
-                className="size-40 border border-primary rounded-full object-cover"
+                className="size-40 border border-primary rounded-full object-cover flex-1"
                 height={160}
                 width={160}
               />
             ) : (
-              <div className="size-24 border border-primary rounded-md bg-primary text-primary-foreground flex items-center justify-center">
+              <div className="size-24 border border-primary rounded-md bg-primary text-primary-foreground flex items-center justify-center flex-1">
                 <span className="uppercase text-lg font-bold">
                   {session.user.name.slice(0, 2)}
                 </span>
               </div>
             )}
           </div>
-          <div>
-            <h2 className="text-2xl font-bold">{session.user.name}</h2>
-            <p className="mb-4">{session.user.email}</p>
-            <div className="flex justify-center gap-2 mb-2">
+          <div className="w-full flex justify-between flex-col sm:flex-row">
+            <div>
+              <h2 className="text-2xl font-bold text-center sm:text-left">
+                {session.user.name}
+              </h2>
+              <p className="mb-4 text-center sm:text-left">
+                {session.user.email}
+              </p>
+            </div>
+            <div className="flex flex-col justify-center gap-2">
               {session.user.role === "ADMIN" && (
-                <Button size="sm" className="w-46" asChild>
+                <Button size="sm" asChild>
                   <Link href="/admin/dashboard">
                     Panneau d&apos;administration
                   </Link>
                 </Button>
               )}
+              <SignOutButton />
             </div>
-            <SignOutButton />
           </div>
         </CardContent>
       </Card>
@@ -71,7 +77,7 @@ export default async function ProfilePage() {
           <CardTitle className="text-2xl font-bold">Permissions</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-x-4 space-y-4">
+          <div className="flex flex-col gap-2">
             <Button size="sm" className="cursor-pointer">
               Gérer mes wishlists
             </Button>
