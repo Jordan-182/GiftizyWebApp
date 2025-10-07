@@ -29,8 +29,6 @@ export default async function ProfilePage() {
     },
   });
 
-  console.log(session.user.id);
-
   return (
     <div className="space-y-8">
       <h1 className="text-3xl font-bold">Mon profil</h1>
