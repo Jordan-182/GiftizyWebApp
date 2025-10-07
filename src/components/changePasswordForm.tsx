@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Spinner } from "./ui/spinner";
 
 export default function ChangePasswordForm() {
   const [isPending, setIsPending] = useState<boolean>(false);
@@ -38,7 +39,7 @@ export default function ChangePasswordForm() {
         <Input type="password" id="newPassword" name="newPassword" />
       </div>
       <Button type="submit" disabled={isPending} className="cursor-pointer">
-        Changer mot de passe
+        {!isPending ? <p>Mettre à jour</p> : <Spinner />}
       </Button>
     </form>
   );

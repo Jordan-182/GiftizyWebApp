@@ -7,6 +7,7 @@ import { updateUser } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Spinner } from "./ui/spinner";
 
 interface UpdateUserFormProps {
   name: string;
@@ -60,7 +61,7 @@ export default function UpdateUserForm({ name, image }: UpdateUserFormProps) {
         <Input type="url" id="image" name="image" defaultValue={image} />
       </div>
       <Button type="submit" disabled={isPending} className="cursor-pointer">
-        Mettre à jour
+        {!isPending ? <p>Mettre à jour</p> : <Spinner />}
       </Button>
     </form>
   );

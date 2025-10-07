@@ -2,10 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { signOut } from "@/lib/auth-client";
-import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Spinner } from "./ui/spinner";
 
 export default function SignOutButton() {
   const [isPending, setIsPending] = useState<boolean>(false);
@@ -39,7 +39,7 @@ export default function SignOutButton() {
       className="cursor-pointer"
       disabled={isPending}
     >
-      {isPending ? <Loader /> : "Déconnexion"}
+      {isPending ? <Spinner /> : "Déconnexion"}
     </Button>
   );
 }
