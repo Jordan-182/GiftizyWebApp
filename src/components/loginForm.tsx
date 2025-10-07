@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import Loader from "./Loader";
+import { Spinner } from "./ui/spinner";
 
 export default function LoginForm() {
   const [isPending, setIsPending] = useState<boolean>(false);
@@ -52,7 +52,7 @@ export default function LoginForm() {
         className="w-full cursor-pointer"
         disabled={isPending}
       >
-        {isPending ? <Loader /> : "Connexion"}
+        {isPending ? <Spinner /> : "Connexion"}
       </Button>
     </form>
   );

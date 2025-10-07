@@ -15,7 +15,7 @@ export async function deleteUserAction({ userId }: { userId: string }) {
 
   if (!session) throw new Error("Action non autorisée");
 
-  if (session.user.role !== "ADMIN" || session.user.id === userId) {
+  if (session.user.role !== "ADMIN" && session.user.id !== userId) {
     throw new Error("Action interdite");
   }
 
