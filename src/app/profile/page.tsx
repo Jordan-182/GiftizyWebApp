@@ -1,4 +1,5 @@
 import ChangePasswordForm from "@/components/changePasswordForm";
+import DeleteMyAccountButton from "@/components/deleteMyAccountButton";
 import SignOutButton from "@/components/signOutButton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,6 +28,8 @@ export default async function ProfilePage() {
       },
     },
   });
+
+  console.log(session.user.id);
 
   return (
     <div className="space-y-8">
@@ -68,6 +71,7 @@ export default async function ProfilePage() {
                 </Button>
               )}
               <SignOutButton />
+              <DeleteMyAccountButton userId={session.user.id} />
             </div>
           </div>
         </CardContent>
@@ -77,7 +81,7 @@ export default async function ProfilePage() {
           <CardTitle className="text-2xl font-bold">Permissions</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col md:flex-row gap-2">
             <Button size="sm" className="cursor-pointer">
               Gérer mes wishlists
             </Button>
@@ -91,36 +95,38 @@ export default async function ProfilePage() {
           </div>
         </CardContent>
       </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold">
-            Modifier mon profil
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <UpdateUserForm
-            name={session.user.name}
-            image={session.user.image ?? ""}
-          />
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold">
-            Modifier mot de passe
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {session.account?.providerId === "google" ? (
-            <p>
-              Votre compte a été créé grâce à la connexion avec Google, la
-              modification de mot de passe est impossible.
-            </p>
-          ) : (
-            <ChangePasswordForm />
-          )}
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold">
+              Modifier mon profil
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <UpdateUserForm
+              name={session.user.name}
+              image={session.user.image ?? ""}
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold">
+              Modifier mot de passe
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {session.account?.providerId === "google" ? (
+              <p>
+                Votre compte a été créé grâce à la connexion avec Google, la
+                modification de mot de passe est impossible.
+              </p>
+            ) : (
+              <ChangePasswordForm />
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
