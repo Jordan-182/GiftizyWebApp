@@ -8,70 +8,59 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
-  USER
-  ADMIN
-}
-
 model Wishlist {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt
-
+  id              String   @id @default(uuid())
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt
   name            String
   description     String?
-  isEventWishlist Boolean @default(false) @map("is_event_wishlist")
-  profileId       String  @map("profile_id")
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isEventWishlist Boolean  @default(false) @map("is_event_wishlist")
+  profileId       String   @map("profile_id")
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("wishlists")
 }
 
 model User {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
+  id            String     @id @default(uuid())
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @default(now()) @updatedAt
   name          String
-  email         String    @unique
-  emailVerified Boolean   @default(false)
+  email         String     @unique
+  emailVerified Boolean    @default(false)
   image         String?
-  role          UserRole  @default(USER)
-  banned        Boolean?  @default(false)
-  banReason     String?
+  birthDate     DateTime?
+  role          UserRole   @default(USER)
   banExpires    DateTime?
-
-  sessions Session[]
-  accounts Account[]
-  Wishlist Wishlist[]
+  banReason     String?
+  banned        Boolean?   @default(false)
+  accounts      Account[]
+  sessions      Session[]
+  Wishlist      Wishlist[]
 
   @@map("users")
 }
 
 model Session {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  id             String   @id @default(uuid())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
   expiresAt      DateTime
   token          String   @unique
   ipAddress      String?
   userAgent      String?
+  userId         String
   impersonatedBy String?
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sessions")
 }
 
 model Account {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  id                    String    @id @default(uuid())
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
   accountId             String
   providerId            String
   accessToken           String?
@@ -81,21 +70,24 @@ model Account {
   refreshTokenExpiresAt DateTime?
   scope                 String?
   password              String?
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("accounts")
 }
 
 model Verification {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
   identifier String
   value      String
   expiresAt  DateTime
 
   @@map("verifications")
+}
+
+enum UserRole {
+  USER
+  ADMIN
 }

@@ -118,6 +118,10 @@ const options = {
         type: ["USER", "ADMIN"] as Array<UserRole>,
         input: false,
       },
+      birthDate: {
+        type: "date",
+        input: true,
+      },
     },
   },
   session: {
@@ -187,6 +191,7 @@ export const auth = betterAuth({
           email: user.email,
           emailVerified: user.emailVerified,
           image: user.image,
+          birthDate: user.birthDate,
           role: user.role,
           banExpires: user.banExpires,
           banReason: user.banReason,

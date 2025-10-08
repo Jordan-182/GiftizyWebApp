@@ -44,8 +44,8 @@ export default async function ProfilePage() {
                 width={160}
               />
             ) : (
-              <div className="size-24 border border-primary rounded-md bg-primary text-primary-foreground flex items-center justify-center flex-1">
-                <span className="uppercase text-lg font-bold">
+              <div className="size-40 border border-primary rounded-full bg-primary text-primary-foreground flex items-center justify-center">
+                <span className="uppercase text-4xl font-bold">
                   {session.user.name.slice(0, 2)}
                 </span>
               </div>
@@ -58,6 +58,12 @@ export default async function ProfilePage() {
               </h2>
               <p className="mb-4 text-center sm:text-left">
                 {session.user.email}
+              </p>
+              <p className="mb-4 text-center sm:text-left">
+                Date de naissance :{" "}
+                {session.user.birthDate instanceof Date
+                  ? session.user.birthDate.toLocaleDateString("fr-FR")
+                  : session.user.birthDate}
               </p>
             </div>
             <div className="flex flex-col justify-center gap-2">

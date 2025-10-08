@@ -37,6 +37,10 @@ export default function RegisterForm() {
         <Input type="text" id="name" name="name" />
       </div>
       <div className="space-y-2">
+        <Label htmlFor="birthDate">Date de naissance</Label>
+        <Input type="date" id="birthDate" name="birthDate" />
+      </div>
+      <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
         <Input type="email" id="email" name="email" />
       </div>
