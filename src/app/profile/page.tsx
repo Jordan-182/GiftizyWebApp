@@ -59,12 +59,14 @@ export default async function ProfilePage() {
               <p className="mb-4 text-center sm:text-left">
                 {session.user.email}
               </p>
-              <p className="mb-4 text-center sm:text-left">
-                Date de naissance :{" "}
-                {session.user.birthDate instanceof Date
-                  ? session.user.birthDate.toLocaleDateString("fr-FR")
-                  : session.user.birthDate}
-              </p>
+              {session.user.birthDate && (
+                <p className="mb-4 text-center sm:text-left">
+                  Date de naissance :{" "}
+                  {session.user.birthDate instanceof Date
+                    ? session.user.birthDate.toLocaleDateString("fr-FR")
+                    : session.user.birthDate}
+                </p>
+              )}
             </div>
             <div className="flex flex-col justify-center gap-2">
               {session.user.role === "ADMIN" && (
