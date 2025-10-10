@@ -7,6 +7,14 @@ export async function signUpEmailAction(formData: FormData) {
   const name = String(formData.get("name"));
   if (!name) return { error: "Merci d'indiquer votre nom" };
 
+  const birthDateStr = String(formData.get("birthDate"));
+  if (!birthDateStr)
+    return { error: "Merci d'indiquer votre date de naissance" };
+
+  const birthDate = new Date(birthDateStr);
+  if (isNaN(birthDate.getTime()))
+    return { error: "Date de naissance invalide" };
+
   const email = String(formData.get("email"));
   if (!email) return { error: "Merci d'indiquer votre email" };
 
@@ -17,6 +25,7 @@ export async function signUpEmailAction(formData: FormData) {
     await auth.api.signUpEmail({
       body: {
         name,
+        birthDate,
         email,
         password,
       },

@@ -1,10 +1,18 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { updateUser } from "@/lib/auth-client";
+import { format, parseISO } from "date-fns";
 import { useRouter } from "next/navigation";
+import * as React from "react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Spinner } from "./ui/spinner";
@@ -12,25 +20,47 @@ import { Spinner } from "./ui/spinner";
 interface UpdateUserFormProps {
   name: string;
   image: string;
+  birthDate?: string; // format YYYY-MM-DD
 }
 
-export default function UpdateUserForm({ name, image }: UpdateUserFormProps) {
+export default function UpdateUserForm({
+  name,
+  image,
+  birthDate,
+}: UpdateUserFormProps) {
   const [isPending, setIsPending] = useState<boolean>(false);
+  const [birthDateState, setBirthDateState] = useState<Date | undefined>(
+    birthDate ? parseISO(birthDate) : undefined
+  );
   const router = useRouter();
+
+  // Variable accessible dans tout le composant
+  const birthDateValueString = birthDateState
+    ? format(birthDateState, "yyyy-MM-dd")
+    : "";
+
+  // Met à jour la date si la prop change
+  React.useEffect(() => {
+    if (typeof window !== "undefined" && birthDate) {
+      setBirthDateState(birthDate ? parseISO(birthDate) : undefined);
+    }
+  }, [birthDate]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.target as HTMLFormElement);
     const name = String(formData.get("name"));
     const image = String(formData.get("image"));
+    formData.set("birthDate", birthDateValueString);
 
-    if (!name && !image) {
-      return toast.error("Veuillez renseigner un nom et une image.");
+    if (!name && !image && !birthDateState) {
+      return toast.error("Veuillez renseigner au moins un champ.");
     }
 
     await updateUser({
       ...(name && { name }),
-      image,
+      ...(image && { image }),
+      ...(birthDateState && { birthDate: birthDateState }),
       fetchOptions: {
         onRequest: () => {
           setIsPending(true);
@@ -60,7 +90,42 @@ export default function UpdateUserForm({ name, image }: UpdateUserFormProps) {
         <Label htmlFor="image">Image</Label>
         <Input type="url" id="image" name="image" defaultValue={image} />
       </div>
-      <Button type="submit" disabled={isPending} className="cursor-pointer">
+
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="birthDate">Date de naissance</Label>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full justify-start text-left font-normal"
+            >
+              {birthDateState
+                ? format(birthDateState, "dd/MM/yyyy")
+                : "Choisir une date"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={birthDateState}
+              onSelect={setBirthDateState}
+              captionLayout="dropdown"
+              fromYear={1900}
+              toYear={new Date().getFullYear()}
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
+        {/* Champ caché pour le submit */}
+        <input type="hidden" name="birthDate" value={birthDateValueString} />
+      </div>
+
+      <Button
+        type="submit"
+        disabled={isPending}
+        className="cursor-pointer w-36"
+      >
         {!isPending ? <p>Mettre à jour</p> : <Spinner />}
       </Button>
     </form>

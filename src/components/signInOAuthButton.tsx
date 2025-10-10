@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { signIn } from "@/lib/auth-client";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Spinner } from "./ui/spinner";
 
 interface SignInOAuthButtonProps {
   provider: "google" | "facebook";
@@ -44,7 +45,7 @@ export default function SignInOAuthButton({
       disabled={isPending}
       className="cursor-pointer"
     >
-      {action} avec {providerName}
+      {isPending ? <Spinner /> : `${action} avec ${providerName}`}
     </Button>
   );
 }
