@@ -121,7 +121,11 @@ export default function UpdateUserForm({
         <input type="hidden" name="birthDate" value={birthDateValueString} />
       </div>
 
-      <Button type="submit" disabled={isPending} className="cursor-pointer">
+      <Button
+        type="submit"
+        disabled={isPending}
+        className="cursor-pointer w-36"
+      >
         {!isPending ? <p>Mettre à jour</p> : <Spinner />}
       </Button>
     </form>

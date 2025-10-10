@@ -8,7 +8,8 @@ export default function ForgotPasswordSuccessPage() {
         <h1 className="text-3xl font-bold">Mail envoyé!</h1>
       </div>
       <p className="text-muted-foreground">
-        Un lien de réinitialisation de mot de passe vous a été envoyé par email.
+        Si votre adresse email correspond à un compte utilisateur, un lien de
+        réinitialisation du mot de passe vous a été adressé.
       </p>
     </div>
   );
