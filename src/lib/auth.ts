@@ -122,6 +122,10 @@ const options = {
         type: "date",
         input: true,
       },
+      avatarId: {
+        type: "string",
+        input: true,
+      },
     },
   },
   session: {
@@ -173,6 +177,14 @@ export const auth = betterAuth({
         where: { userId: user.id },
         select: { providerId: true },
       });
+      let avatarUrl: string | null = null;
+      if (user.avatarId) {
+        const avatar = await prisma.avatar.findUnique({
+          where: { id: user.avatarId },
+          select: { url: true },
+        });
+        avatarUrl = avatar?.url ?? null;
+      }
       return {
         session: {
           createdAt: session.createdAt,
@@ -191,6 +203,8 @@ export const auth = betterAuth({
           email: user.email,
           emailVerified: user.emailVerified,
           image: user.image,
+          avatarId: user.avatarId,
+          avatarUrl,
           birthDate: user.birthDate,
           role: user.role,
           banExpires: user.banExpires,

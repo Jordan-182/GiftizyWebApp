@@ -38,8 +38,18 @@ model User {
   accounts      Account[]
   sessions      Session[]
   Wishlist      Wishlist[]
+  avatarId      String?
+  avatar        avatar?    @relation(fields: [avatarId], references: [id])
 
   @@map("users")
+}
+
+model avatar {
+  id        String   @id @default(cuid())
+  url       String
+  createdAt DateTime @default(now())
+
+  users User[]
 }
 
 model Session {

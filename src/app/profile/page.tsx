@@ -35,9 +35,9 @@ export default async function ProfilePage() {
       <Card>
         <CardContent className="flex gap-4 items-center flex-col sm:flex-row">
           <div className="max-w-3xs flex flex-col items-center gap-2">
-            {session.user.image ? (
+            {session.user.avatarUrl ? (
               <img
-                src={session.user.image}
+                src={session.user.avatarUrl}
                 alt="Avatar"
                 className="size-40 border border-primary rounded-full object-cover flex-1"
                 height={160}
