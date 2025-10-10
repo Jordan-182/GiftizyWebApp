@@ -7,6 +7,7 @@ import { forgetPassword } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Spinner } from "./ui/spinner";
 
 export default function ForgotPasswordForm() {
   const [isPending, setIsPending] = useState<boolean>(false);
@@ -48,8 +49,12 @@ export default function ForgotPasswordForm() {
         <Label htmlFor="email">Email</Label>
         <Input type="email" id="email" name="email" />
       </div>
-      <Button type="submit" disabled={isPending} className="cursor-pointer">
-        Envoyer un lien de réinitialisation
+      <Button
+        type="submit"
+        disabled={isPending}
+        className="cursor-pointer w-60"
+      >
+        {isPending ? <Spinner /> : "Recevoir un lien de réinitialisation"}
       </Button>
     </form>
   );

@@ -38,7 +38,11 @@ export default function ChangePasswordForm() {
         <Label htmlFor="newPassword">Nouveau mot de passe</Label>
         <Input type="password" id="newPassword" name="newPassword" />
       </div>
-      <Button type="submit" disabled={isPending} className="cursor-pointer">
+      <Button
+        type="submit"
+        disabled={isPending}
+        className="cursor-pointer w-36"
+      >
         {!isPending ? <p>Mettre à jour</p> : <Spinner />}
       </Button>
     </form>
