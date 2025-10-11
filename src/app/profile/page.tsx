@@ -3,14 +3,18 @@ import DeleteMyAccountButton from "@/components/deleteMyAccountButton";
 import SignOutButton from "@/components/signOutButton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import UpdateAvatar from "@/components/UpdateAvatar";
 import UpdateUserForm from "@/components/updateUserForm";
+import { getAvatars } from "@/lib/api/avatars";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async function ProfilePage() {
   const headersList = await headers();
+  const avatars = await getAvatars();
 
   const session = await auth.api.getSession({
     headers: headersList,
@@ -35,11 +39,11 @@ export default async function ProfilePage() {
       <Card>
         <CardContent className="flex gap-4 items-center flex-col sm:flex-row">
           <div className="max-w-3xs flex flex-col items-center gap-2">
-            {session.user.image ? (
-              <img
-                src={session.user.image}
+            {session.user.avatarUrl ? (
+              <Image
+                src={session.user.avatarUrl}
                 alt="Avatar"
-                className="size-40 border border-primary rounded-full object-cover flex-1"
+                className="size-40 border-4 border-primary rounded-full object-cover flex-1"
                 height={160}
                 width={160}
               />
@@ -82,37 +86,47 @@ export default async function ProfilePage() {
           </div>
         </CardContent>
       </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold">Permissions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col md:flex-row gap-2">
-            <Button size="sm" className="cursor-pointer">
-              Gérer mes wishlists
-            </Button>
-            <Button
-              size="sm"
-              className="cursor-pointer"
-              disabled={!FULL_WISHLIST_ACCESS.success}
-            >
-              Gérer toutes les wishlists
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold">Permissions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col md:flex-row gap-2">
+              <Button size="sm" className="cursor-pointer">
+                Gérer mes wishlists
+              </Button>
+              <Button
+                size="sm"
+                className="cursor-pointer"
+                disabled={!FULL_WISHLIST_ACCESS.success}
+              >
+                Gérer toutes les wishlists
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold">
+              Modifier mon avatar
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <UpdateAvatar avatars={avatars} avatarId={session.user.avatarId} />
+          </CardContent>
+        </Card>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardHeader>
             <CardTitle className="text-2xl font-bold">
-              Modifier mon profil
+              Modifier mes infos
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <UpdateUserForm
-              name={session.user.name}
-              image={session.user.image ?? ""}
-            />
+            <UpdateUserForm name={session.user.name} />
           </CardContent>
         </Card>
         <Card>

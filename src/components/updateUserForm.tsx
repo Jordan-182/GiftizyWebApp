@@ -19,13 +19,11 @@ import { Spinner } from "./ui/spinner";
 
 interface UpdateUserFormProps {
   name: string;
-  image: string;
   birthDate?: string; // format YYYY-MM-DD
 }
 
 export default function UpdateUserForm({
   name,
-  image,
   birthDate,
 }: UpdateUserFormProps) {
   const [isPending, setIsPending] = useState<boolean>(false);
@@ -50,16 +48,15 @@ export default function UpdateUserForm({
     event.preventDefault();
     const formData = new FormData(event.target as HTMLFormElement);
     const name = String(formData.get("name"));
-    const image = String(formData.get("image"));
+
     formData.set("birthDate", birthDateValueString);
 
-    if (!name && !image && !birthDateState) {
+    if (!name && !birthDateState) {
       return toast.error("Veuillez renseigner au moins un champ.");
     }
 
     await updateUser({
       ...(name && { name }),
-      ...(image && { image }),
       ...(birthDateState && { birthDate: birthDateState }),
       fetchOptions: {
         onRequest: () => {
@@ -85,10 +82,6 @@ export default function UpdateUserForm({
       <div className="flex flex-col gap-2">
         <Label htmlFor="name">Nom</Label>
         <Input id="name" name="name" defaultValue={name} />
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="image">Image</Label>
-        <Input type="url" id="image" name="image" defaultValue={image} />
       </div>
 
       <div className="flex flex-col gap-2">
