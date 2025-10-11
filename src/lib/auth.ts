@@ -90,10 +90,14 @@ const options = {
       }
 
       if (context.path === "/update-user") {
+        const { name, ...rest } = context.body;
         return {
           context: {
             ...context,
-            body: { ...context.body, name: normalizeName(context.body.name) },
+            body:
+              name !== undefined
+                ? { ...rest, name: normalizeName(name) }
+                : { ...rest },
           },
         };
       }
@@ -120,6 +124,10 @@ const options = {
       },
       birthDate: {
         type: "date",
+        input: true,
+      },
+      avatarId: {
+        type: "string",
         input: true,
       },
     },
@@ -173,6 +181,14 @@ export const auth = betterAuth({
         where: { userId: user.id },
         select: { providerId: true },
       });
+      let avatarUrl: string | null = null;
+      if (user.avatarId) {
+        const avatar = await prisma.avatar.findUnique({
+          where: { id: user.avatarId },
+          select: { url: true },
+        });
+        avatarUrl = avatar?.url ?? null;
+      }
       return {
         session: {
           createdAt: session.createdAt,
@@ -191,6 +207,8 @@ export const auth = betterAuth({
           email: user.email,
           emailVerified: user.emailVerified,
           image: user.image,
+          avatarId: user.avatarId,
+          avatarUrl,
           birthDate: user.birthDate,
           role: user.role,
           banExpires: user.banExpires,
