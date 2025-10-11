@@ -15,9 +15,10 @@ model Wishlist {
   name            String
   description     String?
   isEventWishlist Boolean  @default(false) @map("is_event_wishlist")
-  profileId       String   @map("profile_id")
   userId          String
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  profileId       String
+  profile         Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
   @@map("wishlists")
 }
@@ -25,7 +26,7 @@ model Wishlist {
 model User {
   id            String     @id @default(uuid())
   createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @default(now()) @updatedAt
+  updatedAt     DateTime   @updatedAt
   name          String
   email         String     @unique
   emailVerified Boolean    @default(false)
@@ -37,19 +38,42 @@ model User {
   banned        Boolean?   @default(false)
   accounts      Account[]
   sessions      Session[]
-  Wishlist      Wishlist[]
+  wishlist      Wishlist[]
+  profile       Profile[]
   avatarId      String?
-  avatar        avatar?    @relation(fields: [avatarId], references: [id])
+  avatar        Avatar?    @relation(fields: [avatarId], references: [id], onDelete: SetNull)
 
   @@map("users")
 }
 
-model avatar {
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model Avatar {
   id        String   @id @default(cuid())
   url       String
   createdAt DateTime @default(now())
 
-  users User[]
+  users    User[]
+  profiles Profile[]
+}
+
+model Profile {
+  id        String     @id @default(uuid())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  name      String
+  birthDate DateTime?
+  image     String?
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  avatarId  String?
+  avatar    Avatar?    @relation(fields: [avatarId], references: [id], onDelete: SetNull)
+  wishlists Wishlist[]
+
+  @@map("profiles")
 }
 
 model Session {
@@ -95,9 +119,4 @@ model Verification {
   expiresAt  DateTime
 
   @@map("verifications")
-}
-
-enum UserRole {
-  USER
-  ADMIN
 }
