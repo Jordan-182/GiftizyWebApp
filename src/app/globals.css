@@ -64,13 +64,13 @@
 }
 
 .dark {
-  --background: oklch(0.2077 0.0398 265.7549);
+  --background: oklch(20.768% 0.03985 265.767);
   --foreground: oklch(0.9288 0.0126 255.5078);
   --card: oklch(0.2795 0.0368 260.031);
   --card-foreground: oklch(0.9288 0.0126 255.5078);
   --popover: oklch(0.2795 0.0368 260.031);
   --popover-foreground: oklch(0.9288 0.0126 255.5078);
-  --primary: oklch(0.6801 0.1583 276.9349);
+  --primary: oklch(68.012% 0.1584 276.941);
   --primary-foreground: oklch(0.2077 0.0398 265.7549);
   --secondary: oklch(0.3351 0.0331 260.912);
   --secondary-foreground: oklch(0.8717 0.0093 258.3382);
@@ -181,4 +181,13 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.font-modak {
+  font-family: var(--font-modak), cursive;
+}
+
+h1 {
+  color: var(--primary);
+  font-weight: 800;
 }

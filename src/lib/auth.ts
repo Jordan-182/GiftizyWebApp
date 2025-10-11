@@ -90,10 +90,14 @@ const options = {
       }
 
       if (context.path === "/update-user") {
+        const { name, ...rest } = context.body;
         return {
           context: {
             ...context,
-            body: { ...context.body, name: normalizeName(context.body.name) },
+            body:
+              name !== undefined
+                ? { ...rest, name: normalizeName(name) }
+                : { ...rest },
           },
         };
       }

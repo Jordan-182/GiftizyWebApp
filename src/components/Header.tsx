@@ -3,6 +3,7 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSession } from "@/lib/auth-client";
 import { Menu, X } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import DesktopNav from "./DesktopNav";
@@ -29,13 +30,17 @@ export default function Header() {
   };
 
   return isMobile ? (
-    <header className="py-6 bg-primary fixed top-0 w-full text-white z-[100]">
+    <header className="py-4 bg-primary fixed top-0 w-full text-secondary z-[100]">
       <div
         className={`flex items-center max-w-5xl px-8 mx-auto ${
           session ? "justify-between" : "justify-center"
         }`}
       >
-        <h2 className="font-bold text-xl">LOGO</h2>
+        <div className="flex gap-1 items-center">
+          <Image src={"/logo.png"} alt="Logo Giftizy" height={50} width={50} />
+          <h2 className="font-modak text-2xl text-secondary">Giftizy</h2>
+        </div>
+
         {session && (
           <Drawer
             direction="left"
@@ -47,10 +52,13 @@ export default function Header() {
                 {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
             </DrawerTrigger>
-            <DrawerContent className="h-auto pt-19">
+            <DrawerContent className="h-auto pt-21">
               <DrawerHeader>
-                <DrawerTitle className="text-center text-xl">Logo</DrawerTitle>
+                <DrawerTitle className="text-center text-xl font-extrabold">
+                  Giftizy
+                </DrawerTitle>
               </DrawerHeader>
+
               <div className="px-4 flex flex-col gap-2 pb-6">
                 <Link
                   href="/dashboard"
@@ -89,19 +97,29 @@ export default function Header() {
                 </Link>
                 <ThemeToggle />
               </div>
+              <Image
+                src={"/logo.png"}
+                alt="Logo Giftizy"
+                height={150}
+                width={150}
+                className="mx-auto"
+              />
             </DrawerContent>
           </Drawer>
         )}
       </div>
     </header>
   ) : (
-    <header className="py-6 bg-primary fixed top-0 w-full text-white z-[100]">
+    <header className="py-4 bg-primary fixed top-0 w-full text-white z-[100]">
       <div
         className={`flex items-center max-w-5xl px-8 mx-auto ${
           session ? "justify-between" : "justify-center"
         }`}
       >
-        <h2 className="font-bold text-xl">LOGO</h2>
+        <div className="flex gap-1 items-center">
+          <Image src={"/logo.png"} alt="Logo Giftizy" height={50} width={50} />
+          <h2 className="font-modak text-2xl text-secondary">Giftizy</h2>
+        </div>
         {session && <DesktopNav />}
       </div>
     </header>
