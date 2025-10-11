@@ -21,7 +21,7 @@ export async function signUpEmailAction(formData: FormData) {
   const password = String(formData.get("password"));
   if (!password) return { error: "Merci d'indiquer votre mot de passe" };
 
-  const avatarId = "cl2k5a8q00001x0u7d9a7p8z3";
+  const avatarId = "cl2k5a8q00001x0u7d9a7p8z1";
   try {
     await auth.api.signUpEmail({
       body: {

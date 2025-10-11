@@ -38,7 +38,7 @@ export default function Header() {
       >
         <div className="flex gap-1 items-center">
           <Image src={"/logo.png"} alt="Logo Giftizy" height={50} width={50} />
-          <h2 className="font-modak text-2xl text-secondary">Giftizy</h2>
+          <h2 className="font-modak text-3xl text-secondary">Giftizy</h2>
         </div>
 
         {session && (
@@ -118,7 +118,7 @@ export default function Header() {
       >
         <div className="flex gap-1 items-center">
           <Image src={"/logo.png"} alt="Logo Giftizy" height={50} width={50} />
-          <h2 className="font-modak text-2xl text-secondary">Giftizy</h2>
+          <h2 className="font-modak text-3xl text-secondary">Giftizy</h2>
         </div>
         {session && <DesktopNav />}
       </div>

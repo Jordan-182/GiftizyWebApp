@@ -35,7 +35,7 @@ export default async function ProfilePage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-bold">Mon profil</h1>
+      <h1 className="text-3xl font-bold">Mon compte</h1>
       <Card>
         <CardContent className="flex gap-4 items-center flex-col sm:flex-row">
           <div className="max-w-3xs flex flex-col items-center gap-2">
