@@ -49,21 +49,16 @@ export default function UpdateUserForm({
     const formData = new FormData(event.target as HTMLFormElement);
     const name = String(formData.get("name"));
 
-    // On convertit la date au format YYYY-MM-DD en objet Date (sans fuseau horaire)
-    let birthDate: Date | undefined = undefined;
-    if (birthDateValueString) {
-      // On découpe la string pour créer une date locale sans décalage UTC
-      const [year, month, day] = birthDateValueString.split("-").map(Number);
-      birthDate = new Date(year, month - 1, day); // mois: 0-indexé
-    }
-
-    if (!name && !birthDate) {
+    // On envoie la date au format string 'YYYY-MM-DD' pour éviter le décalage UTC
+    if (!name && !birthDateValueString) {
       return toast.error("Veuillez renseigner au moins un champ.");
     }
 
     await updateUser({
       ...(name && { name }),
-      ...(birthDate && { birthDate }),
+      ...(birthDateValueString && {
+        birthDate: new Date(birthDateValueString),
+      }),
       fetchOptions: {
         onRequest: () => {
           setIsPending(true);
