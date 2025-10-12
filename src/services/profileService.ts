@@ -1,3 +1,4 @@
+import type { ProfileFormData } from "@/repositories/profileRepository";
 import { profileRepository } from "@/repositories/profileRepository";
 
 export const profileService = {
@@ -13,6 +14,14 @@ export const profileService = {
     const result = await profileRepository.deleteProfile(id);
     if (!result) {
       throw new Error("Erreur lors de la suppression du profil");
+    }
+    return result;
+  },
+
+  async createProfile(profile: ProfileFormData) {
+    const result = await profileRepository.createProfile(profile);
+    if (!result) {
+      throw new Error("Erreur lors de la création du profil");
     }
     return result;
   },

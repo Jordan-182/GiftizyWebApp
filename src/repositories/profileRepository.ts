@@ -1,5 +1,13 @@
 import { prisma } from "@/lib/prisma";
 
+export type ProfileFormData = {
+  name: string;
+  birthDate: string;
+  userId: string;
+  avatarId: string;
+  isMainProfile: boolean;
+};
+
 export const profileRepository = {
   findByUserId: (userId: string) =>
     prisma.profile.findMany({
@@ -18,4 +26,7 @@ export const profileRepository = {
     prisma.profile.delete({
       where: { id },
     }),
+
+  createProfile: (profile: ProfileFormData) =>
+    prisma.profile.create({ data: profile }),
 };

@@ -1,3 +1,5 @@
+import { ProfileFormData } from "@/repositories/profileRepository";
+
 export async function getProfiles(userId: string) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/users/${userId}/profiles`,
@@ -14,4 +16,20 @@ export async function deleteProfile(userId: string, profileId: string) {
   );
   if (!res.ok) throw new Error("Erreur lors de la suppression du profil");
   return res;
+}
+
+export async function createProfile(
+  userId: string,
+  profileData: ProfileFormData
+) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/users/${userId}/profiles`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(profileData),
+    }
+  );
+  if (!res.ok) throw new Error("Erreur lors de la création du profil");
+  return res.json();
 }
