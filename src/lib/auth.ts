@@ -123,6 +123,23 @@ const options = {
           }
           return { data: user };
         },
+        after: async (user) => {
+          // Créer automatiquement un profil par défaut pour l'utilisateur
+          const defaultAvatarId = "cl2k5a8q00001x0u7d9a7p8z1"; // Avatar par défaut
+          await prisma.profile.create({
+            data: {
+              name: user.name,
+              birthDate: user.birthDate instanceof Date ? user.birthDate : null,
+              image: user.image,
+              avatarId:
+                typeof user.avatarId === "string"
+                  ? user.avatarId
+                  : defaultAvatarId,
+              isMainProfile: true,
+              userId: user.id,
+            },
+          });
+        },
       },
     },
   },
