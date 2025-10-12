@@ -90,14 +90,24 @@ const options = {
       }
 
       if (context.path === "/update-user") {
-        const { name, ...rest } = context.body;
+        const { name, birthDate, ...rest } = context.body;
+        let birthDateValue = birthDate;
+        if (typeof birthDate === "string" && birthDate.length === 10) {
+          // Conversion string 'YYYY-MM-DD' -> Date locale
+          const [year, month, day] = birthDate.split("-").map(Number);
+          birthDateValue = new Date(year, month - 1, day);
+        }
         return {
           context: {
             ...context,
             body:
               name !== undefined
-                ? { ...rest, name: normalizeName(name) }
-                : { ...rest },
+                ? {
+                    ...rest,
+                    name: normalizeName(name),
+                    birthDate: birthDateValue,
+                  }
+                : { ...rest, birthDate: birthDateValue },
           },
         };
       }

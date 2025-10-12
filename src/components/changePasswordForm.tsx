@@ -29,7 +29,10 @@ export default function ChangePasswordForm() {
   }
 
   return (
-    <form className="max-w-sm w-full space-y-4" onSubmit={handleSubmit}>
+    <form
+      className="flex flex-col gap-2 w-full space-y-4"
+      onSubmit={handleSubmit}
+    >
       <div className="flex flex-col gap-2">
         <Label htmlFor="currentPassword">Mot de passe actuel</Label>
         <Input type="password" id="currentPassword" name="currentPassword" />
@@ -38,11 +41,7 @@ export default function ChangePasswordForm() {
         <Label htmlFor="newPassword">Nouveau mot de passe</Label>
         <Input type="password" id="newPassword" name="newPassword" />
       </div>
-      <Button
-        type="submit"
-        disabled={isPending}
-        className="cursor-pointer w-36"
-      >
+      <Button type="submit" disabled={isPending} className="cursor-pointer">
         {!isPending ? <p>Mettre à jour</p> : <Spinner />}
       </Button>
     </form>

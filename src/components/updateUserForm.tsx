@@ -49,15 +49,16 @@ export default function UpdateUserForm({
     const formData = new FormData(event.target as HTMLFormElement);
     const name = String(formData.get("name"));
 
-    formData.set("birthDate", birthDateValueString);
-
-    if (!name && !birthDateState) {
+    // On envoie la date au format string 'YYYY-MM-DD' pour éviter le décalage UTC
+    if (!name && !birthDateValueString) {
       return toast.error("Veuillez renseigner au moins un champ.");
     }
 
     await updateUser({
       ...(name && { name }),
-      ...(birthDateState && { birthDate: birthDateState }),
+      ...(birthDateValueString && {
+        birthDate: new Date(birthDateValueString),
+      }),
       fetchOptions: {
         onRequest: () => {
           setIsPending(true);
@@ -78,7 +79,10 @@ export default function UpdateUserForm({
   }
 
   return (
-    <form className="max-w-sm w-full space-y-4" onSubmit={handleSubmit}>
+    <form
+      className="flex flex-col gap-2 w-full space-y-4"
+      onSubmit={handleSubmit}
+    >
       <div className="flex flex-col gap-2">
         <Label htmlFor="name">Nom</Label>
         <Input id="name" name="name" defaultValue={name} />
@@ -114,11 +118,7 @@ export default function UpdateUserForm({
         <input type="hidden" name="birthDate" value={birthDateValueString} />
       </div>
 
-      <Button
-        type="submit"
-        disabled={isPending}
-        className="cursor-pointer w-36"
-      >
+      <Button type="submit" disabled={isPending} className="cursor-pointer">
         {!isPending ? <p>Mettre à jour</p> : <Spinner />}
       </Button>
     </form>

@@ -61,17 +61,18 @@ model Avatar {
 }
 
 model Profile {
-  id        String     @id @default(uuid())
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  name      String
-  birthDate DateTime?
-  image     String?
-  userId    String
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  avatarId  String?
-  avatar    Avatar?    @relation(fields: [avatarId], references: [id], onDelete: SetNull)
-  wishlists Wishlist[]
+  id            String     @id @default(uuid())
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @default(now()) @updatedAt
+  name          String
+  birthDate     DateTime?
+  image         String?
+  isMainProfile Boolean    @default(false)
+  userId        String
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  avatarId      String?
+  avatar        Avatar?    @relation(fields: [avatarId], references: [id], onDelete: SetNull)
+  wishlists     Wishlist[]
 
   @@map("profiles")
 }
