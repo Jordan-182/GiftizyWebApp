@@ -36,7 +36,10 @@ export async function POST(
   }
   try {
     const body = await request.json();
-    const profileData = { ...body } as ProfileFormData;
+    const profileData = {
+      ...body,
+      birthDate: body.birthDate ? new Date(body.birthDate) : null,
+    } as ProfileFormData;
     const newProfile = await profileService.createProfile(profileData);
     return NextResponse.json(newProfile, { status: 201 });
   } catch (error) {

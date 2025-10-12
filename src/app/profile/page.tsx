@@ -84,7 +84,7 @@ export default async function ProfilePage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl font-bold">Profils</CardTitle>
+            <CardTitle className="text-2xl font-bold">Mes profils</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-4 h-full">
             <ProfileSection profiles={profiles} />

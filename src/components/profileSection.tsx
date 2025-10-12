@@ -1,7 +1,7 @@
 import type { Profile } from "@/generated/prisma";
 import Image from "next/image";
+import CreateProfileModal from "./CreateProfileModal";
 import DeleteProfileButton from "./deleteProfileButton";
-import { Button } from "./ui/button";
 import { Item, ItemActions, ItemContent, ItemTitle } from "./ui/item";
 
 type ProfileWithAvatar = Profile & {
@@ -15,6 +15,8 @@ export default function ProfileSection({
 }: {
   profiles: ProfileWithAvatar[];
 }) {
+  // On récupère le userId depuis le premier profil (tous ont le même userId)
+  const userId = profiles[0]?.userId || "";
   return (
     <>
       <ul className="flex flex-col gap-2">
@@ -49,19 +51,19 @@ export default function ProfileSection({
                     profileId={profile.id}
                   />
                 )}
-                <Button
-                  variant="default"
-                  size="sm"
-                  className="cursor-pointer h-full"
+                <button
+                  type="button"
+                  className="cursor-pointer h-full px-2 py-1 rounded bg-primary text-white"
+                  // à compléter pour la gestion du profil
                 >
                   Gérer
-                </Button>
+                </button>
               </ItemActions>
             </Item>
           </li>
         ))}
       </ul>
-      <Button className="mt-auto cursor-pointer">Créer un profil</Button>
+      <CreateProfileModal userId={userId} />
     </>
   );
 }

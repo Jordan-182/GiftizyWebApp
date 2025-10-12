@@ -12,7 +12,7 @@ export const profileRepository = {
   findByUserId: (userId: string) =>
     prisma.profile.findMany({
       where: { userId },
-      orderBy: { id: "asc" },
+      orderBy: { createdAt: "asc" },
       include: {
         avatar: {
           select: {
