@@ -1,11 +1,13 @@
 import ChangePasswordForm from "@/components/changePasswordForm";
 import DeleteMyAccountButton from "@/components/deleteMyAccountButton";
+import ProfileSection from "@/components/profileSection";
 import SignOutButton from "@/components/signOutButton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import UpdateAvatar from "@/components/UpdateAvatar";
 import UpdateUserForm from "@/components/updateUserForm";
 import { getAvatars } from "@/lib/api/avatars";
+import { getProfiles } from "@/lib/api/profiles";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import Image from "next/image";
@@ -23,20 +25,12 @@ export default async function ProfilePage() {
   if (!session) {
     redirect("/auth/login");
   }
-
-  const FULL_WISHLIST_ACCESS = await auth.api.userHasPermission({
-    headers: headersList,
-    body: {
-      permissions: {
-        wishlists: ["update", "delete"],
-      },
-    },
-  });
+  const profiles = await getProfiles(session?.user.id);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
       <h1 className="text-3xl font-bold">Mon compte</h1>
-      <Card>
+      <Card className="my-6">
         <CardContent className="flex gap-4 items-center flex-col sm:flex-row">
           <div className="max-w-3xs flex flex-col items-center gap-2">
             {session.user.avatarUrl ? (
@@ -90,21 +84,10 @@ export default async function ProfilePage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl font-bold">Permissions</CardTitle>
+            <CardTitle className="text-2xl font-bold">Profils</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="flex flex-col md:flex-row gap-2">
-              <Button size="sm" className="cursor-pointer">
-                Gérer mes wishlists
-              </Button>
-              <Button
-                size="sm"
-                className="cursor-pointer"
-                disabled={!FULL_WISHLIST_ACCESS.success}
-              >
-                Gérer toutes les wishlists
-              </Button>
-            </div>
+          <CardContent className="flex flex-col gap-4 h-full">
+            <ProfileSection profiles={profiles} />
           </CardContent>
         </Card>
         <Card>
