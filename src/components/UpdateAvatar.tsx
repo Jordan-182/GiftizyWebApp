@@ -1,6 +1,6 @@
 "use client";
 
-import type { avatar } from "@/generated/prisma";
+import type { Avatar } from "@/generated/prisma";
 import { updateUser } from "@/lib/auth-client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -10,7 +10,7 @@ import { Button } from "./ui/button";
 import { Spinner } from "./ui/spinner";
 
 type UpdateAvatarProps = {
-  avatars: avatar[];
+  avatars: Avatar[];
   avatarId: string;
 };
 
