@@ -1,3 +1,4 @@
+import { auth } from "@/lib/auth";
 import { profileService } from "@/services/profileService";
 import { NextResponse } from "next/server";
 
@@ -9,10 +10,16 @@ function getErrorMessage(error: unknown): string {
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { userId: string; profileId: string } }
+  context: { params: Promise<{ userId: string; profileId: string }> }
 ) {
+  const { userId, profileId } = await context.params;
+  const session = await auth.api.getSession(request);
+  if (!session || session.user.id !== userId) {
+    return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
+  }
+
   try {
-    await profileService.deleteProfileById(params.profileId);
+    await profileService.deleteProfileById(profileId);
     return new Response(null, { status: 204 });
   } catch (error) {
     return NextResponse.json(
