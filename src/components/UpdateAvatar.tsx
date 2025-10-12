@@ -46,8 +46,8 @@ export default function UpdateAvatar({ avatars, avatarId }: UpdateAvatarProps) {
   }
 
   return (
-    <section className="max-w-sm w-full space-y-4">
-      <ul className="flex flex-wrap gap-2">
+    <section className="flex flex-col gap-4 w-full space-y-4">
+      <ul className="flex flex-wrap justify-center gap-2">
         {avatars.map((avatar) => {
           return (
             <li key={avatar.id} onClick={() => handleClick(avatar.id)}>
@@ -69,7 +69,7 @@ export default function UpdateAvatar({ avatars, avatarId }: UpdateAvatarProps) {
       <Button
         type="submit"
         disabled={isPending || !selectedAvatarId}
-        className="cursor-pointer w-36"
+        className="cursor-pointer"
         onClick={handleValidation}
       >
         {!isPending ? <p>Mettre à jour</p> : <Spinner />}

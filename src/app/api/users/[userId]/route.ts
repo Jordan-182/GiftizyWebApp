@@ -9,11 +9,11 @@ function getErrorMessage(error: unknown): string {
 
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ userId: string }> }
 ) {
-  const { id } = await context.params;
+  const { userId } = await context.params;
   try {
-    const user = await userService.getUserById(id);
+    const user = await userService.getUserById(userId);
     return NextResponse.json(user, { status: 200 });
   } catch (error) {
     return NextResponse.json(

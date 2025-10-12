@@ -79,7 +79,10 @@ export default function UpdateUserForm({
   }
 
   return (
-    <form className="max-w-sm w-full space-y-4" onSubmit={handleSubmit}>
+    <form
+      className="flex flex-col gap-2 w-full space-y-4"
+      onSubmit={handleSubmit}
+    >
       <div className="flex flex-col gap-2">
         <Label htmlFor="name">Nom</Label>
         <Input id="name" name="name" defaultValue={name} />
@@ -115,11 +118,7 @@ export default function UpdateUserForm({
         <input type="hidden" name="birthDate" value={birthDateValueString} />
       </div>
 
-      <Button
-        type="submit"
-        disabled={isPending}
-        className="cursor-pointer w-36"
-      >
+      <Button type="submit" disabled={isPending} className="cursor-pointer">
         {!isPending ? <p>Mettre à jour</p> : <Spinner />}
       </Button>
     </form>
