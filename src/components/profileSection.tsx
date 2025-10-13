@@ -1,4 +1,4 @@
-import type { Profile } from "@/generated/prisma";
+import type { Avatar, Profile } from "@/generated/prisma";
 import Image from "next/image";
 import CreateProfileModal from "./CreateProfileModal";
 import DeleteProfileButton from "./deleteProfileButton";
@@ -13,8 +13,10 @@ type ProfileWithAvatar = Profile & {
 
 export default function ProfileSection({
   profiles,
+  avatars,
 }: {
   profiles: ProfileWithAvatar[];
+  avatars: Avatar[];
 }) {
   // On récupère le userId depuis le premier profil (tous ont le même userId)
   const userId = profiles[0]?.userId || "";
@@ -45,13 +47,17 @@ export default function ProfileSection({
                     profileId={profile.id}
                   />
                 )}
-                <UpdateProfileModal userId={userId} profile={profile} />
+                <UpdateProfileModal
+                  userId={userId}
+                  profile={profile}
+                  avatars={avatars}
+                />
               </ItemActions>
             </Item>
           </li>
         ))}
       </ul>
-      <CreateProfileModal userId={userId} />
+      <CreateProfileModal userId={userId} avatars={avatars} />
     </>
   );
 }

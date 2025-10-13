@@ -1,13 +1,12 @@
 "use client";
 
 import type { Avatar, Profile } from "@/generated/prisma";
-import { getAvatars } from "@/lib/api/avatars";
 import { editProfile } from "@/lib/api/profiles";
 import type { ProfileFormData } from "@/repositories/profileRepository";
 import { format } from "date-fns";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "./ui/button";
 import { Calendar } from "./ui/calendar";
 import { Input } from "./ui/input";
@@ -25,9 +24,11 @@ type ProfileWithAvatar = Profile & {
 export default function UpdateProfileModal({
   userId,
   profile,
+  avatars,
 }: {
   userId: string;
   profile: ProfileWithAvatar;
+  avatars: Avatar[];
 }) {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<Partial<ProfileFormData>>({
@@ -39,22 +40,9 @@ export default function UpdateProfileModal({
     avatarId: profile.avatarId || undefined,
     isMainProfile: profile.isMainProfile,
   });
-  const [avatars, setAvatars] = useState<Avatar[]>([]);
   const [selectedAvatarId, setSelectedAvatarId] = useState<string>(
     profile.avatarId || "cl2k5a8q00001x0u7d9a7p8z1"
   );
-  // Récupération des avatars au montage
-  useEffect(() => {
-    async function fetchAvatars() {
-      try {
-        const data = await getAvatars();
-        setAvatars(data);
-      } catch (err) {
-        console.log(err);
-      }
-    }
-    fetchAvatars();
-  }, []);
   const [birthDateState, setBirthDateState] = useState<Date | undefined>(
     profile.birthDate ? new Date(profile.birthDate) : undefined
   );
