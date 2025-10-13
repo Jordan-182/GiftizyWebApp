@@ -44,7 +44,7 @@ export default function DeleteProfileButton({
       <SheetTrigger asChild>
         <Button
           size="sm"
-          variant="outline"
+          variant="destructive"
           className="rounded-sm cursor-pointer"
           disabled={isPending}
         >
