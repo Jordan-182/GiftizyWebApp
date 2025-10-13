@@ -3,6 +3,7 @@ import Image from "next/image";
 import CreateProfileModal from "./CreateProfileModal";
 import DeleteProfileButton from "./deleteProfileButton";
 import { Item, ItemActions, ItemContent, ItemTitle } from "./ui/item";
+import UpdateProfileModal from "./updateProfileModal";
 
 type ProfileWithAvatar = Profile & {
   avatar?: {
@@ -31,18 +32,11 @@ export default function ProfileSection({
                   width={50}
                 />
               )}
-              <ItemContent>
+              <ItemContent className="gap-0">
                 <ItemTitle className="text-lg font-bold">
                   {profile.name}
                 </ItemTitle>
-                {profile.birthDate && (
-                  <p>
-                    Date de naissance :{" "}
-                    {profile.birthDate
-                      ? new Date(profile.birthDate).toLocaleDateString("fr-FR")
-                      : ""}
-                  </p>
-                )}
+                {profile.isMainProfile && <p>Profil principal</p>}
               </ItemContent>
               <ItemActions className="h-[50px] py-2">
                 {profile.isMainProfile ? null : (
@@ -51,13 +45,7 @@ export default function ProfileSection({
                     profileId={profile.id}
                   />
                 )}
-                <button
-                  type="button"
-                  className="cursor-pointer h-full px-2 py-1 rounded bg-primary text-white"
-                  // à compléter pour la gestion du profil
-                >
-                  Gérer
-                </button>
+                <UpdateProfileModal userId={userId} profile={profile} />
               </ItemActions>
             </Item>
           </li>
