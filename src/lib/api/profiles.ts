@@ -33,3 +33,20 @@ export async function createProfile(
   if (!res.ok) throw new Error("Erreur lors de la création du profil");
   return res.json();
 }
+
+export async function editProfile(
+  userId: string,
+  profileId: string,
+  updatedProfile: ProfileFormData
+) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/users/${userId}/profiles/${profileId}`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedProfile),
+    }
+  );
+  if (!res.ok) throw new Error("Erreur lors de la modification du profil");
+  return res.json();
+}

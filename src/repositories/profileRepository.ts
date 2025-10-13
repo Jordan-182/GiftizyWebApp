@@ -29,4 +29,10 @@ export const profileRepository = {
 
   createProfile: (profile: ProfileFormData) =>
     prisma.profile.create({ data: profile }),
+
+  editProfile: (id: string, updatedProfile: ProfileFormData) =>
+    prisma.profile.update({
+      where: { id },
+      data: updatedProfile,
+    }),
 };

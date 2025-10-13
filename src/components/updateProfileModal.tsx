@@ -1,8 +1,8 @@
 "use client";
 
-import type { Avatar } from "@/generated/prisma";
+import type { Avatar, Profile } from "@/generated/prisma";
 import { getAvatars } from "@/lib/api/avatars";
-import { createProfile } from "@/lib/api/profiles";
+import { editProfile } from "@/lib/api/profiles";
 import type { ProfileFormData } from "@/repositories/profileRepository";
 import { format } from "date-fns";
 import Image from "next/image";
@@ -16,12 +16,32 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "./ui/sheet";
 import { Spinner } from "./ui/spinner";
 
-export default function CreateProfileModal({ userId }: { userId: string }) {
+type ProfileWithAvatar = Profile & {
+  avatar?: {
+    url: string;
+  } | null;
+};
+
+export default function UpdateProfileModal({
+  userId,
+  profile,
+}: {
+  userId: string;
+  profile: ProfileWithAvatar;
+}) {
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState<Partial<ProfileFormData>>({});
+  const [form, setForm] = useState<Partial<ProfileFormData>>({
+    name: profile.name,
+    birthDate: profile.birthDate
+      ? format(new Date(profile.birthDate), "yyyy-MM-dd")
+      : "",
+    userId: profile.userId,
+    avatarId: profile.avatarId || undefined,
+    isMainProfile: profile.isMainProfile,
+  });
   const [avatars, setAvatars] = useState<Avatar[]>([]);
   const [selectedAvatarId, setSelectedAvatarId] = useState<string>(
-    "cl2k5a8q00001x0u7d9a7p8z1"
+    profile.avatarId || "cl2k5a8q00001x0u7d9a7p8z1"
   );
   // Récupération des avatars au montage
   useEffect(() => {
@@ -36,7 +56,7 @@ export default function CreateProfileModal({ userId }: { userId: string }) {
     fetchAvatars();
   }, []);
   const [birthDateState, setBirthDateState] = useState<Date | undefined>(
-    undefined
+    profile.birthDate ? new Date(profile.birthDate) : undefined
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -70,12 +90,12 @@ export default function CreateProfileModal({ userId }: { userId: string }) {
     }
     setLoading(true);
     try {
-      await createProfile(userId, {
+      await editProfile(userId, profile.id, {
         name: form.name.trim(),
         birthDate: birthDateValueString,
         userId,
         avatarId: selectedAvatarId,
-        isMainProfile: false,
+        isMainProfile: profile.isMainProfile,
       });
       setOpen(false);
       router.refresh();
@@ -92,8 +112,13 @@ export default function CreateProfileModal({ userId }: { userId: string }) {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} className="mt-auto cursor-pointer">
-        Créer un profil
+      <Button
+        onClick={() => setOpen(true)}
+        className="rounded-sm cursor-pointer"
+        size="sm"
+        variant={"outline"}
+      >
+        Gérer
       </Button>
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent
@@ -102,7 +127,7 @@ export default function CreateProfileModal({ userId }: { userId: string }) {
         >
           <div className="max-w-120 mx-auto">
             <SheetHeader className="p-0">
-              <SheetTitle className="text-2xl">Créer un profil</SheetTitle>
+              <SheetTitle className="text-2xl">Modifier le profil</SheetTitle>
             </SheetHeader>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-4">
               <Label htmlFor="name">Nom</Label>
@@ -181,7 +206,7 @@ export default function CreateProfileModal({ userId }: { userId: string }) {
                 disabled={loading}
                 className="cursor-pointer"
               >
-                {loading ? <Spinner /> : "Valider"}
+                {loading ? <Spinner /> : "Mettre à jour"}
               </Button>
             </form>
           </div>

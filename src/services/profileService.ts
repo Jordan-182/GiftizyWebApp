@@ -25,4 +25,12 @@ export const profileService = {
     }
     return result;
   },
+
+  async editProfile(id: string, updatedProfile: ProfileFormData) {
+    const result = await profileRepository.editProfile(id, updatedProfile);
+    if (!result) {
+      throw new Error("Erreur lors de la modification du profil");
+    }
+    return result;
+  },
 };
