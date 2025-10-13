@@ -1,13 +1,12 @@
 "use client";
 
 import type { Avatar } from "@/generated/prisma";
-import { getAvatars } from "@/lib/api/avatars";
 import { createProfile } from "@/lib/api/profiles";
 import type { ProfileFormData } from "@/repositories/profileRepository";
 import { format } from "date-fns";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "./ui/button";
 import { Calendar } from "./ui/calendar";
 import { Input } from "./ui/input";
@@ -16,25 +15,18 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "./ui/sheet";
 import { Spinner } from "./ui/spinner";
 
-export default function CreateProfileModal({ userId }: { userId: string }) {
+export default function CreateProfileModal({
+  userId,
+  avatars,
+}: {
+  userId: string;
+  avatars: Avatar[];
+}) {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<Partial<ProfileFormData>>({});
-  const [avatars, setAvatars] = useState<Avatar[]>([]);
   const [selectedAvatarId, setSelectedAvatarId] = useState<string>(
     "cl2k5a8q00001x0u7d9a7p8z1"
   );
-  // Récupération des avatars au montage
-  useEffect(() => {
-    async function fetchAvatars() {
-      try {
-        const data = await getAvatars();
-        setAvatars(data);
-      } catch (err) {
-        console.log(err);
-      }
-    }
-    fetchAvatars();
-  }, []);
   const [birthDateState, setBirthDateState] = useState<Date | undefined>(
     undefined
   );

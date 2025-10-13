@@ -87,7 +87,7 @@ export default async function ProfilePage() {
             <CardTitle className="text-2xl font-bold">Mes profils</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-4 h-full">
-            <ProfileSection profiles={profiles} />
+            <ProfileSection profiles={profiles} avatars={avatars} />
           </CardContent>
         </Card>
         <Card>
