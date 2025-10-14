@@ -1,6 +1,7 @@
 import { sendEmailAction } from "@/actions/sendEmail.action";
 import { UserRole } from "@/generated/prisma";
 import { hashPassword, verifyPassword } from "@/lib/argon2";
+import { generateFriendCode } from "@/lib/generateFriendCode";
 import { ac, roles } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 import { getValidDomains, normalizeName } from "@/lib/utils";
@@ -118,10 +119,28 @@ const options = {
       create: {
         before: async (user) => {
           const ADMIN_EMAILS = process.env.ADMIN_EMAILS?.split(";") ?? [];
-          if (ADMIN_EMAILS.includes(user.email)) {
-            return { data: { ...user, role: UserRole.ADMIN } };
+
+          // Générer un code ami unique
+          let friendCode = generateFriendCode();
+          let isUnique = false;
+
+          while (!isUnique) {
+            const existingUser = await prisma.user.findUnique({
+              where: { friendCode },
+            });
+            if (!existingUser) {
+              isUnique = true;
+            } else {
+              friendCode = generateFriendCode();
+            }
           }
-          return { data: user };
+
+          const userData = { ...user, friendCode };
+
+          if (ADMIN_EMAILS.includes(user.email)) {
+            return { data: { ...userData, role: UserRole.ADMIN } };
+          }
+          return { data: userData };
         },
         after: async (user) => {
           // Créer automatiquement un profil par défaut pour l'utilisateur
@@ -156,6 +175,10 @@ const options = {
       avatarId: {
         type: "string",
         input: true,
+      },
+      friendCode: {
+        type: "string",
+        input: false,
       },
     },
   },
@@ -237,6 +260,7 @@ export const auth = betterAuth({
           avatarId: user.avatarId,
           avatarUrl,
           birthDate: user.birthDate,
+          friendCode: user.friendCode,
           role: user.role,
           banExpires: user.banExpires,
           banReason: user.banReason,

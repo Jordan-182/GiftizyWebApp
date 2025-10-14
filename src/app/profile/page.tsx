@@ -1,5 +1,6 @@
 import ChangePasswordForm from "@/components/changePasswordForm";
 import DeleteMyAccountButton from "@/components/deleteMyAccountButton";
+import FriendCode from "@/components/friendCode";
 import ProfileSection from "@/components/profileSection";
 import SignOutButton from "@/components/signOutButton";
 import { Button } from "@/components/ui/button";
@@ -50,21 +51,22 @@ export default async function ProfilePage() {
             )}
           </div>
           <div className="w-full flex justify-between flex-col sm:flex-row">
-            <div>
-              <h2 className="text-2xl font-bold text-center sm:text-left">
+            <div className="flex flex-col gap-0">
+              <h2 className="mb-3 text-2xl font-bold text-center sm:text-left">
                 {session.user.name}
               </h2>
-              <p className="mb-4 text-center sm:text-left">
+              <p className="mb-1 text-center sm:text-left">
                 {session.user.email}
               </p>
               {session.user.birthDate && (
-                <p className="mb-4 text-center sm:text-left">
+                <p className="mb-1 text-center sm:text-left">
                   Date de naissance :{" "}
                   {session.user.birthDate instanceof Date
                     ? session.user.birthDate.toLocaleDateString("fr-FR")
                     : session.user.birthDate}
                 </p>
               )}
+              <FriendCode friendCode={session.user.friendCode} />
             </div>
             <div className="flex flex-col justify-center gap-2">
               {session.user.role === "ADMIN" && (
