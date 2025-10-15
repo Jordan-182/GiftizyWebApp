@@ -8,4 +8,12 @@ export const userService = {
     }
     return user;
   },
+
+  async getUserByFriendCode(friendCode: string) {
+    const user = await userRepository.findByFriendCode(friendCode);
+    if (!user) {
+      throw new Error("Utilisateur non trouvé");
+    }
+    return user;
+  },
 };

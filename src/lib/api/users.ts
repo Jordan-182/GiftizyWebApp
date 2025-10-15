@@ -4,3 +4,10 @@ export async function getUser(userId: string) {
     throw new Error("Erreur lors de la récupération de l'utilisateur");
   return res.json();
 }
+
+export async function getUserByFriendCode(friendCode: string) {
+  const res = await fetch(`/api/users/${friendCode}`, { method: "GET" });
+  if (!res.ok)
+    throw new Error("Erreur lors de la récupération de l'utilisateur");
+  return res.json();
+}
