@@ -1,9 +1,9 @@
 "use client";
 
-import { signInEmailAction } from "@/actions/signinEmail.action";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { signIn } from "@/lib/auth-client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -16,17 +16,42 @@ export default function LoginForm() {
   const router = useRouter();
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setIsPending(true);
+
     const formData = new FormData(event.target as HTMLFormElement);
-    const { error } = await signInEmailAction(formData);
-    if (error) {
-      toast.error(error);
-      setIsPending(false);
-    } else {
-      toast.success("Connexion réussie!");
-      router.push("/profile");
+    const email = String(formData.get("email"));
+    const password = String(formData.get("password"));
+
+    if (!email || !password) {
+      toast.error("Veuillez remplir tous les champs");
+      return;
     }
-    setIsPending(false);
+
+    try {
+      await signIn.email({
+        email,
+        password,
+        callbackURL: "/profile",
+        fetchOptions: {
+          onRequest: () => {
+            setIsPending(true);
+          },
+          onResponse: () => {
+            setIsPending(false);
+          },
+          onError: (context) => {
+            toast.error("Erreur de connexion: " + context.error.message);
+            setIsPending(false);
+          },
+          onSuccess: () => {
+            toast.success("Connexion réussie!");
+            router.push("/profile");
+          },
+        },
+      });
+    } catch (error) {
+      toast.error("Erreur de connexion");
+      setIsPending(false);
+    }
   }
 
   return (
