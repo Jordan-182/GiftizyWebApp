@@ -24,25 +24,27 @@ model Wishlist {
 }
 
 model User {
-  id            String     @id @default(uuid())
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  name          String
-  email         String     @unique
-  emailVerified Boolean    @default(false)
-  image         String?
-  birthDate     DateTime?
-  friendCode    String     @unique
-  role          UserRole   @default(USER)
-  banExpires    DateTime?
-  banReason     String?
-  banned        Boolean?   @default(false)
-  accounts      Account[]
-  sessions      Session[]
-  wishlist      Wishlist[]
-  profile       Profile[]
-  avatarId      String?
-  avatar        Avatar?    @relation(fields: [avatarId], references: [id], onDelete: SetNull)
+  id                  String       @id @default(uuid())
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  name                String
+  email               String       @unique
+  emailVerified       Boolean      @default(false)
+  image               String?
+  birthDate           DateTime?
+  friendCode          String       @unique
+  role                UserRole     @default(USER)
+  banExpires          DateTime?
+  banReason           String?
+  banned              Boolean?     @default(false)
+  accounts            Account[]
+  sessions            Session[]
+  wishlist            Wishlist[]
+  profile             Profile[]
+  avatarId            String?
+  avatar              Avatar?      @relation(fields: [avatarId], references: [id], onDelete: SetNull)
+  sentFriendships     Friendship[] @relation("FriendshipSender")
+  receivedFriendships Friendship[] @relation("FriendshipReceiver")
 
   @@map("users")
 }
@@ -122,4 +124,25 @@ model Verification {
   expiresAt  DateTime
 
   @@map("verifications")
+}
+
+model Friendship {
+  id         String           @id @default(cuid())
+  createdAt  DateTime         @default(now())
+  senderId   String
+  receiverId String
+  status     FriendshipStatus @default(PENDING)
+
+  sender   User @relation("FriendshipSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("FriendshipReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, receiverId])
+  @@map("friendships")
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  BLOCKED
 }
