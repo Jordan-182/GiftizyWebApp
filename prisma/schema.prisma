@@ -70,6 +70,7 @@ model Profile {
   image         String?
   isMainProfile Boolean    @default(false)
   userId        String
+  friendCode    String?
   user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   avatarId      String?
   avatar        Avatar?    @relation(fields: [avatarId], references: [id], onDelete: SetNull)

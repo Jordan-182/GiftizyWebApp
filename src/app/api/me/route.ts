@@ -1,3 +1,4 @@
+import { auth } from "@/lib/auth";
 import { userService } from "@/services/userService";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -7,11 +8,12 @@ function getErrorMessage(error: unknown): string {
   return "Une erreur inconnue est survenue";
 }
 
-export async function GET(
-  request: NextRequest,
-  context: { params: Promise<{ userId: string }> }
-) {
-  const { userId } = await context.params;
+export async function GET(request: NextRequest) {
+  const session = await auth.api.getSession(request);
+  if (!session) {
+    return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
+  }
+  const userId = await session.user.id;
   try {
     const user = await userService.getUserById(userId);
     return NextResponse.json(user, { status: 200 });
