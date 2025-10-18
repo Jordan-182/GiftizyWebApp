@@ -14,12 +14,12 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 interface DeleteProfileButtonProps {
-  userId: string;
+  friendCode: string;
   profileId: string;
 }
 
 export default function DeleteProfileButton({
-  userId,
+  friendCode,
   profileId,
 }: DeleteProfileButtonProps) {
   const [isPending, setIsPending] = useState<boolean>(false);
@@ -28,7 +28,7 @@ export default function DeleteProfileButton({
 
   async function handleConfirmDelete() {
     setIsPending(true);
-    const result = await deleteProfile(userId, profileId);
+    const result = await deleteProfile(friendCode, profileId);
     if (result) {
       toast.success("Le profil a été supprimé");
     } else {

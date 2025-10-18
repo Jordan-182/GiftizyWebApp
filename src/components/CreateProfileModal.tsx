@@ -16,10 +16,10 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "./ui/sheet";
 import { Spinner } from "./ui/spinner";
 
 export default function CreateProfileModal({
-  userId,
+  friendCode,
   avatars,
 }: {
-  userId: string;
+  friendCode: string;
   avatars: Avatar[];
 }) {
   const [open, setOpen] = useState(false);
@@ -62,10 +62,10 @@ export default function CreateProfileModal({
     }
     setLoading(true);
     try {
-      await createProfile(userId, {
+      await createProfile(friendCode, {
         name: form.name.trim(),
         birthDate: birthDateValueString,
-        userId,
+        friendCode,
         avatarId: selectedAvatarId,
         isMainProfile: false,
       });

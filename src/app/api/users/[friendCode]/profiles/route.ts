@@ -11,11 +11,11 @@ function getErrorMessage(error: unknown): string {
 
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ userId: string }> }
+  context: { params: Promise<{ friendCode: string }> }
 ) {
-  const { userId } = await context.params;
+  const { friendCode } = await context.params;
   try {
-    const profiles = await profileService.getProfilesByUserId(userId);
+    const profiles = await profileService.getProfilesByfriendCode(friendCode);
     return NextResponse.json(profiles, { status: 200 });
   } catch (error) {
     return NextResponse.json(
@@ -27,11 +27,11 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  context: { params: Promise<{ userId: string }> }
+  context: { params: Promise<{ friendCode: string }> }
 ) {
-  const { userId } = await context.params;
+  const { friendCode } = await context.params;
   const session = await auth.api.getSession(request);
-  if (!session || session.user.id !== userId) {
+  if (!session || session.user.friendCode !== friendCode) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
   }
   try {

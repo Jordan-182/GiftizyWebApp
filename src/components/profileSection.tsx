@@ -14,50 +14,56 @@ type ProfileWithAvatar = Profile & {
 export default function ProfileSection({
   profiles,
   avatars,
+  friendCode,
 }: {
   profiles: ProfileWithAvatar[];
   avatars: Avatar[];
+  friendCode: string;
 }) {
-  // On récupère le userId depuis le premier profil (tous ont le même userId)
-  const userId = profiles[0]?.userId || "";
   return (
     <>
       <ul className="flex flex-col gap-2">
-        {profiles.map((profile: ProfileWithAvatar) => (
-          <li key={profile.id}>
-            <Item variant={"muted"}>
-              {profile.avatar?.url && (
-                <Image
-                  src={profile.avatar?.url}
-                  alt="Avatar du profil"
-                  height={50}
-                  width={50}
-                />
-              )}
-              <ItemContent className="gap-0">
-                <ItemTitle className="text-lg font-bold">
-                  {profile.name}
-                </ItemTitle>
-                {profile.isMainProfile && <p>Profil principal</p>}
-              </ItemContent>
-              <ItemActions className="h-[50px] py-2">
-                {profile.isMainProfile ? null : (
-                  <DeleteProfileButton
-                    userId={profile.userId}
-                    profileId={profile.id}
+        {profiles.length === 0 ? (
+          <li className="text-center text-muted-foreground py-4">
+            Aucun profil créé pour le moment
+          </li>
+        ) : (
+          profiles.map((profile: ProfileWithAvatar) => (
+            <li key={profile.id}>
+              <Item variant={"muted"}>
+                {profile.avatar?.url && (
+                  <Image
+                    src={profile.avatar?.url}
+                    alt="Avatar du profil"
+                    height={50}
+                    width={50}
                   />
                 )}
-                <UpdateProfileModal
-                  userId={userId}
-                  profile={profile}
-                  avatars={avatars}
-                />
-              </ItemActions>
-            </Item>
-          </li>
-        ))}
+                <ItemContent className="gap-0">
+                  <ItemTitle className="text-lg font-bold">
+                    {profile.name}
+                  </ItemTitle>
+                  {profile.isMainProfile && <p>Profil principal</p>}
+                </ItemContent>
+                <ItemActions className="h-[50px] py-2">
+                  {profile.isMainProfile ? null : (
+                    <DeleteProfileButton
+                      friendCode={profile.friendCode || friendCode}
+                      profileId={profile.id}
+                    />
+                  )}
+                  <UpdateProfileModal
+                    friendCode={friendCode}
+                    profile={profile}
+                    avatars={avatars}
+                  />
+                </ItemActions>
+              </Item>
+            </li>
+          ))
+        )}
       </ul>
-      <CreateProfileModal userId={userId} avatars={avatars} />
+      <CreateProfileModal friendCode={friendCode} avatars={avatars} />
     </>
   );
 }

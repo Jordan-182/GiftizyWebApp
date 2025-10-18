@@ -22,11 +22,11 @@ type ProfileWithAvatar = Profile & {
 };
 
 export default function UpdateProfileModal({
-  userId,
+  friendCode,
   profile,
   avatars,
 }: {
-  userId: string;
+  friendCode: string;
   profile: ProfileWithAvatar;
   avatars: Avatar[];
 }) {
@@ -36,7 +36,7 @@ export default function UpdateProfileModal({
     birthDate: profile.birthDate
       ? format(new Date(profile.birthDate), "yyyy-MM-dd")
       : "",
-    userId: profile.userId,
+    friendCode: profile.friendCode || friendCode,
     avatarId: profile.avatarId || undefined,
     isMainProfile: profile.isMainProfile,
   });
@@ -78,10 +78,10 @@ export default function UpdateProfileModal({
     }
     setLoading(true);
     try {
-      await editProfile(userId, profile.id, {
+      await editProfile(friendCode, profile.id, {
         name: form.name.trim(),
         birthDate: birthDateValueString,
-        userId,
+        friendCode,
         avatarId: selectedAvatarId,
         isMainProfile: profile.isMainProfile,
       });

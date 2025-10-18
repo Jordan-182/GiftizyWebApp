@@ -26,7 +26,7 @@ export default async function ProfilePage() {
   if (!session) {
     redirect("/auth/login");
   }
-  const profiles = await getProfiles(session?.user.id);
+  const profiles = await getProfiles(session?.user.friendCode);
 
   return (
     <div className="space-y-4">
@@ -89,7 +89,11 @@ export default async function ProfilePage() {
             <CardTitle className="text-2xl font-bold">Mes profils</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-4 h-full">
-            <ProfileSection profiles={profiles} avatars={avatars} />
+            <ProfileSection
+              profiles={profiles}
+              avatars={avatars}
+              friendCode={session.user.friendCode}
+            />
           </CardContent>
         </Card>
         <Card>
