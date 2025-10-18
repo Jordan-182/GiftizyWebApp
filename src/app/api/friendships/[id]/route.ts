@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth";
-import { userService } from "@/services/userService";
+import { friendService } from "@/services/friendService";
 import { NextRequest, NextResponse } from "next/server";
 
 function getErrorMessage(error: unknown): string {
@@ -7,20 +7,24 @@ function getErrorMessage(error: unknown): string {
   if (typeof error === "string") return error;
   return "Une erreur inconnue est survenue";
 }
-
-export async function GET(request: NextRequest) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   const session = await auth.api.getSession(request);
   if (!session) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
   }
-  const userId = session.user.id;
+
+  const { id: friendshipId } = await params;
+
   try {
-    const user = await userService.getUserById(userId);
-    return NextResponse.json(user, { status: 200 });
+    const result = await friendService.deleteFriendship(friendshipId);
+    return NextResponse.json(result, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       { error: getErrorMessage(error) },
-      { status: 404 }
+      { status: 500 }
     );
   }
 }

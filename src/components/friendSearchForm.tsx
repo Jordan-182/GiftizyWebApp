@@ -27,11 +27,13 @@ export default function FriendSearchForm() {
     null
   );
   const [error, setError] = useState<string>("");
+  const [addError, setAddError] = useState<string>("");
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsPending(true);
     setError("");
+    setAddError("");
     setRetrievedUser(null);
     const formData = new FormData(event.target as HTMLFormElement);
     const friendCode = String(formData.get("friendCode")).toUpperCase();
@@ -50,22 +52,8 @@ export default function FriendSearchForm() {
     }
   }
 
-  console.log(retrievedUser);
-
   return (
-    <form onSubmit={handleSubmit} className="max-w-sm w-full space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="friendCode">Code ami :</Label>
-        <Input
-          type="text"
-          id="friendCode"
-          name="friendCode"
-          placeholder="Entrez un code ami"
-        />
-      </div>
-      <Button disabled={isPending} className="cursor-pointer w-36">
-        {isPending ? <Spinner /> : "Rechercher"}
-      </Button>
+    <section className="max-w-sm w-full space-y-4 mx-auto">
       {error && <p className="text-red-500">{error}</p>}
       {retrievedUser && (
         <Item className="flex mt-2" variant={"muted"}>
@@ -81,10 +69,28 @@ export default function FriendSearchForm() {
             <ItemTitle className="text-lg">{retrievedUser.name}</ItemTitle>
           </ItemContent>
           <ItemActions>
-            <AddFriendButton />
+            <AddFriendButton
+              friendId={retrievedUser.id}
+              onError={(error: string) => setAddError(error)}
+            />
           </ItemActions>
         </Item>
       )}
-    </form>
+      {addError && <p className="text-red-500">{addError}</p>}
+      <form onSubmit={handleSubmit} className="max-w-sm w-full space-y-4 ">
+        <div className="space-y-2">
+          <Label htmlFor="friendCode">Code ami :</Label>
+          <Input
+            type="text"
+            id="friendCode"
+            name="friendCode"
+            placeholder="Entrez un code ami"
+          />
+        </div>
+        <Button disabled={isPending} className="cursor-pointer w-36">
+          {isPending ? <Spinner /> : "Rechercher"}
+        </Button>
+      </form>
+    </section>
   );
 }
