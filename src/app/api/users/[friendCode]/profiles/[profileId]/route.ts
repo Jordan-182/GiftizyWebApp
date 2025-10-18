@@ -11,11 +11,11 @@ function getErrorMessage(error: unknown): string {
 
 export async function DELETE(
   request: Request,
-  context: { params: Promise<{ userId: string; profileId: string }> }
+  context: { params: Promise<{ friendCode: string; profileId: string }> }
 ) {
-  const { userId, profileId } = await context.params;
+  const { friendCode, profileId } = await context.params;
   const session = await auth.api.getSession(request);
-  if (!session || session.user.id !== userId) {
+  if (!session || session.user.friendCode !== friendCode) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
   }
 
@@ -32,11 +32,11 @@ export async function DELETE(
 
 export async function PATCH(
   request: Request,
-  context: { params: Promise<{ userId: string; profileId: string }> }
+  context: { params: Promise<{ friendCode: string; profileId: string }> }
 ) {
-  const { userId, profileId } = await context.params;
+  const { friendCode, profileId } = await context.params;
   const session = await auth.api.getSession(request);
-  if (!session || session.user.id !== userId) {
+  if (!session || session.user.friendCode !== friendCode) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
   }
   try {

@@ -12,4 +12,12 @@ export const userRepository = {
         },
       },
     }),
+
+  findByFriendCode: (friendCode: string) =>
+    prisma.user.findUnique({
+      where: { friendCode },
+      include: {
+        avatar: true,
+      },
+    }),
 };

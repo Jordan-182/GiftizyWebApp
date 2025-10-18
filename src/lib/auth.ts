@@ -156,6 +156,7 @@ const options = {
                   : defaultAvatarId,
               isMainProfile: true,
               userId: user.id,
+              friendCode: user.friendCode as string,
             },
           });
         },
