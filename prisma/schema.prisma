@@ -11,13 +11,13 @@ datasource db {
 model Wishlist {
   id              String         @id @default(uuid())
   createdAt       DateTime       @default(now()) @map("created_at")
-  updatedAt       DateTime       @updatedAt
+  updatedAt       DateTime       @default(now()) @updatedAt
   name            String
   description     String?
   isEventWishlist Boolean        @default(false) @map("is_event_wishlist")
   profileId       String         @map("profile_id")
   userId          String
-  eventId         String?        @unique // si liée à un évènement
+  eventId         String?        @unique
   user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   profile         Profile        @relation(fields: [profileId], references: [id], onDelete: Cascade)
   event           Event?         @relation(fields: [eventId], references: [id], onDelete: SetNull)
@@ -32,7 +32,7 @@ model WishlistItem {
   updatedAt   DateTime         @updatedAt
   name        String
   description String?
-  url         String? // lien produit
+  url         String?
   image       String?
   price       Float?
   reserved    Boolean          @default(false)
@@ -48,7 +48,7 @@ model ItemReservation {
   createdAt    DateTime     @default(now())
   itemId       String       @unique
   item         WishlistItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
-  reservedById String? // optionnel si anonyme
+  reservedById String?
   reservedBy   User?        @relation(fields: [reservedById], references: [id], onDelete: Cascade)
   anonymous    Boolean      @default(false)
 
@@ -63,11 +63,11 @@ model Event {
   description String?
   date        DateTime
   location    String?
-  hostId      String // l'utilisateur qui crée l'événement
-  profileId   String? // ex : anniversaire d'un enfant
+  hostId      String
+  profileId   String?
   host        User              @relation(fields: [hostId], references: [id], onDelete: Cascade)
   profile     Profile?          @relation(fields: [profileId], references: [id])
-  wishlist    Wishlist? // Relation inverse sans @relation explicite
+  wishlist    Wishlist?
   invitations EventInvitation[]
 
   @@map("events")

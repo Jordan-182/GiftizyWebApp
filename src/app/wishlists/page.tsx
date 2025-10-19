@@ -1,13 +1,12 @@
 import CreateWishlistForm from "@/components/createWishlistForm";
 import { Button } from "@/components/ui/button";
 import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { ListPlus } from "lucide-react";
 
 export default function WishlistsPage() {
@@ -15,27 +14,29 @@ export default function WishlistsPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Mes listes</h1>
-        <Drawer>
-          <DrawerTrigger asChild>
+        <Sheet>
+          <SheetTrigger asChild>
             <Button
               className="cursor-pointer flex gap-0"
-              aria-roledescription="Ajouter un ami"
+              aria-roledescription="Créer une wishlist"
             >
               <ListPlus className="h-4 w-4" />
             </Button>
-          </DrawerTrigger>
-          <DrawerContent className="mb-20">
-            <DrawerHeader>
-              <DrawerTitle>Créer une wishlist</DrawerTitle>
-              <DrawerDescription>
-                Créez une wishlist pour vous ou l&apos;un de vos profils
-              </DrawerDescription>
-            </DrawerHeader>
-            <div className="px-4 pb-4">
-              <CreateWishlistForm />
+          </SheetTrigger>
+          <SheetContent
+            side="bottom"
+            className="h-[calc(100dvh-82px)] p-8 flex flex-col justify-center"
+          >
+            <div className="max-w-120 mx-auto">
+              <SheetHeader className="p-0">
+                <SheetTitle className="text-2xl">Créer une wishlist</SheetTitle>
+              </SheetHeader>
+              <div className="mt-4">
+                <CreateWishlistForm />
+              </div>
             </div>
-          </DrawerContent>
-        </Drawer>
+          </SheetContent>
+        </Sheet>
       </div>
     </div>
   );
