@@ -9,42 +9,113 @@ datasource db {
 }
 
 model Wishlist {
-  id              String   @id @default(uuid())
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt
+  id              String         @id @default(uuid())
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @updatedAt
   name            String
   description     String?
-  isEventWishlist Boolean  @default(false) @map("is_event_wishlist")
+  isEventWishlist Boolean        @default(false) @map("is_event_wishlist")
+  profileId       String         @map("profile_id")
   userId          String
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  profileId       String
-  profile         Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  eventId         String?        @unique // si liée à un évènement
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  profile         Profile        @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  event           Event?         @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  items           WishlistItem[]
 
   @@map("wishlists")
 }
 
+model WishlistItem {
+  id          String           @id @default(uuid())
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  name        String
+  description String?
+  url         String? // lien produit
+  image       String?
+  price       Float?
+  reserved    Boolean          @default(false)
+  wishlistId  String
+  wishlist    Wishlist         @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
+  reservation ItemReservation?
+
+  @@map("wishlist_items")
+}
+
+model ItemReservation {
+  id           String       @id @default(uuid())
+  createdAt    DateTime     @default(now())
+  itemId       String       @unique
+  item         WishlistItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  reservedById String? // optionnel si anonyme
+  reservedBy   User?        @relation(fields: [reservedById], references: [id], onDelete: Cascade)
+  anonymous    Boolean      @default(false)
+
+  @@map("item_reservations")
+}
+
+model Event {
+  id          String            @id @default(uuid())
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  name        String
+  description String?
+  date        DateTime
+  location    String?
+  hostId      String // l'utilisateur qui crée l'événement
+  profileId   String? // ex : anniversaire d'un enfant
+  host        User              @relation(fields: [hostId], references: [id], onDelete: Cascade)
+  profile     Profile?          @relation(fields: [profileId], references: [id])
+  wishlist    Wishlist? // Relation inverse sans @relation explicite
+  invitations EventInvitation[]
+
+  @@map("events")
+}
+
+model EventInvitation {
+  id       String           @id @default(uuid())
+  eventId  String
+  friendId String
+  status   InvitationStatus @default(PENDING)
+  event    Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  friend   User             @relation(fields: [friendId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, friendId])
+  @@map("event_invitations")
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
 model User {
-  id                  String       @id @default(uuid())
-  createdAt           DateTime     @default(now())
-  updatedAt           DateTime     @updatedAt
+  id                  String            @id @default(uuid())
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
   name                String
-  email               String       @unique
-  emailVerified       Boolean      @default(false)
+  email               String            @unique
+  emailVerified       Boolean           @default(false)
   image               String?
   birthDate           DateTime?
-  friendCode          String       @unique
-  role                UserRole     @default(USER)
+  friendCode          String            @unique
+  role                UserRole          @default(USER)
   banExpires          DateTime?
   banReason           String?
-  banned              Boolean?     @default(false)
+  banned              Boolean?          @default(false)
   accounts            Account[]
   sessions            Session[]
-  wishlist            Wishlist[]
-  profile             Profile[]
+  wishlists           Wishlist[]
+  profiles            Profile[]
   avatarId            String?
-  avatar              Avatar?      @relation(fields: [avatarId], references: [id], onDelete: SetNull)
-  sentFriendships     Friendship[] @relation("FriendshipSender")
-  receivedFriendships Friendship[] @relation("FriendshipReceiver")
+  avatar              Avatar?           @relation(fields: [avatarId], references: [id], onDelete: SetNull)
+  sentFriendships     Friendship[]      @relation("FriendshipSender")
+  receivedFriendships Friendship[]      @relation("FriendshipReceiver")
+  itemReservations    ItemReservation[]
+  events              Event[]
+  eventInvitations    EventInvitation[]
 
   @@map("users")
 }
@@ -77,6 +148,7 @@ model Profile {
   avatarId      String?
   avatar        Avatar?    @relation(fields: [avatarId], references: [id], onDelete: SetNull)
   wishlists     Wishlist[]
+  events        Event[]
 
   @@map("profiles")
 }
