@@ -1,12 +1,19 @@
 "use client";
 
+import { useFriends } from "@/contexts/FriendsContext";
 import type { Avatar, Friendship } from "@/generated/prisma";
-import { getFriends } from "@/lib/api/friends";
 import { RotateCw } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
+import DeleteFriendButton from "./deleteFriendButton";
 import { Button } from "./ui/button";
-import { Item, ItemContent, ItemMedia, ItemTitle } from "./ui/item";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemMedia,
+  ItemTitle,
+} from "./ui/item";
 import { Spinner } from "./ui/spinner";
 
 type UserWithAvatar = {
@@ -22,28 +29,12 @@ type FriendshipWithUsers = Friendship & {
 };
 
 interface FriendsListProps {
-  initialData: FriendshipWithUsers[];
   userId: string;
 }
 
-export default function FriendsList({ initialData, userId }: FriendsListProps) {
-  const [friends, setFriends] = useState<FriendshipWithUsers[]>(initialData);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string>("");
-
-  const refreshFriends = async () => {
-    setIsLoading(true);
-    setError("");
-    try {
-      const friendsData = await getFriends();
-      setFriends(friendsData);
-    } catch (error) {
-      console.error("Erreur lors du rechargement des amis:", error);
-      setError("Erreur lors du rechargement des amis");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+export default function FriendsList({ userId }: FriendsListProps) {
+  const { friends, isLoading, refreshFriends } = useFriends();
+  const [error] = useState<string>("");
 
   const getFriendUser = (friendship: FriendshipWithUsers) => {
     return friendship.senderId === userId
@@ -55,7 +46,7 @@ export default function FriendsList({ initialData, userId }: FriendsListProps) {
 
   return (
     <section>
-      <div className="flex items-center justify-between max-w-sm">
+      <div className="flex items-center justify-between w-full">
         <h2 className="text-xl font-bold">Liste d&apos;amis</h2>
         <Button
           onClick={refreshFriends}
@@ -66,29 +57,36 @@ export default function FriendsList({ initialData, userId }: FriendsListProps) {
           {isLoading ? <Spinner /> : <RotateCw />}
         </Button>
       </div>
-      <ul className="space-y-2">
+      <ul className="space-y-2 mt-4 flex gap-2 flex-wrap justify-center">
         {friends.map((friendship) => {
           const friend = getFriendUser(friendship);
           return (
-            <Item key={friendship.id} className="max-w-sm">
-              <ItemContent>
-                <ItemMedia>
-                  <Image
-                    src={friend.avatar?.url || "/logo.png"}
-                    alt={friend.name}
-                    height={50}
-                    width={50}
-                    className="rounded-full"
-                  />
-                </ItemMedia>
-                <div>
-                  <ItemTitle className="font-bold">{friend.name}</ItemTitle>
-                  <p className="text-xs text-gray-500">
-                    Code ami: {friend.friendCode}
-                  </p>
-                </div>
-              </ItemContent>
-            </Item>
+            <li key={friendship.id}>
+              <Item className="max-w-sm" variant={"muted"}>
+                <ItemContent>
+                  <div className="flex gap-4 items-center">
+                    <ItemMedia>
+                      <Image
+                        src={friend.avatar?.url || "/logo.png"}
+                        alt={friend.name}
+                        height={50}
+                        width={50}
+                        className="rounded-full"
+                      />
+                    </ItemMedia>
+                    <div>
+                      <ItemTitle className="font-bold">{friend.name}</ItemTitle>
+                      <p className="text-xs text-gray-500">
+                        Code ami: {friend.friendCode}
+                      </p>
+                    </div>
+                  </div>
+                </ItemContent>
+                <ItemActions>
+                  <DeleteFriendButton friendshipId={friendship.id} />
+                </ItemActions>
+              </Item>
+            </li>
           );
         })}
         {friends.length === 0 && (
