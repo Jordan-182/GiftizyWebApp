@@ -51,7 +51,7 @@ export default async function FriendsPage() {
                 <UserPlus className="h-4 w-4" />
               </Button>
             </DrawerTrigger>
-            <DrawerContent className="min-h-[calc(100dvh-82px)] my-0">
+            <DrawerContent className="mb-20">
               <DrawerHeader>
                 <DrawerTitle>Ajouter un ami</DrawerTitle>
                 <DrawerDescription>

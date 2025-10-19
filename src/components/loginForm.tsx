@@ -30,7 +30,7 @@ export default function LoginForm() {
       await signIn.email({
         email,
         password,
-        callbackURL: "/profile",
+        callbackURL: "/dashboard",
         fetchOptions: {
           onRequest: () => {
             setIsPending(true);
@@ -44,12 +44,16 @@ export default function LoginForm() {
           },
           onSuccess: () => {
             toast.success("Connexion réussie!");
-            router.push("/profile");
+            router.push("/dashboard");
           },
         },
       });
     } catch (error) {
-      toast.error("Erreur de connexion");
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Une erreur inattendue s'est produite";
+      toast.error("Erreur de connexion: " + errorMessage);
       setIsPending(false);
     }
   }
