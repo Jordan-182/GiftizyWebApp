@@ -51,3 +51,35 @@ export async function deleteFriendship(friendshipId: string) {
   }
   return res.json();
 }
+
+export async function updateFriendRequest(
+  friendshipId: string,
+  accept: boolean
+) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/friendships/${friendshipId}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ accept }),
+    }
+  );
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.error || "Erreur lors de la mise à jour");
+  }
+  return res.json();
+}
+
+export async function checkFriendshipStatus(userId: string) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/friendships/status?userId=${userId}`,
+    { method: "GET" }
+  );
+  if (!res.ok) {
+    throw new Error("Erreur lors de la vérification du statut");
+  }
+  return res.json();
+}

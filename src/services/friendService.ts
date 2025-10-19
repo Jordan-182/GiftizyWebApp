@@ -65,4 +65,45 @@ export const friendService = {
     }
     return deletedFriendship;
   },
+
+  async checkFriendshipStatus(currentUserId: string, targetUserId: string) {
+    // Si c'est le même utilisateur
+    if (currentUserId === targetUserId) {
+      return { status: "self" };
+    }
+
+    // Vérifier s'il y a une amitié existante
+    const existingFriendship = await friendRepository.findExistingFriendship(
+      currentUserId,
+      targetUserId
+    );
+
+    if (!existingFriendship) {
+      return { status: "none" }; // Aucune relation
+    }
+
+    if (existingFriendship.status === "ACCEPTED") {
+      return {
+        status: "friend",
+        friendshipId: existingFriendship.id,
+      };
+    }
+
+    if (existingFriendship.status === "PENDING") {
+      // Vérifier qui a envoyé la demande
+      if (existingFriendship.senderId === currentUserId) {
+        return {
+          status: "pending_sent",
+          friendshipId: existingFriendship.id,
+        };
+      } else {
+        return {
+          status: "pending_received",
+          friendshipId: existingFriendship.id,
+        };
+      }
+    }
+
+    return { status: "none" };
+  },
 };
