@@ -1,7 +1,8 @@
 "use client";
 
+import { useFriends } from "@/contexts/FriendsContext";
 import type { Avatar, Friendship } from "@/generated/prisma";
-import { deleteFriendship, getPendingFriendRequests } from "@/lib/api/friends";
+import { deleteFriendship, updateFriendRequest } from "@/lib/api/friends";
 import { Check, RotateCw, X } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
@@ -28,19 +29,17 @@ type FriendshipWithUsers = Friendship & {
 };
 
 interface FriendsRequestListProps {
-  initialData: FriendshipWithUsers[];
   userId: string;
 }
 
 export default function FriendsRequestList({
-  initialData,
   userId,
 }: FriendsRequestListProps) {
-  const [friendsRequests, setFriendsRequests] =
-    useState<FriendshipWithUsers[]>(initialData);
-  const [isLoading, setIsLoading] = useState(false);
+  const { friendRequests, isLoading, refreshAll } = useFriends();
   const [isCancelLoading, setIsCancelLoading] = useState(false);
-  const [error, setError] = useState<string>("");
+  const [isAcceptLoading, setIsAcceptLoading] = useState(false);
+  const [isRejectLoading, setIsRejectLoading] = useState(false);
+  const [error] = useState<string>("");
 
   const categorizeRequests = (requests: FriendshipWithUsers[]) => {
     const receivedRequests = requests.filter(
@@ -53,21 +52,36 @@ export default function FriendsRequestList({
     return { receivedRequests, sentRequests };
   };
 
-  const { receivedRequests, sentRequests } =
-    categorizeRequests(friendsRequests);
+  const { receivedRequests, sentRequests } = categorizeRequests(friendRequests);
 
-  const refreshRequests = async () => {
-    setIsLoading(true);
-    setError("");
-    try {
-      const requests = await getPendingFriendRequests();
-      setFriendsRequests(requests);
-    } catch (error) {
-      console.error("Erreur lors du rechargement des demandes d'ami:", error);
-      setError("Erreur lors du rechargement des demandes d'ami");
-    } finally {
-      setIsLoading(false);
-    }
+  const handleAccept = (friendshipId: string) => {
+    return async (event: React.MouseEvent<HTMLButtonElement>) => {
+      event.preventDefault();
+      setIsAcceptLoading(true);
+      try {
+        await updateFriendRequest(friendshipId, true);
+        await refreshAll();
+      } catch (error) {
+        console.error("Erreur lors de l'acceptation:", error);
+      } finally {
+        setIsAcceptLoading(false);
+      }
+    };
+  };
+
+  const handleReject = (friendshipId: string) => {
+    return async (event: React.MouseEvent<HTMLButtonElement>) => {
+      event.preventDefault();
+      setIsRejectLoading(true);
+      try {
+        await updateFriendRequest(friendshipId, false);
+        await refreshAll();
+      } catch (error) {
+        console.error("Erreur lors du refus:", error);
+      } finally {
+        setIsRejectLoading(false);
+      }
+    };
   };
 
   const handleCancel = (friendshipId: string) => {
@@ -76,7 +90,7 @@ export default function FriendsRequestList({
       setIsCancelLoading(true);
       try {
         await deleteFriendship(friendshipId);
-        await refreshRequests();
+        await refreshAll();
       } catch (error) {
         console.error("Erreur lors de la suppression:", error);
       } finally {
@@ -89,10 +103,10 @@ export default function FriendsRequestList({
 
   return (
     <section>
-      <div className="flex items-center justify-between max-w-sm">
+      <div className="flex items-center justify-between w-full">
         <h2 className="text-xl font-bold">Demandes en attente</h2>
         <Button
-          onClick={refreshRequests}
+          onClick={refreshAll}
           className="cursor-pointer"
           variant={"secondary"}
           size={"icon"}
@@ -105,7 +119,7 @@ export default function FriendsRequestList({
         <h3 className="text-lg font-semibold mb-3">
           Demandes reçues ({receivedRequests.length})
         </h3>
-        <ul className="space-y-2">
+        <ul className="space-y-2 flex gap-2 flex-wrap justify-center">
           {receivedRequests.map((request) => (
             <Item key={request.id} className="max-w-sm" variant={"muted"}>
               <ItemContent>
@@ -131,15 +145,23 @@ export default function FriendsRequestList({
                 </div>
               </ItemContent>
               <ItemActions>
-                <Button size="sm" variant="outline" className="cursor-pointer">
-                  <Check />
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="cursor-pointer"
+                  onClick={handleAccept(request.id)}
+                  disabled={isAcceptLoading}
+                >
+                  {isAcceptLoading ? <Spinner /> : <Check />}
                 </Button>
                 <Button
                   size="sm"
                   variant="destructive"
                   className="cursor-pointer"
+                  onClick={handleReject(request.id)}
+                  disabled={isRejectLoading}
                 >
-                  <X />
+                  {isRejectLoading ? <Spinner /> : <X />}
                 </Button>
               </ItemActions>
             </Item>
@@ -156,7 +178,7 @@ export default function FriendsRequestList({
         <h3 className="text-lg font-semibold mb-3">
           Demandes envoyées ({sentRequests.length})
         </h3>
-        <ul className="space-y-2">
+        <ul className="space-y-2 flex gap-2 flex-wrap justify-center">
           {sentRequests.map((request) => (
             <Item key={request.id} className="max-w-sm" variant="muted">
               <ItemContent>

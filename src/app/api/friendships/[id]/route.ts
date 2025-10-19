@@ -7,6 +7,33 @@ function getErrorMessage(error: unknown): string {
   if (typeof error === "string") return error;
   return "Une erreur inconnue est survenue";
 }
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await auth.api.getSession(request);
+  if (!session) {
+    return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
+  }
+
+  const { id: friendshipId } = await params;
+  const { accept } = await request.json();
+
+  try {
+    const result = await friendService.updateFriendRequest(
+      friendshipId,
+      accept
+    );
+    return NextResponse.json(result, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { error: getErrorMessage(error) },
+      { status: 500 }
+    );
+  }
+}
+
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

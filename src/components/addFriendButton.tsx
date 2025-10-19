@@ -1,5 +1,6 @@
 "use client";
 
+import { useFriends } from "@/contexts/FriendsContext";
 import { createFriendRequest } from "@/lib/api/friends";
 import { UserRoundPlus } from "lucide-react";
 import { useState } from "react";
@@ -17,15 +18,16 @@ export default function AddFriendButton({
   onError,
 }: AddFriendButtonProps) {
   const [isPending, setIsPending] = useState<boolean>(false);
+  const { refreshAll } = useFriends();
 
   async function handleAddFriend(event: React.MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
     onError?.("");
     setIsPending(true);
     try {
-      const newFriendRequest = await createFriendRequest(friendId);
+      await createFriendRequest(friendId);
       toast.success("Demande d'ami envoyée!");
-      return newFriendRequest;
+      await refreshAll();
     } catch (error) {
       console.error("Erreur lors de l'ajout d'ami:", error);
       const errorMessage =

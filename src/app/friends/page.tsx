@@ -12,6 +12,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FriendsProvider } from "@/contexts/FriendsContext";
 import { auth } from "@/lib/auth";
 import { friendService } from "@/services/friendService";
 import { UserCheck, UserPlus } from "lucide-react";
@@ -28,73 +29,71 @@ export default async function FriendsPage() {
     redirect("/auth/login");
   }
 
-  // Récupération des données initiales
   const [initialRequests, initialFriends] = await Promise.all([
     friendService.getPendingFriendRequests(session.user.id),
     friendService.getFriends(session.user.id),
   ]);
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Mes amis</h1>
-        <Drawer>
-          <DrawerTrigger asChild>
-            <Button
-              className="cursor-pointer flex gap-0"
-              aria-roledescription="Ajouter un ami"
-            >
-              <UserPlus className="h-4 w-4" />
-            </Button>
-          </DrawerTrigger>
-          <DrawerContent>
-            <DrawerHeader>
-              <DrawerTitle>Ajouter un ami</DrawerTitle>
-              <DrawerDescription>
-                Recherchez un ami en utilisant son code ami
-              </DrawerDescription>
-            </DrawerHeader>
-            <div className="px-4 pb-4">
-              <FriendSearchForm />
-            </div>
-          </DrawerContent>
-        </Drawer>
-      </div>
-
-      <Card className="p-0">
-        <CardContent className="p-4">
-          <Tabs defaultValue="friends" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger
-                value="friends"
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                <UserCheck className="h-4 w-4" />
-                Amis
-              </TabsTrigger>
-              <TabsTrigger
-                value="requests"
-                className="flex items-center gap-2 cursor-pointer"
+    <FriendsProvider
+      initialFriends={initialFriends}
+      initialRequests={initialRequests}
+    >
+      <div className="space-y-8">
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold">Mes amis</h1>
+          <Drawer>
+            <DrawerTrigger asChild>
+              <Button
+                className="cursor-pointer flex gap-0"
+                aria-roledescription="Ajouter un ami"
               >
                 <UserPlus className="h-4 w-4" />
-                Demandes
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="friends" className="mt-6">
-              <FriendsList
-                initialData={initialFriends}
-                userId={session.user.id}
-              />
-            </TabsContent>
-            <TabsContent value="requests" className="mt-6">
-              <FriendsRequestList
-                initialData={initialRequests}
-                userId={session.user.id}
-              />
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
-    </div>
+              </Button>
+            </DrawerTrigger>
+            <DrawerContent className="min-h-[calc(100dvh-82px)] my-0">
+              <DrawerHeader>
+                <DrawerTitle>Ajouter un ami</DrawerTitle>
+                <DrawerDescription>
+                  Recherchez un ami en utilisant son code ami
+                </DrawerDescription>
+              </DrawerHeader>
+              <div className="px-4 pb-4">
+                <FriendSearchForm />
+              </div>
+            </DrawerContent>
+          </Drawer>
+        </div>
+
+        <Card className="p-0">
+          <CardContent className="p-4">
+            <Tabs defaultValue="friends" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger
+                  value="friends"
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <UserCheck className="h-4 w-4" />
+                  Amis
+                </TabsTrigger>
+                <TabsTrigger
+                  value="requests"
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <UserPlus className="h-4 w-4" />
+                  Demandes
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="friends" className="mt-6">
+                <FriendsList userId={session.user.id} />
+              </TabsContent>
+              <TabsContent value="requests" className="mt-6">
+                <FriendsRequestList userId={session.user.id} />
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+      </div>
+    </FriendsProvider>
   );
 }
