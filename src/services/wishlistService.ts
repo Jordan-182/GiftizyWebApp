@@ -8,4 +8,12 @@ export const wishlistService = {
     }
     return wishlists;
   },
+
+  async getWishlistById(id: string) {
+    const wishlist = await wishlistRepository.findById(id);
+    if (!wishlist) {
+      throw new Error("Aucune liste trouvée");
+    }
+    return wishlist;
+  },
 };

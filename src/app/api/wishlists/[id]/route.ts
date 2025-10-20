@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth";
-import { userService } from "@/services/userService";
+import { wishlistService } from "@/services/wishlistService";
 import { NextRequest, NextResponse } from "next/server";
 
 function getErrorMessage(error: unknown): string {
@@ -10,16 +10,16 @@ function getErrorMessage(error: unknown): string {
 
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ friendCode: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
-  const { friendCode } = await context.params;
+  const { id } = await context.params;
   const session = await auth.api.getSession(request);
   if (!session) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
   }
   try {
-    const user = await userService.getUserByFriendCode(friendCode);
-    return NextResponse.json(user, { status: 200 });
+    const wishlist = await wishlistService.getWishlistById(id);
+    return NextResponse.json(wishlist, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       { error: getErrorMessage(error) },

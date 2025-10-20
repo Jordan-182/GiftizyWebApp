@@ -44,7 +44,7 @@ export default function NavigationMenuDemo() {
 
         <NavigationMenuItem>
           <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-            <Link href="/profile">Profil</Link>
+            <Link href="/profile">Compte</Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
 

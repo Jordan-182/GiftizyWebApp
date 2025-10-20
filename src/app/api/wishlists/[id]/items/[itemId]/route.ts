@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth";
-import { userService } from "@/services/userService";
+import { wishlistItemService } from "@/services/wishlistItemService";
 import { NextRequest, NextResponse } from "next/server";
 
 function getErrorMessage(error: unknown): string {
@@ -8,22 +8,28 @@ function getErrorMessage(error: unknown): string {
   return "Une erreur inconnue est survenue";
 }
 
-export async function GET(
+export async function DELETE(
   request: NextRequest,
-  context: { params: Promise<{ friendCode: string }> }
+  context: { params: Promise<{ id: string; itemId: string }> }
 ) {
-  const { friendCode } = await context.params;
+  const { id: wishlistId, itemId } = await context.params;
   const session = await auth.api.getSession(request);
+
   if (!session) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
   }
+
   try {
-    const user = await userService.getUserByFriendCode(friendCode);
-    return NextResponse.json(user, { status: 200 });
+    await wishlistItemService.deleteItem(itemId, wishlistId, session.user.id);
+
+    return NextResponse.json(
+      { message: "Article supprimé avec succès" },
+      { status: 200 }
+    );
   } catch (error) {
     return NextResponse.json(
       { error: getErrorMessage(error) },
-      { status: 404 }
+      { status: 400 }
     );
   }
 }

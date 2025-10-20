@@ -93,7 +93,7 @@ export default function Header() {
                   onClick={handleToggle}
                   className="py-2 hover:bg-muted rounded-md px-2"
                 >
-                  Profil
+                  Compte
                 </Link>
                 <ThemeToggle />
               </div>

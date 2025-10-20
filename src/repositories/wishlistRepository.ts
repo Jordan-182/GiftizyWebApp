@@ -13,4 +13,17 @@ export const wishlistRepository = {
         },
       },
     }),
+
+  findById: (id: string) =>
+    prisma.wishlist.findUnique({
+      where: { id },
+      include: {
+        items: true,
+        profile: {
+          include: {
+            avatar: true,
+          },
+        },
+      },
+    }),
 };

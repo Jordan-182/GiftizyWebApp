@@ -53,7 +53,7 @@ export default function DeleteProfileButton({
       </SheetTrigger>
       <SheetContent
         side="bottom"
-        className="h-full flex flex-col items-center justify-center gap-6"
+        className="h-[calc(100dvh-82px)] flex flex-col items-center justify-center gap-6"
       >
         <SheetTitle className="sr-only">
           Confirmer la suppression du profil

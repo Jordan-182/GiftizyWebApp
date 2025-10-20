@@ -1,6 +1,5 @@
 "use client";
 
-import { deleteUserAction } from "@/actions/deleteUser.action";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -9,26 +8,33 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { deleteWishlistItem } from "@/lib/api/wishlistItems";
+import { Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-interface DeleteMyAccountButtonProps {
-  userId: string;
+interface DeleteItemButtonProps {
+  wishlistId: string;
+  itemId: string;
 }
 
-export default function DeleteMyAccountButton({
-  userId,
-}: DeleteMyAccountButtonProps) {
+export default function DeleteItemButton({
+  wishlistId,
+  itemId,
+}: DeleteItemButtonProps) {
   const [isPending, setIsPending] = useState<boolean>(false);
   const [open, setOpen] = useState(false);
+  const router = useRouter();
 
   async function handleConfirmDelete() {
     setIsPending(true);
-    const { error } = await deleteUserAction({ userId });
+    const { error } = await deleteWishlistItem(wishlistId, itemId);
     if (error) {
       toast.error(error);
     } else {
-      toast.success("Votre compte a été supprimé");
+      toast.success("Cet article a été supprimé");
+      router.refresh();
     }
     setIsPending(false);
     setOpen(false);
@@ -38,12 +44,12 @@ export default function DeleteMyAccountButton({
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button
-          size="sm"
-          variant="outline"
-          className="rounded-sm cursor-pointer"
+          size="icon"
+          variant="destructive"
+          className="cursor-pointer"
           disabled={isPending}
         >
-          <span>Supprimer mon compte</span>
+          <Trash2 />
         </Button>
       </SheetTrigger>
       <SheetContent
@@ -51,15 +57,14 @@ export default function DeleteMyAccountButton({
         className="h-[calc(100dvh-82px)] flex flex-col items-center justify-center gap-6"
       >
         <SheetTitle className="sr-only">
-          Confirmer la suppression du compte
+          Confirmer la suppression de l&apos;article
         </SheetTitle>
         <div className="flex flex-col items-center justify-center gap-4 w-full">
           <span className="text-lg font-semibold">
             Confirmer la suppression
           </span>
           <span className="text-sm text-muted-foreground text-center">
-            Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est
-            irréversible.
+            Êtes-vous sûr de vouloir supprimer cet article de votre liste?
           </span>
           <div className="flex flex-col gap-2 mt-4">
             <Button
@@ -68,7 +73,7 @@ export default function DeleteMyAccountButton({
               onClick={handleConfirmDelete}
               className="cursor-pointer"
             >
-              Oui, supprimer mon compte
+              Oui, supprimer cet article
             </Button>
             <SheetClose asChild>
               <Button
