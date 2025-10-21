@@ -26,14 +26,46 @@ export const wishlistItemService = {
     return result;
   },
 
-  async addItemToWishlist(wishlistId: string, item: ItemCreateData) {
+  async addItemToWishlist(
+    wishlistId: string,
+    item: ItemCreateData,
+    userId: string
+  ) {
+    // Vérification que la wishlist existe et appartient à l'utilisateur
+    const wishlist = await wishlistItemRepository.getWishlistWithUser(
+      wishlistId
+    );
+
+    if (!wishlist) {
+      throw new Error("Wishlist introuvable");
+    }
+
+    if (wishlist.userId !== userId) {
+      throw new Error(
+        "Vous n'êtes pas autorisé à ajouter des articles à cette wishlist"
+      );
+    }
+
+    // Validation des données
+    if (!item.name?.trim()) {
+      throw new Error("Le nom de l'article est obligatoire");
+    }
+    if (!item.description?.trim()) {
+      throw new Error("La description de l'article est obligatoire");
+    }
+    if (item.price !== undefined && item.price < 0) {
+      throw new Error("Le prix ne peut pas être négatif");
+    }
+
     const result = await wishlistItemRepository.addItemToWishlist(
       wishlistId,
       item
     );
+
     if (!result) {
-      throw new Error("Erreur lors de l'ajout' de l'article");
+      throw new Error("Erreur lors de l'ajout de l'article");
     }
+
     return result;
   },
 };

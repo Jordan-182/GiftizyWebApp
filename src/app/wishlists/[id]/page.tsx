@@ -1,3 +1,4 @@
+import AddItemButton from "@/components/AddItemButton";
 import DeleteItemButton from "@/components/deleteItemButton";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -10,7 +11,7 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 import { getWishList } from "@/lib/api/wishlists";
-import { Pen, Plus } from "lucide-react";
+import { Pen } from "lucide-react";
 import Image from "next/image";
 
 interface WishlistItem {
@@ -50,10 +51,7 @@ export default async function WishlistIdPage({
         ont acheté l&apos;un des articles qui y figurent.
       </p>
       <Card className="mt-4 p-4">
-        <Button className="max-w-sm mx-auto cursor-pointer">
-          <Plus />
-          Ajouter un article
-        </Button>
+        <AddItemButton wishlistId={id}/>
         {wishlist.items.length === 0 ? (
           <p>Cette liste est vide, ajoutez des articles!</p>
         ) : (

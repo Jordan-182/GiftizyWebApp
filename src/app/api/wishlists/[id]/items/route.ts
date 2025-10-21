@@ -1,9 +1,8 @@
-/* ROUTE POST POUR AJOUTER UN ARTICLE DANS UNE LISTE SPECIFIQUE */
-
 import { auth } from "@/lib/auth";
-import { ItemCreateData } from "@/repositories/wishlistItemRepository";
+import { CreateWishlistItemSchema } from "@/schemas";
 import { wishlistItemService } from "@/services/wishlistItemService";
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error) return error.message;
@@ -25,29 +24,38 @@ export async function POST(
   try {
     const body = await request.json();
 
-    if (!body.name || !body.description || typeof body.price !== "number") {
-      return NextResponse.json(
-        { error: "Données invalides. Nom, description et prix sont requis." },
-        { status: 400 }
-      );
-    }
+    // Validation avec Zod
+    const validatedData = CreateWishlistItemSchema.parse(body);
 
-    const item: ItemCreateData = {
-      name: body.name,
-      description: body.description,
-      price: body.price,
-    };
-
-    await wishlistItemService.addItemToWishlist(id, item);
+    // Appel du service avec l'userId pour vérification des permissions
+    await wishlistItemService.addItemToWishlist(
+      id,
+      validatedData,
+      session.user.id
+    );
 
     return NextResponse.json(
       { message: "Article ajouté avec succès" },
       { status: 201 }
     );
   } catch (error) {
-    return NextResponse.json(
-      { error: getErrorMessage(error) },
-      { status: 400 }
-    );
+    // Gestion spécifique des erreurs Zod
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        {
+          error: "Données invalides",
+          details: error.issues.map((issue) => ({
+            field: issue.path.join("."),
+            message: issue.message,
+          })),
+        },
+        { status: 400 }
+      );
+    }
+
+    const message = getErrorMessage(error);
+    const status = message.includes("autorisé") ? 403 : 500;
+
+    return NextResponse.json({ error: message }, { status });
   }
 }

@@ -1,10 +1,8 @@
 import { prisma } from "@/lib/prisma";
+import type { CreateWishlistItemInput } from "@/schemas";
 
-export type ItemCreateData = {
-  name: string;
-  description: string;
-  price: number;
-};
+// Utilisation du type généré par Zod
+export type ItemCreateData = CreateWishlistItemInput;
 
 export const wishlistItemRepository = {
   deleteItem: (id: string) =>
@@ -19,6 +17,16 @@ export const wishlistItemRepository = {
         wishlist: {
           select: { userId: true },
         },
+      },
+    }),
+
+  getWishlistWithUser: (id: string) =>
+    prisma.wishlist.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        userId: true,
+        name: true,
       },
     }),
 
