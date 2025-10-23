@@ -13,6 +13,7 @@ import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Spinner } from "./ui/spinner";
 
 interface DeleteItemButtonProps {
   wishlistId: string;
@@ -71,15 +72,15 @@ export default function DeleteItemButton({
               variant="destructive"
               disabled={isPending}
               onClick={handleConfirmDelete}
-              className="cursor-pointer"
+              className="cursor-pointer w-44"
             >
-              Oui, supprimer cet article
+              {isPending ? <Spinner /> : "Oui, supprimer cet article"}
             </Button>
             <SheetClose asChild>
               <Button
                 variant="outline"
                 disabled={isPending}
-                className="cursor-pointer"
+                className="cursor-pointer w-44"
               >
                 Annuler
               </Button>

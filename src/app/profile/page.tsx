@@ -1,3 +1,4 @@
+import { getAvatarsAction } from "@/actions/getAvatars.action";
 import ChangePasswordForm from "@/components/changePasswordForm";
 import DeleteMyAccountButton from "@/components/deleteMyAccountButton";
 import FriendCode from "@/components/friendCode";
@@ -7,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import UpdateAvatar from "@/components/UpdateAvatar";
 import UpdateUserForm from "@/components/updateUserForm";
-import { getAvatars } from "@/lib/api/avatars";
 import { getProfiles } from "@/lib/api/profiles";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
@@ -17,7 +17,7 @@ import { redirect } from "next/navigation";
 
 export default async function ProfilePage() {
   const headersList = await headers();
-  const avatars = await getAvatars();
+  const avatars = await getAvatarsAction();
 
   const session = await auth.api.getSession({
     headers: headersList,
