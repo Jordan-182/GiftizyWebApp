@@ -1,4 +1,5 @@
 import { getAvatarsAction } from "@/actions/getAvatars.action";
+import { getMyProfilesAction } from "@/actions/profiles.actions";
 import ChangePasswordForm from "@/components/changePasswordForm";
 import DeleteMyAccountButton from "@/components/deleteMyAccountButton";
 import FriendCode from "@/components/friendCode";
@@ -8,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import UpdateAvatar from "@/components/UpdateAvatar";
 import UpdateUserForm from "@/components/updateUserForm";
-import { getProfiles } from "@/lib/api/profiles";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import Image from "next/image";
@@ -26,7 +26,7 @@ export default async function ProfilePage() {
   if (!session) {
     redirect("/auth/login");
   }
-  const profiles = await getProfiles(session?.user.friendCode);
+  const profiles = await getMyProfilesAction();
 
   return (
     <div className="space-y-4">

@@ -1,5 +1,6 @@
 "use client";
 
+import { deleteProfileAction } from "@/actions/profiles.actions";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -8,18 +9,15 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { deleteProfile } from "@/lib/api/profiles";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
 interface DeleteProfileButtonProps {
-  friendCode: string;
   profileId: string;
 }
 
 export default function DeleteProfileButton({
-  friendCode,
   profileId,
 }: DeleteProfileButtonProps) {
   const [isPending, setIsPending] = useState<boolean>(false);
@@ -28,15 +26,15 @@ export default function DeleteProfileButton({
 
   async function handleConfirmDelete() {
     setIsPending(true);
-    const result = await deleteProfile(friendCode, profileId);
-    if (result) {
+    const result = await deleteProfileAction(profileId);
+    if (result.success) {
       toast.success("Le profil a été supprimé");
+      router.refresh();
     } else {
-      toast.error("Erreur lors de la suppression du profil");
+      toast.error(result.error || "Erreur lors de la suppression du profil");
     }
     setIsPending(false);
     setOpen(false);
-    router.refresh();
   }
 
   return (

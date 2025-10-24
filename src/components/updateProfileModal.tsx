@@ -1,12 +1,16 @@
 "use client";
 
+import {
+  updateProfileAction,
+  type ProfileActionResult,
+} from "@/actions/profiles.actions";
 import type { Avatar, Profile } from "@/generated/prisma";
-import { editProfile } from "@/lib/api/profiles";
-import type { ProfileFormData } from "@/repositories/profileRepository";
 import { format } from "date-fns";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useActionState, useEffect, useState } from "react";
+import { useFormStatus } from "react-dom";
+import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { Calendar } from "./ui/calendar";
 import { Input } from "./ui/input";
@@ -21,82 +25,70 @@ type ProfileWithAvatar = Profile & {
   } | null;
 };
 
+function SubmitButton({ loading }: { loading: boolean }) {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button
+      type="submit"
+      disabled={pending || loading}
+      className="w-full cursor-pointer"
+    >
+      {pending || loading ? <Spinner /> : "Mettre à jour le profil"}
+    </Button>
+  );
+}
+
 export default function UpdateProfileModal({
-  friendCode,
   profile,
   avatars,
 }: {
-  friendCode: string;
   profile: ProfileWithAvatar;
   avatars: Avatar[];
 }) {
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState<Partial<ProfileFormData>>({
-    name: profile.name,
-    birthDate: profile.birthDate
-      ? format(new Date(profile.birthDate), "yyyy-MM-dd")
-      : "",
-    friendCode: profile.friendCode || friendCode,
-    avatarId: profile.avatarId || undefined,
-    isMainProfile: profile.isMainProfile,
-  });
+  const [profileName, setProfileName] = useState(profile.name);
   const [selectedAvatarId, setSelectedAvatarId] = useState<string>(
     profile.avatarId || "cl2k5a8q00001x0u7d9a7p8z1"
   );
   const [birthDateState, setBirthDateState] = useState<Date | undefined>(
     profile.birthDate ? new Date(profile.birthDate) : undefined
   );
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  // Server Action avec useActionState
+  const updateProfileWithId = updateProfileAction.bind(null, profile.id);
+  const [state, formAction] = useActionState<ProfileActionResult, FormData>(
+    updateProfileWithId,
+    { success: false }
+  );
+
+  // Gestion des effets de bord de l'action
+  useEffect(() => {
+    if (state.success) {
+      toast.success("Le profil a été mis à jour avec succès");
+      setOpen(false);
+      router.refresh();
+    } else if (state.error) {
+      toast.error(state.error);
+    }
+  }, [state.success, state.error, router]);
+
+  // Reset des états locaux quand le modal se ferme
+  useEffect(() => {
+    if (!open) {
+      setProfileName(profile.name);
+      setSelectedAvatarId(profile.avatarId || "cl2k5a8q00001x0u7d9a7p8z1");
+      setBirthDateState(
+        profile.birthDate ? new Date(profile.birthDate) : undefined
+      );
+    }
+  }, [open, profile.name, profile.avatarId, profile.birthDate]);
 
   // Format pour le champ caché
   const birthDateValueString = birthDateState
     ? format(birthDateState, "yyyy-MM-dd")
     : "";
-
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    setError(null);
-
-    // Validation des champs
-    if (!form.name || form.name.trim().length < 2) {
-      setError("Le nom du profil est requis");
-      return;
-    }
-    if (!birthDateValueString) {
-      setError("La date de naissance est requise");
-      return;
-    }
-    if (!selectedAvatarId) {
-      setError("Veuillez sélectionner un avatar");
-      return;
-    }
-    setLoading(true);
-    try {
-      await editProfile(friendCode, profile.id, {
-        name: form.name.trim(),
-        birthDate: birthDateValueString,
-        friendCode,
-        avatarId: selectedAvatarId,
-        isMainProfile: profile.isMainProfile,
-      });
-      setOpen(false);
-      router.refresh();
-    } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError("Erreur inconnue");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <>
@@ -117,13 +109,13 @@ export default function UpdateProfileModal({
             <SheetHeader className="p-0">
               <SheetTitle className="text-2xl">Modifier le profil</SheetTitle>
             </SheetHeader>
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-4">
+            <form action={formAction} className="flex flex-col gap-4 mt-4">
               <Label htmlFor="name">Nom</Label>
               <Input
                 name="name"
                 placeholder="Nom du profil"
-                value={form.name || ""}
-                onChange={handleChange}
+                value={profileName}
+                onChange={(e) => setProfileName(e.target.value)}
                 required
               />
               <div className="flex flex-col gap-2">
@@ -152,12 +144,18 @@ export default function UpdateProfileModal({
                     />
                   </PopoverContent>
                 </Popover>
-                {/* Champ caché pour le submit */}
+                {/* Champs cachés pour le submit */}
                 <input
                   type="hidden"
                   name="birthDate"
                   value={birthDateValueString}
                   required
+                />
+                <input type="hidden" name="avatarId" value={selectedAvatarId} />
+                <input
+                  type="hidden"
+                  name="isMainProfile"
+                  value={profile.isMainProfile.toString()}
                 />
               </div>
               <div className="flex flex-col gap-2">
@@ -188,14 +186,14 @@ export default function UpdateProfileModal({
                   </p>
                 )}
               </div>
-              {error && <p className="text-red-500 text-sm">{error}</p>}
-              <Button
-                type="submit"
-                disabled={loading}
-                className="cursor-pointer"
-              >
-                {loading ? <Spinner /> : "Mettre à jour"}
-              </Button>
+              {state.fieldErrors && (
+                <div className="text-red-500 text-sm">
+                  {Object.entries(state.fieldErrors).map(([field, errors]) => (
+                    <p key={field}>{errors}</p>
+                  ))}
+                </div>
+              )}
+              <SubmitButton loading={false} />
             </form>
           </div>
         </SheetContent>
