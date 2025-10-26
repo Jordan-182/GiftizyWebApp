@@ -1,13 +1,17 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import { deleteWishlistItem } from "@/lib/api/wishlistItems";
 import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -25,7 +29,6 @@ export default function DeleteItemButton({
   itemId,
 }: DeleteItemButtonProps) {
   const [isPending, setIsPending] = useState<boolean>(false);
-  const [open, setOpen] = useState(false);
   const router = useRouter();
 
   async function handleConfirmDelete() {
@@ -38,12 +41,11 @@ export default function DeleteItemButton({
       router.refresh();
     }
     setIsPending(false);
-    setOpen(false);
   }
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
         <Button
           size="icon"
           variant="destructive"
@@ -52,42 +54,37 @@ export default function DeleteItemButton({
         >
           <Trash2 />
         </Button>
-      </SheetTrigger>
-      <SheetContent
-        side="bottom"
-        className="h-[calc(100dvh-82px)] flex flex-col items-center justify-center gap-6"
-      >
-        <SheetTitle className="sr-only">
-          Confirmer la suppression de l&apos;article
-        </SheetTitle>
-        <div className="flex flex-col items-center justify-center gap-4 w-full">
-          <span className="text-lg font-semibold">
-            Confirmer la suppression
-          </span>
-          <span className="text-sm text-muted-foreground text-center">
-            Êtes-vous sûr de vouloir supprimer cet article de votre liste?
-          </span>
-          <div className="flex flex-col gap-2 mt-4">
-            <Button
-              variant="destructive"
-              disabled={isPending}
-              onClick={handleConfirmDelete}
-              className="cursor-pointer w-44"
-            >
-              {isPending ? <Spinner /> : "Oui, supprimer cet article"}
-            </Button>
-            <SheetClose asChild>
-              <Button
-                variant="outline"
-                disabled={isPending}
-                className="cursor-pointer w-44"
-              >
-                Annuler
-              </Button>
-            </SheetClose>
-          </div>
-        </div>
-      </SheetContent>
-    </Sheet>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>
+            Confirmer la suppression de l'article
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            Êtes-vous sûr de vouloir supprimer cet article de votre liste ?
+            Cette action est irréversible.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={isPending} className="cursor-pointer">
+            Annuler
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={handleConfirmDelete}
+            disabled={isPending}
+            className="cursor-pointer bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          >
+            {isPending ? (
+              <>
+                <Spinner className="mr-2" />
+                Suppression...
+              </>
+            ) : (
+              "Oui, supprimer cet article"
+            )}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

@@ -18,6 +18,7 @@ import { redirect } from "next/navigation";
 export default async function ProfilePage() {
   const headersList = await headers();
   const avatars = await getAvatarsAction();
+  const profiles = await getMyProfilesAction();
 
   const session = await auth.api.getSession({
     headers: headersList,
@@ -26,7 +27,6 @@ export default async function ProfilePage() {
   if (!session) {
     redirect("/auth/login");
   }
-  const profiles = await getMyProfilesAction();
 
   return (
     <div className="space-y-4">

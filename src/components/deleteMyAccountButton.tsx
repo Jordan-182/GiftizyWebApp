@@ -1,14 +1,18 @@
 "use client";
 
 import { deleteUserAction } from "@/actions/deleteUser.action";
-import { Button } from "@/components/ui/button";
 import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -20,7 +24,6 @@ export default function DeleteMyAccountButton({
   userId,
 }: DeleteMyAccountButtonProps) {
   const [isPending, setIsPending] = useState<boolean>(false);
-  const [open, setOpen] = useState(false);
 
   async function handleConfirmDelete() {
     setIsPending(true);
@@ -31,12 +34,11 @@ export default function DeleteMyAccountButton({
       toast.success("Votre compte a été supprimé");
     }
     setIsPending(false);
-    setOpen(false);
   }
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
         <Button
           size="sm"
           variant="outline"
@@ -45,43 +47,30 @@ export default function DeleteMyAccountButton({
         >
           <span>Supprimer mon compte</span>
         </Button>
-      </SheetTrigger>
-      <SheetContent
-        side="bottom"
-        className="h-[calc(100dvh-82px)] flex flex-col items-center justify-center gap-6"
-      >
-        <SheetTitle className="sr-only">
-          Confirmer la suppression du compte
-        </SheetTitle>
-        <div className="flex flex-col items-center justify-center gap-4 w-full">
-          <span className="text-lg font-semibold">
-            Confirmer la suppression
-          </span>
-          <span className="text-sm text-muted-foreground text-center">
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>
+            Confirmer la suppression du compte
+          </AlertDialogTitle>
+          <AlertDialogDescription>
             Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est
-            irréversible.
-          </span>
-          <div className="flex flex-col gap-2 mt-4">
-            <Button
-              variant="destructive"
-              disabled={isPending}
-              onClick={handleConfirmDelete}
-              className="cursor-pointer"
-            >
-              Oui, supprimer mon compte
-            </Button>
-            <SheetClose asChild>
-              <Button
-                variant="outline"
-                disabled={isPending}
-                className="cursor-pointer"
-              >
-                Annuler
-              </Button>
-            </SheetClose>
-          </div>
-        </div>
-      </SheetContent>
-    </Sheet>
+            irréversible et supprimera définitivement toutes vos données.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={isPending} className="cursor-pointer">
+            Annuler
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={handleConfirmDelete}
+            disabled={isPending}
+            className="cursor-pointer bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          >
+            {isPending ? "Suppression..." : "Oui, supprimer mon compte"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

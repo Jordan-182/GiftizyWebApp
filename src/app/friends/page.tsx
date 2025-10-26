@@ -4,12 +4,12 @@ import FriendsList from "@/components/friendsList";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FriendsProvider } from "@/contexts/FriendsContext";
 import { auth } from "@/lib/auth";
@@ -41,29 +41,24 @@ export default async function FriendsPage() {
       <div className="space-y-8">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">Mes amis</h1>
-          <Sheet>
-            <SheetTrigger asChild>
+          <Dialog>
+            <DialogTrigger asChild>
               <Button
                 className="cursor-pointer flex gap-0"
                 aria-roledescription="Ajouter un ami"
               >
                 <UserPlus className="h-4 w-4" />
               </Button>
-            </SheetTrigger>
-            <SheetContent
-              side="bottom"
-              className="h-[calc(100dvh-82px)] p-8 flex flex-col justify-center"
-            >
-              <div className="max-w-120 mx-auto">
-                <SheetHeader className="p-0">
-                  <SheetTitle className="text-2xl">Ajouter un ami</SheetTitle>
-                </SheetHeader>
-                <div className="mt-4">
-                  <FriendSearchForm />
-                </div>
+            </DialogTrigger>
+            <DialogContent className="max-w-md max-h-[80vh] sm:max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
+              <DialogHeader>
+                <DialogTitle className="text-2xl">Ajouter un ami</DialogTitle>
+              </DialogHeader>
+              <div className="mt-4">
+                <FriendSearchForm />
               </div>
-            </SheetContent>
-          </Sheet>
+            </DialogContent>
+          </Dialog>
         </div>
 
         <Card className="p-0">

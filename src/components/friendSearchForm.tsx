@@ -1,5 +1,6 @@
 "use client";
 
+import { getUserByFriendCodeAction } from "@/actions/getUserByFriendCode.action";
 import { useFriends } from "@/contexts/FriendsContext";
 import type { Avatar, User } from "@/generated/prisma";
 import {
@@ -7,7 +8,6 @@ import {
   deleteFriendship,
   updateFriendRequest,
 } from "@/lib/api/friends";
-import { getUserByFriendCode } from "@/lib/api/users";
 import { Check, Clock, UserCheck, UserRoundPlus, UserX } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
@@ -62,9 +62,15 @@ export default function FriendSearchForm() {
       return;
     }
     try {
-      const response = await getUserByFriendCode(friendCode.trim());
-      setRetrievedUser(response);
-      const status = await checkFriendshipStatus(response.id);
+      const result = await getUserByFriendCodeAction(friendCode.trim());
+
+      if (!result.success || !result.data) {
+        setError(result.error || "Utilisateur non trouvé");
+        return;
+      }
+
+      setRetrievedUser(result.data);
+      const status = await checkFriendshipStatus(result.data.id);
       setFriendshipStatus(status);
     } catch (error) {
       console.error("Erreur lors de la recherche d'ami:", error);

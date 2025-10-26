@@ -7,15 +7,15 @@ import { useState } from "react";
 import { useFormStatus } from "react-dom";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "./ui/sheet";
 import { Spinner } from "./ui/spinner";
 
 // Composant pour le formulaire qui utilise useFormStatus
@@ -172,26 +172,23 @@ interface AddItemButtonProps {
 export default function AddItemButton({ wishlistId }: AddItemButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetTrigger asChild>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
         <Button className="max-w-sm mx-auto cursor-pointer">
           <Plus />
           Ajouter un article
         </Button>
-      </SheetTrigger>
-      <SheetContent
-        side="bottom"
-        className="h-[calc(100dvh-82px)] p-8 flex flex-col items-center justify-center gap-6"
-      >
-        <SheetHeader className="p-0">
-          <SheetTitle className="text-2xl">Ajouter un article</SheetTitle>
-        </SheetHeader>
+      </DialogTrigger>
+      <DialogContent className="max-w-md max-h-[80vh] sm:max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
+        <DialogHeader>
+          <DialogTitle className="text-2xl">Ajouter un article</DialogTitle>
+        </DialogHeader>
 
         <AddItemForm
           wishlistId={wishlistId}
           onSuccess={() => setIsOpen(false)}
         />
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }

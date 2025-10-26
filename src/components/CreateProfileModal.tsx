@@ -12,10 +12,16 @@ import { useFormStatus } from "react-dom";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { Calendar } from "./ui/calendar";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "./ui/sheet";
 import { Spinner } from "./ui/spinner";
 
 // Composant pour le bouton submit qui utilise useFormStatus
@@ -110,116 +116,108 @@ export default function CreateProfileModal({
   }, [open]);
 
   return (
-    <>
-      <Button onClick={() => setOpen(true)} className="mt-auto cursor-pointer">
-        Créer un profil
-      </Button>
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent
-          side="bottom"
-          className="h-[calc(100dvh-82px)] p-8 flex flex-col justify-center"
-        >
-          <div className="max-w-120 mx-auto">
-            <SheetHeader className="p-0">
-              <SheetTitle className="text-2xl">Créer un profil</SheetTitle>
-            </SheetHeader>
-            <form
-              action={handleFormAction}
-              className="flex flex-col gap-4 mt-4"
-            >
-              {/* Champ caché pour le friendCode */}
-              <input type="hidden" name="friendCode" value={friendCode} />
-              <input type="hidden" name="avatarId" value={selectedAvatarId} />
-              <input type="hidden" name="isMainProfile" value="false" />
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button className="mt-auto cursor-pointer">Créer un profil</Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-md max-h-[85vh] mt-10 sm:max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
+        <DialogHeader>
+          <DialogTitle className="text-2xl">Créer un profil</DialogTitle>
+        </DialogHeader>
+        <div>
+          <form action={handleFormAction} className="flex flex-col gap-4 mt-1">
+            {/* Champ caché pour le friendCode */}
+            <input type="hidden" name="friendCode" value={friendCode} />
+            <input type="hidden" name="avatarId" value={selectedAvatarId} />
+            <input type="hidden" name="isMainProfile" value="false" />
 
-              <Label htmlFor="name">Nom</Label>
-              <Input
-                name="name"
-                placeholder="Nom du profil"
-                value={profileName}
-                onChange={(e) => setProfileName(e.target.value)}
-                required
+            <Label htmlFor="name">Nom</Label>
+            <Input
+              name="name"
+              placeholder="Nom du profil"
+              value={profileName}
+              onChange={(e) => setProfileName(e.target.value)}
+              required
+            />
+            {state.fieldErrors?.name && (
+              <p className="text-sm text-red-500">{state.fieldErrors.name}</p>
+            )}
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="birthDate">Date de naissance</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full justify-start text-left font-normal"
+                  >
+                    {birthDateState
+                      ? format(birthDateState, "dd/MM/yyyy")
+                      : "Choisir une date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="p-0 z-999" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={birthDateState}
+                    onSelect={setBirthDateState}
+                    captionLayout="dropdown"
+                    fromYear={1900}
+                    toYear={new Date().getFullYear()}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              {/* Champ caché pour le submit */}
+              <input
+                type="hidden"
+                name="birthDate"
+                value={birthDateValueString}
               />
-              {state.fieldErrors?.name && (
-                <p className="text-sm text-red-500">{state.fieldErrors.name}</p>
-              )}
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="birthDate">Date de naissance</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full justify-start text-left font-normal"
-                    >
-                      {birthDateState
-                        ? format(birthDateState, "dd/MM/yyyy")
-                        : "Choisir une date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="p-0 z-999" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={birthDateState}
-                      onSelect={setBirthDateState}
-                      captionLayout="dropdown"
-                      fromYear={1900}
-                      toYear={new Date().getFullYear()}
-                      initialFocus
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label>Choisir un avatar</Label>
+              <ul className="flex flex-wrap justify-center gap-1">
+                {avatars.map((avatar) => (
+                  <li
+                    key={avatar.id}
+                    onClick={() => setSelectedAvatarId(avatar.id)}
+                  >
+                    <Image
+                      src={avatar.url}
+                      alt="Avatar"
+                      height={60}
+                      width={60}
+                      className={`cursor-pointer rounded-full border-4 hover:border-primary duration-300 ease-out ${
+                        selectedAvatarId === avatar.id
+                          ? "border-primary"
+                          : "border-transparent"
+                      }`}
                     />
-                  </PopoverContent>
-                </Popover>
-                {/* Champ caché pour le submit */}
-                <input
-                  type="hidden"
-                  name="birthDate"
-                  value={birthDateValueString}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label>Choisir un avatar</Label>
-                <ul className="flex flex-wrap justify-center gap-2">
-                  {avatars.map((avatar) => (
-                    <li
-                      key={avatar.id}
-                      onClick={() => setSelectedAvatarId(avatar.id)}
-                    >
-                      <Image
-                        src={avatar.url}
-                        alt="Avatar"
-                        height={60}
-                        width={60}
-                        className={`cursor-pointer rounded-full border-4 hover:border-primary duration-300 ease-out ${
-                          selectedAvatarId === avatar.id
-                            ? "border-primary"
-                            : "border-transparent"
-                        }`}
-                      />
-                    </li>
-                  ))}
-                </ul>
-                {selectedAvatarId === "" && (
-                  <p className="text-sm text-red-500">
-                    Veuillez sélectionner un avatar
-                  </p>
-                )}
-              </div>
+                  </li>
+                ))}
+              </ul>
+              {selectedAvatarId === "" && (
+                <p className="text-sm text-red-500">
+                  Veuillez sélectionner un avatar
+                </p>
+              )}
+            </div>
 
-              <div className="flex flex-col gap-2 mt-6">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setOpen(false)}
-                  className="flex-1 cursor-pointer"
-                >
-                  Annuler
-                </Button>
-                <SubmitButton />
-              </div>
-            </form>
-          </div>
-        </SheetContent>
-      </Sheet>
-    </>
+            <div className="flex flex-col gap-2 mt-0">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setOpen(false)}
+                className="flex-1 cursor-pointer"
+              >
+                Annuler
+              </Button>
+              <SubmitButton />
+            </div>
+          </form>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
