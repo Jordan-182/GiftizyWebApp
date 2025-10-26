@@ -1,8 +1,9 @@
 "use client";
 
+import { deleteFriendshipAction } from "@/actions/deleteFriendship.action";
+import { updateFriendRequestAction } from "@/actions/updateFriendRequest.action";
 import { useFriends } from "@/contexts/FriendsContext";
 import type { Avatar, Friendship } from "@/generated/prisma";
-import { deleteFriendship, updateFriendRequest } from "@/lib/api/friends";
 import { Check, RotateCw, X } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
@@ -59,8 +60,10 @@ export default function FriendsRequestList({
       event.preventDefault();
       setIsAcceptLoading(true);
       try {
-        await updateFriendRequest(friendshipId, true);
-        await refreshAll();
+        const result = await updateFriendRequestAction(friendshipId, true);
+        if (result.success) {
+          await refreshAll();
+        }
       } catch (error) {
         console.error("Erreur lors de l'acceptation:", error);
       } finally {
@@ -74,8 +77,10 @@ export default function FriendsRequestList({
       event.preventDefault();
       setIsRejectLoading(true);
       try {
-        await updateFriendRequest(friendshipId, false);
-        await refreshAll();
+        const result = await updateFriendRequestAction(friendshipId, false);
+        if (result.success) {
+          await refreshAll();
+        }
       } catch (error) {
         console.error("Erreur lors du refus:", error);
       } finally {
@@ -89,8 +94,10 @@ export default function FriendsRequestList({
       event.preventDefault();
       setIsCancelLoading(true);
       try {
-        await deleteFriendship(friendshipId);
-        await refreshAll();
+        const result = await deleteFriendshipAction(friendshipId);
+        if (result.success) {
+          await refreshAll();
+        }
       } catch (error) {
         console.error("Erreur lors de la suppression:", error);
       } finally {

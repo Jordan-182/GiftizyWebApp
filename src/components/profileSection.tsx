@@ -47,16 +47,9 @@ export default function ProfileSection({
                 </ItemContent>
                 <ItemActions className="h-[50px] py-2">
                   {profile.isMainProfile ? null : (
-                    <DeleteProfileButton
-                      friendCode={profile.friendCode || friendCode}
-                      profileId={profile.id}
-                    />
+                    <DeleteProfileButton profileId={profile.id} />
                   )}
-                  <UpdateProfileModal
-                    friendCode={friendCode}
-                    profile={profile}
-                    avatars={avatars}
-                  />
+                  <UpdateProfileModal profile={profile} avatars={avatars} />
                 </ItemActions>
               </Item>
             </li>

@@ -1,47 +1,47 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { deleteProfileAction } from "@/actions/profiles.actions";
 import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { deleteProfile } from "@/lib/api/profiles";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
 interface DeleteProfileButtonProps {
-  friendCode: string;
   profileId: string;
 }
 
 export default function DeleteProfileButton({
-  friendCode,
   profileId,
 }: DeleteProfileButtonProps) {
   const [isPending, setIsPending] = useState<boolean>(false);
-  const [open, setOpen] = useState(false);
   const router = useRouter();
 
   async function handleConfirmDelete() {
     setIsPending(true);
-    const result = await deleteProfile(friendCode, profileId);
-    if (result) {
+    const result = await deleteProfileAction(profileId);
+    if (result.success) {
       toast.success("Le profil a été supprimé");
+      router.refresh();
     } else {
-      toast.error("Erreur lors de la suppression du profil");
+      toast.error(result.error || "Erreur lors de la suppression du profil");
     }
     setIsPending(false);
-    setOpen(false);
-    router.refresh();
   }
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
         <Button
           size="sm"
           variant="destructive"
@@ -50,42 +50,28 @@ export default function DeleteProfileButton({
         >
           <span>Supprimer</span>
         </Button>
-      </SheetTrigger>
-      <SheetContent
-        side="bottom"
-        className="h-full flex flex-col items-center justify-center gap-6"
-      >
-        <SheetTitle className="sr-only">
-          Confirmer la suppression du profil
-        </SheetTitle>
-        <div className="flex flex-col items-center justify-center gap-4 w-full">
-          <span className="text-lg font-semibold">
-            Confirmer la suppression
-          </span>
-          <span className="text-sm text-muted-foreground text-center">
-            Êtes-vous sûr de vouloir supprimer ce profil?
-          </span>
-          <div className="flex flex-col gap-2 mt-4">
-            <Button
-              variant="destructive"
-              disabled={isPending}
-              onClick={handleConfirmDelete}
-              className="cursor-pointer"
-            >
-              Oui, supprimer ce profil
-            </Button>
-            <SheetClose asChild>
-              <Button
-                variant="outline"
-                disabled={isPending}
-                className="cursor-pointer"
-              >
-                Annuler
-              </Button>
-            </SheetClose>
-          </div>
-        </div>
-      </SheetContent>
-    </Sheet>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
+          <AlertDialogDescription>
+            Êtes-vous sûr de vouloir supprimer ce profil ? Cette action est
+            irréversible.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={isPending} className="cursor-pointer">
+            Annuler
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={handleConfirmDelete}
+            disabled={isPending}
+            className="cursor-pointer bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          >
+            {isPending ? "Suppression..." : "Oui, supprimer"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

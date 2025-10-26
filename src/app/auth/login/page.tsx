@@ -13,7 +13,7 @@ export default async function LoginPage() {
   });
 
   if (session) {
-    redirect("/profile");
+    redirect("/dashboard");
   }
   return (
     <div className="space-y-8">

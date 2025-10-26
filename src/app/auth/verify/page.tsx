@@ -11,7 +11,7 @@ export default async function VerifyEmailPage({
 }: VerifyEmailPageProps) {
   const error = (await searchParams).error;
 
-  if (!error) redirect("/profile");
+  if (!error) redirect("/dashboard");
 
   return (
     <div className="space-y-8">

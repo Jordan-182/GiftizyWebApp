@@ -1,18 +1,23 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { deleteFriendshipAction } from "@/actions/deleteFriendship.action";
 import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import { useFriends } from "@/contexts/FriendsContext";
-import { deleteFriendship } from "@/lib/api/friends";
 import { UserRoundX } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Spinner } from "./ui/spinner";
 
 interface DeleteFriendButtonProps {
   friendshipId: string;
@@ -22,25 +27,29 @@ export default function DeleteFriendButton({
   friendshipId,
 }: DeleteFriendButtonProps) {
   const [isPending, setIsPending] = useState<boolean>(false);
-  const [open, setOpen] = useState(false);
   const { refreshAll } = useFriends();
 
   async function handleConfirmDelete() {
     setIsPending(true);
-    const result = await deleteFriendship(friendshipId);
-    if (result) {
-      toast.success("Cet ami a été supprimé");
-      await refreshAll();
-    } else {
+    try {
+      const result = await deleteFriendshipAction(friendshipId);
+      if (result.success) {
+        toast.success("Cet ami a été supprimé");
+        await refreshAll();
+      } else {
+        toast.error(result.error || "Erreur lors de la suppression de l'ami");
+      }
+    } catch (error) {
+      console.error("Erreur lors de la suppression:", error);
       toast.error("Erreur lors de la suppression de l'ami");
+    } finally {
+      setIsPending(false);
     }
-    setIsPending(false);
-    setOpen(false);
   }
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
         <Button
           size="sm"
           variant="destructive"
@@ -49,42 +58,30 @@ export default function DeleteFriendButton({
         >
           <UserRoundX />
         </Button>
-      </SheetTrigger>
-      <SheetContent
-        side="bottom"
-        className="h-[calc(100dvh-82px)] flex flex-col items-center justify-center gap-6"
-      >
-        <SheetTitle className="sr-only">
-          Confirmer la suppression dde l&apos;ami
-        </SheetTitle>
-        <div className="flex flex-col items-center justify-center gap-4 w-full">
-          <span className="text-lg font-semibold">
-            Confirmer la suppression
-          </span>
-          <span className="text-sm text-muted-foreground text-center">
-            Êtes-vous sûr de vouloir supprimer cet ami?
-          </span>
-          <div className="flex flex-col gap-2 mt-4">
-            <Button
-              variant="destructive"
-              disabled={isPending}
-              onClick={handleConfirmDelete}
-              className="cursor-pointer"
-            >
-              Oui, supprimer cet ami
-            </Button>
-            <SheetClose asChild>
-              <Button
-                variant="outline"
-                disabled={isPending}
-                className="cursor-pointer"
-              >
-                Annuler
-              </Button>
-            </SheetClose>
-          </div>
-        </div>
-      </SheetContent>
-    </Sheet>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>
+            Confirmer la suppression de l&apos;ami
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            Êtes-vous sûr de vouloir supprimer cet ami ? Cette action est
+            irréversible.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={isPending} className="cursor-pointer">
+            Annuler
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={handleConfirmDelete}
+            disabled={isPending}
+            className="cursor-pointer bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          >
+            {isPending ? <Spinner /> : "Oui, supprimer cet ami"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
