@@ -1,13 +1,11 @@
 "use client";
 
+import { checkFriendshipStatusAction } from "@/actions/checkFriendshipStatus.action";
+import { deleteFriendshipAction } from "@/actions/deleteFriendship.action";
 import { getUserByFriendCodeAction } from "@/actions/getUserByFriendCode.action";
+import { updateFriendRequestAction } from "@/actions/updateFriendRequest.action";
 import { useFriends } from "@/contexts/FriendsContext";
 import type { Avatar, User } from "@/generated/prisma";
-import {
-  checkFriendshipStatus,
-  deleteFriendship,
-  updateFriendRequest,
-} from "@/lib/api/friends";
 import { Check, Clock, UserCheck, UserRoundPlus, UserX } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
@@ -70,8 +68,10 @@ export default function FriendSearchForm() {
       }
 
       setRetrievedUser(result.data);
-      const status = await checkFriendshipStatus(result.data.id);
-      setFriendshipStatus(status);
+      const statusResult = await checkFriendshipStatusAction(result.data.id);
+      if (statusResult.success && statusResult.data) {
+        setFriendshipStatus(statusResult.data as FriendshipStatus);
+      }
     } catch (error) {
       console.error("Erreur lors de la recherche d'ami:", error);
       setError("Utilisateur non trouvé ou erreur de connexion");
@@ -122,9 +122,13 @@ export default function FriendSearchForm() {
                 variant="outline"
                 onClick={async () => {
                   try {
-                    await deleteFriendship(friendshipStatus.friendshipId!);
-                    await refreshAll();
-                    setFriendshipStatus({ status: "none" });
+                    const result = await deleteFriendshipAction(
+                      friendshipStatus.friendshipId!
+                    );
+                    if (result.success) {
+                      await refreshAll();
+                      setFriendshipStatus({ status: "none" });
+                    }
                   } catch (error) {
                     console.error("Erreur lors de l'annulation:", error);
                   }
@@ -154,15 +158,17 @@ export default function FriendSearchForm() {
                   variant="outline"
                   onClick={async () => {
                     try {
-                      await updateFriendRequest(
+                      const result = await updateFriendRequestAction(
                         friendshipStatus.friendshipId!,
                         true
                       );
-                      await refreshAll();
-                      setFriendshipStatus({
-                        status: "friend",
-                        friendshipId: friendshipStatus.friendshipId,
-                      });
+                      if (result.success) {
+                        await refreshAll();
+                        setFriendshipStatus({
+                          status: "friend",
+                          friendshipId: friendshipStatus.friendshipId,
+                        });
+                      }
                     } catch (error) {
                       console.error("Erreur lors de l'acceptation:", error);
                     }
@@ -175,12 +181,14 @@ export default function FriendSearchForm() {
                   variant="destructive"
                   onClick={async () => {
                     try {
-                      await updateFriendRequest(
+                      const result = await updateFriendRequestAction(
                         friendshipStatus.friendshipId!,
                         false
                       );
-                      await refreshAll();
-                      setFriendshipStatus({ status: "none" });
+                      if (result.success) {
+                        await refreshAll();
+                        setFriendshipStatus({ status: "none" });
+                      }
                     } catch (error) {
                       console.error("Erreur lors du refus:", error);
                     }

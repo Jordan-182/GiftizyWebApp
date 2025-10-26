@@ -1,5 +1,6 @@
 "use client";
 
+import { deleteFriendshipAction } from "@/actions/deleteFriendship.action";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,7 +14,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { useFriends } from "@/contexts/FriendsContext";
-import { deleteFriendship } from "@/lib/api/friends";
 import { UserRoundX } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -31,14 +31,20 @@ export default function DeleteFriendButton({
 
   async function handleConfirmDelete() {
     setIsPending(true);
-    const result = await deleteFriendship(friendshipId);
-    if (result) {
-      toast.success("Cet ami a été supprimé");
-      await refreshAll();
-    } else {
+    try {
+      const result = await deleteFriendshipAction(friendshipId);
+      if (result.success) {
+        toast.success("Cet ami a été supprimé");
+        await refreshAll();
+      } else {
+        toast.error(result.error || "Erreur lors de la suppression de l'ami");
+      }
+    } catch (error) {
+      console.error("Erreur lors de la suppression:", error);
       toast.error("Erreur lors de la suppression de l'ami");
+    } finally {
+      setIsPending(false);
     }
-    setIsPending(false);
   }
 
   return (

@@ -1,7 +1,8 @@
 "use client";
 
+import { getFriendsAction } from "@/actions/getFriends.action";
+import { getPendingFriendRequestsAction } from "@/actions/getPendingFriendRequests.action";
 import type { Avatar, Friendship } from "@/generated/prisma";
-import { getFriends, getPendingFriendRequests } from "@/lib/api/friends";
 import {
   createContext,
   ReactNode,
@@ -54,8 +55,10 @@ export function FriendsProvider({
   const refreshFriends = useCallback(async () => {
     setIsLoading(true);
     try {
-      const friendsData = await getFriends();
-      setFriends(friendsData);
+      const result = await getFriendsAction();
+      if (result.success && result.data) {
+        setFriends(result.data);
+      }
     } catch (error) {
       console.error("Erreur lors du rechargement des amis:", error);
     } finally {
@@ -66,8 +69,10 @@ export function FriendsProvider({
   const refreshFriendRequests = useCallback(async () => {
     setIsLoading(true);
     try {
-      const requestsData = await getPendingFriendRequests();
-      setFriendRequests(requestsData);
+      const result = await getPendingFriendRequestsAction();
+      if (result.success && result.data) {
+        setFriendRequests(result.data);
+      }
     } catch (error) {
       console.error("Erreur lors du rechargement des demandes:", error);
     } finally {
@@ -78,12 +83,16 @@ export function FriendsProvider({
   const refreshAll = useCallback(async () => {
     setIsLoading(true);
     try {
-      const [friendsData, requestsData] = await Promise.all([
-        getFriends(),
-        getPendingFriendRequests(),
+      const [friendsResult, requestsResult] = await Promise.all([
+        getFriendsAction(),
+        getPendingFriendRequestsAction(),
       ]);
-      setFriends(friendsData);
-      setFriendRequests(requestsData);
+      if (friendsResult.success && friendsResult.data) {
+        setFriends(friendsResult.data);
+      }
+      if (requestsResult.success && requestsResult.data) {
+        setFriendRequests(requestsResult.data);
+      }
     } catch (error) {
       console.error("Erreur lors du rechargement:", error);
     } finally {
