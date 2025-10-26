@@ -59,7 +59,14 @@ export default async function WishlistsPage() {
                     </ItemContent>
                   </Link>
                   <ItemActions>
-                    <UpdateListButton />
+                    <UpdateListButton
+                      wishlistData={{
+                        id: list.id,
+                        name: list.name,
+                        description: list.description,
+                        profileId: list.profileId,
+                      }}
+                    />
                     <DeleteListButton
                       wishlistId={list.id}
                       wishlistName={list.name}

@@ -1,5 +1,8 @@
 import { prisma } from "@/lib/prisma";
-import type { CreateWishlistInput } from "@/schemas/wishlist.schema";
+import type {
+  CreateWishlistInput,
+  UpdateWishlistInput,
+} from "@/schemas/wishlist.schema";
 
 export const wishlistRepository = {
   create: (data: CreateWishlistInput & { userId: string }) =>
@@ -51,6 +54,20 @@ export const wishlistRepository = {
         id,
         userId,
       },
+      include: {
+        items: true,
+        profile: {
+          include: {
+            avatar: true,
+          },
+        },
+      },
+    }),
+
+  update: (id: string, data: UpdateWishlistInput) =>
+    prisma.wishlist.update({
+      where: { id },
+      data,
       include: {
         items: true,
         profile: {

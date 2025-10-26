@@ -13,6 +13,7 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 import UpdateItemButton from "@/components/updateItemButton";
+import UpdateListButton from "@/components/UpdateListButton";
 import Image from "next/image";
 
 interface WishlistItem {
@@ -48,6 +49,14 @@ export default async function WishlistIdPage({
             <h2>Profil : {wishlist.profile.name}</h2>
           </div>
           <div className="flex gap-2">
+            <UpdateListButton
+              wishlistData={{
+                id: wishlist.id,
+                name: wishlist.name,
+                description: wishlist.description,
+                profileId: wishlist.profileId,
+              }}
+            />
             <DeleteListButton
               wishlistId={wishlist.id}
               wishlistName={wishlist.name}
