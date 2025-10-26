@@ -1,6 +1,8 @@
 import { getWishlistByIdAction } from "@/actions/getWishlistById.action";
 import AddItemButton from "@/components/AddItemButton";
 import DeleteItemButton from "@/components/deleteItemButton";
+import DeleteListButton from "@/components/deleteListButton";
+import ReturnButton from "@/components/returnButton";
 import { Card } from "@/components/ui/card";
 import {
   Item,
@@ -32,17 +34,27 @@ export default async function WishlistIdPage({
   const wishlist = await getWishlistByIdAction(id);
   return (
     <section>
-      <div className="flex gap-4 items-center">
-        <Image
-          src={wishlist.profile.avatar?.url || "/default-avatar.png"}
-          alt={wishlist.profile.name}
-          height={80}
-          width={80}
-        />
-        <div>
-          <h1 className="text-xl">{wishlist.name}</h1>
-          <h2>Profil : {wishlist.profile.name}</h2>
+      <ReturnButton href="/wishlists" label="Retour" />
+      <div className=" mt-4">
+        <div className="flex gap-4 items-center mb-1">
+          <Image
+            src={wishlist.profile.avatar?.url || "/default-avatar.png"}
+            alt={wishlist.profile.name}
+            height={80}
+            width={80}
+          />
+          <div className="flex-1">
+            <h1 className="text-xl">{wishlist.name}</h1>
+            <h2>Profil : {wishlist.profile.name}</h2>
+          </div>
+          <div className="flex gap-2">
+            <DeleteListButton
+              wishlistId={wishlist.id}
+              wishlistName={wishlist.name}
+            />
+          </div>
         </div>
+        {wishlist.description && <p>Descripiton: {wishlist.description}</p>}
       </div>
       <p className="mt-4">
         Cette liste est visible par vous et l&apos;ensemble de vos amis. Vos

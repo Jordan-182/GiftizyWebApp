@@ -26,6 +26,19 @@ export type ProfileActionCreateData = ProfileActionData & {
 };
 
 export const profileRepository = {
+  findByUserId: (userId: string) =>
+    prisma.profile.findMany({
+      where: { userId },
+      orderBy: { createdAt: "asc" },
+      include: {
+        avatar: {
+          select: {
+            url: true,
+          },
+        },
+      },
+    }),
+
   findByfriendCode: (friendCode: string) =>
     prisma.profile.findMany({
       where: { friendCode },
