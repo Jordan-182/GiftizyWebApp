@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteFriendshipAction } from "@/actions/deleteFriendship.action";
+import { deleteWishlistItemAction } from "@/actions/deleteWishlistItem.action";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,60 +13,54 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { useFriends } from "@/contexts/FriendsContext";
-import { UserRoundX } from "lucide-react";
-import { useState } from "react";
+import { Trash2 } from "lucide-react";
+import { useTransition } from "react";
 import { toast } from "sonner";
 import { Spinner } from "./ui/spinner";
 
-interface DeleteFriendButtonProps {
-  friendshipId: string;
+interface DeleteItemButtonProps {
+  wishlistId: string;
+  itemId: string;
 }
 
-export default function DeleteFriendButton({
-  friendshipId,
-}: DeleteFriendButtonProps) {
-  const [isPending, setIsPending] = useState<boolean>(false);
-  const { refreshAll } = useFriends();
+export default function DeleteItemButton({
+  wishlistId,
+  itemId,
+}: DeleteItemButtonProps) {
+  const [isPending, startTransition] = useTransition();
 
   async function handleConfirmDelete() {
-    setIsPending(true);
-    try {
-      const result = await deleteFriendshipAction(friendshipId);
-      if (result.success) {
-        toast.success("Cet ami a été supprimé");
-        await refreshAll();
+    startTransition(async () => {
+      const result = await deleteWishlistItemAction(wishlistId, itemId);
+      if (result.error) {
+        toast.error(result.error);
       } else {
-        toast.error(result.error || "Erreur lors de la suppression de l'ami");
+        toast.success("Cet article a été supprimé");
+        // Pas besoin de router.refresh() - la revalidation s'en charge
       }
-    } catch (error) {
-      console.error("Erreur lors de la suppression:", error);
-      toast.error("Erreur lors de la suppression de l'ami");
-    } finally {
-      setIsPending(false);
-    }
+    });
   }
 
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button
-          size="sm"
+          size="icon"
           variant="destructive"
-          className="rounded-sm cursor-pointer"
+          className="cursor-pointer"
           disabled={isPending}
         >
-          <UserRoundX />
+          <Trash2 />
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            Confirmer la suppression de l&apos;ami
+            Confirmer la suppression de l&apos;article
           </AlertDialogTitle>
           <AlertDialogDescription>
-            Êtes-vous sûr de vouloir supprimer cet ami ? Cette action est
-            irréversible.
+            Êtes-vous sûr de vouloir supprimer cet article de votre liste ?
+            Cette action est irréversible.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -78,7 +72,14 @@ export default function DeleteFriendButton({
             disabled={isPending}
             className="cursor-pointer bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            {isPending ? <Spinner /> : "Oui, supprimer cet ami"}
+            {isPending ? (
+              <>
+                <Spinner className="mr-2" />
+                Suppression...
+              </>
+            ) : (
+              "Oui, supprimer cet article"
+            )}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

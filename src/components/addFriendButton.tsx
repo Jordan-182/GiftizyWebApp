@@ -1,7 +1,7 @@
 "use client";
 
+import { createFriendRequestAction } from "@/actions/createFriendRequest.action";
 import { useFriends } from "@/contexts/FriendsContext";
-import { createFriendRequest } from "@/lib/api/friends";
 import { UserRoundPlus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -25,9 +25,14 @@ export default function AddFriendButton({
     onError?.("");
     setIsPending(true);
     try {
-      await createFriendRequest(friendId);
-      toast.success("Demande d'ami envoyée!");
-      await refreshAll();
+      const result = await createFriendRequestAction(friendId);
+      if (result.success) {
+        toast.success("Demande d'ami envoyée!");
+        await refreshAll();
+      } else {
+        const errorMessage = result.error || "Erreur lors de l'ajout en ami";
+        onError?.(errorMessage);
+      }
     } catch (error) {
       console.error("Erreur lors de l'ajout d'ami:", error);
       const errorMessage =
