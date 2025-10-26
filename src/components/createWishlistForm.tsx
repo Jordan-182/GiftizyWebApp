@@ -118,13 +118,16 @@ function CreateWishlistFormContent({
 
 interface CreateWishlistFormProps {
   onSuccess?: () => void;
+  isOpen?: boolean; // Pour détecter quand le dialog s'ouvre/ferme
 }
 
 export default function CreateWishlistForm({
   onSuccess,
+  isOpen = true,
 }: CreateWishlistFormProps) {
   const [profiles, setProfiles] = useState<UserProfile[]>([]);
   const [profilesLoading, setProfilesLoading] = useState(true);
+  const lastSuccessStateRef = React.useRef<CreateWishlistState | null>(null);
 
   const initialState: CreateWishlistState = { success: false };
 
@@ -148,12 +151,21 @@ export default function CreateWishlistForm({
     loadProfiles();
   }, []);
 
-  // Gestion des effets de la server action
+  // Réinitialiser la référence quand le dialog s'ouvre
   React.useEffect(() => {
-    if (state.success) {
+    if (isOpen) {
+      lastSuccessStateRef.current = null;
+    }
+  }, [isOpen]);
+
+  // Gestion des effets de la server action avec protection contre les doublons
+  React.useEffect(() => {
+    // Vérifier si c'est un nouvel état de succès
+    if (state.success && state !== lastSuccessStateRef.current) {
       toast.success("Liste créée avec succès !");
+      lastSuccessStateRef.current = state;
       onSuccess?.();
-    } else if (state.error) {
+    } else if (state.error && !state.success) {
       toast.error(state.error);
     }
   }, [state, onSuccess]);

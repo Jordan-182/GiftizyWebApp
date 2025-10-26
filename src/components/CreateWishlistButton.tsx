@@ -30,7 +30,10 @@ export default function CreateWishlistButton() {
           <DialogTitle className="text-2xl">Créer une wishlist</DialogTitle>
         </DialogHeader>
         <div className="mt-4">
-          <CreateWishlistForm onSuccess={() => setIsOpen(false)} />
+          <CreateWishlistForm
+            onSuccess={() => setIsOpen(false)}
+            isOpen={isOpen}
+          />
         </div>
       </DialogContent>
     </Dialog>
