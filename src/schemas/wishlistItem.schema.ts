@@ -24,6 +24,16 @@ export const UpdateWishlistItemSchema = WishlistItemSchema.partial();
 // Schéma pour la mise à jour complète (PUT) - identique à la création
 export const ReplaceWishlistItemSchema = WishlistItemSchema;
 
+// Schémas pour les IDs - plus permissif pour supporter les formats personnalisés
+export const WishlistIdSchema = z.string().min(1, "ID de wishlist requis");
+export const ItemIdSchema = z.string().min(1, "ID d'item requis");
+
+// Schémas pour la suppression d'items
+export const DeleteWishlistItemSchema = z.object({
+  wishlistId: WishlistIdSchema,
+  itemId: ItemIdSchema,
+});
+
 // Types TypeScript inférés automatiquement
 export type WishlistItemInput = z.infer<typeof WishlistItemSchema>;
 export type CreateWishlistItemInput = z.infer<typeof CreateWishlistItemSchema>;
@@ -31,3 +41,4 @@ export type UpdateWishlistItemInput = z.infer<typeof UpdateWishlistItemSchema>;
 export type ReplaceWishlistItemInput = z.infer<
   typeof ReplaceWishlistItemSchema
 >;
+export type DeleteWishlistItemInput = z.infer<typeof DeleteWishlistItemSchema>;

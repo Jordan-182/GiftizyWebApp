@@ -1,3 +1,4 @@
+import { getWishlistByIdAction } from "@/actions/getWishlistById.action";
 import AddItemButton from "@/components/AddItemButton";
 import DeleteItemButton from "@/components/deleteItemButton";
 import { Button } from "@/components/ui/button";
@@ -10,17 +11,16 @@ import {
   ItemFooter,
   ItemTitle,
 } from "@/components/ui/item";
-import { getWishList } from "@/lib/api/wishlists";
 import { Pen } from "lucide-react";
 import Image from "next/image";
 
 interface WishlistItem {
   id: string;
   name: string;
-  description: string;
-  price: number;
+  description: string | null;
+  price: number | null;
   reserved: boolean;
-  updatedAt: string;
+  updatedAt: Date;
   wishlistId: string;
 }
 
@@ -30,12 +30,12 @@ export default async function WishlistIdPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const wishlist = await getWishList(id);
+  const wishlist = await getWishlistByIdAction(id);
   return (
     <section>
       <div className="flex gap-4 items-center">
         <Image
-          src={wishlist.profile.avatar.url}
+          src={wishlist.profile.avatar?.url || "/default-avatar.png"}
           alt={wishlist.profile.name}
           height={80}
           width={80}
@@ -51,7 +51,7 @@ export default async function WishlistIdPage({
         ont acheté l&apos;un des articles qui y figurent.
       </p>
       <Card className="mt-4 p-4">
-        <AddItemButton wishlistId={id}/>
+        <AddItemButton wishlistId={id} />
         {wishlist.items.length === 0 ? (
           <p>Cette liste est vide, ajoutez des articles!</p>
         ) : (

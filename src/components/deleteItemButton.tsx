@@ -1,5 +1,6 @@
 "use client";
 
+import { deleteWishlistItemAction } from "@/actions/deleteWishlistItem.action";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,10 +13,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { deleteWishlistItem } from "@/lib/api/wishlistItems";
 import { Trash2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useTransition } from "react";
 import { toast } from "sonner";
 import { Spinner } from "./ui/spinner";
 
@@ -28,19 +27,18 @@ export default function DeleteItemButton({
   wishlistId,
   itemId,
 }: DeleteItemButtonProps) {
-  const [isPending, setIsPending] = useState<boolean>(false);
-  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
   async function handleConfirmDelete() {
-    setIsPending(true);
-    const { error } = await deleteWishlistItem(wishlistId, itemId);
-    if (error) {
-      toast.error(error);
-    } else {
-      toast.success("Cet article a été supprimé");
-      router.refresh();
-    }
-    setIsPending(false);
+    startTransition(async () => {
+      const result = await deleteWishlistItemAction(wishlistId, itemId);
+      if (result.error) {
+        toast.error(result.error);
+      } else {
+        toast.success("Cet article a été supprimé");
+        // Pas besoin de router.refresh() - la revalidation s'en charge
+      }
+    });
   }
 
   return (

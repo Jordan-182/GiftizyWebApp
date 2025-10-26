@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/lib/auth";
-import { CreateWishlistItemSchema } from "@/schemas";
+import { CreateWishlistItemSchema, WishlistIdSchema } from "@/schemas";
 import { wishlistItemService } from "@/services/wishlistItemService";
 import { revalidateTag } from "next/cache";
 import { z } from "zod";
@@ -29,27 +29,30 @@ export async function addWishlistItemAction(
       };
     }
 
-    // 2. Extraction et validation des données
+    // 2. Validation du wishlistId
+    const validatedWishlistId = WishlistIdSchema.parse(wishlistId);
+
+    // 3. Extraction et validation des données
     const rawFormData = {
       name: formData.get("name") as string,
       description: formData.get("description") as string,
       price: formData.get("price") ? Number(formData.get("price")) : undefined,
-      url: formData.get("url") as string | undefined,
-      image: formData.get("image") as string | undefined,
+      url: formData.get("url") ? (formData.get("url") as string) : "",
+      image: formData.get("image") ? (formData.get("image") as string) : "",
     };
 
-    // 3. Validation Zod (même schéma que l'API)
+    // 4. Validation Zod (même schéma que l'API)
     const validatedData = CreateWishlistItemSchema.parse(rawFormData);
 
-    // 4. Appel du service (MÊME LOGIQUE que l'API Route)
+    // 5. Appel du service (MÊME LOGIQUE que l'API Route)
     await wishlistItemService.addItemToWishlist(
-      wishlistId,
+      validatedWishlistId,
       validatedData,
       session.user.id
     );
 
-    // 5. Invalidation sélective du cache
-    revalidateTag(`wishlist-${wishlistId}`);
+    // 6. Invalidation sélective du cache
+    revalidateTag(`wishlist-${validatedWishlistId}`);
     revalidateTag(`user-wishlists-${session.user.id}`);
 
     return { success: true };
