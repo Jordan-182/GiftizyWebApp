@@ -57,6 +57,8 @@ export async function createWishlistAction(
 
     // 6. Invalidation sélective du cache
     revalidateTag(`user-wishlists-${session.user.id}`);
+    // Invalider aussi le cache des wishlists des amis pour que les autres utilisateurs voient la nouvelle liste
+    revalidateTag("friends-wishlists");
 
     return { success: true };
   } catch (error) {
