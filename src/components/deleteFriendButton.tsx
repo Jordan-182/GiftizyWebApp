@@ -55,7 +55,9 @@ export default function DeleteFriendButton({
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Confirmer la suppression de l'ami</AlertDialogTitle>
+          <AlertDialogTitle>
+            Confirmer la suppression de l&apos;ami
+          </AlertDialogTitle>
           <AlertDialogDescription>
             Êtes-vous sûr de vouloir supprimer cet ami ? Cette action est
             irréversible.

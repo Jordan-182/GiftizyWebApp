@@ -58,7 +58,7 @@ export default function DeleteItemButton({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            Confirmer la suppression de l'article
+            Confirmer la suppression de l&apos;article
           </AlertDialogTitle>
           <AlertDialogDescription>
             Êtes-vous sûr de vouloir supprimer cet article de votre liste ?
