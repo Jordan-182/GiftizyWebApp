@@ -5,8 +5,7 @@ import {
   type UpdateWishlistItemState,
 } from "@/actions/updateWishlistItem.action";
 import { Pen } from "lucide-react";
-import React, { useActionState, useState } from "react";
-import { useFormStatus } from "react-dom";
+import React, { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
 import {
@@ -29,23 +28,29 @@ interface WishlistItem {
   wishlistId: string;
 }
 
-// Composant pour le formulaire qui utilise useFormStatus
+// Composant pour le formulaire
 function UpdateItemForm({
   item,
   formAction,
   state,
   onCancel,
+  isPending,
 }: {
   item: WishlistItem;
-  formAction: (payload: FormData) => void;
+  formAction: (payload: FormData) => Promise<void>;
   state: UpdateWishlistItemState;
   onCancel: () => void;
+  isPending: boolean;
 }) {
-  const { pending } = useFormStatus();
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    await formAction(formData);
+  };
 
   return (
     <form
-      action={formAction}
+      onSubmit={handleSubmit}
       className="flex flex-col gap-4 mt-4 w-full max-w-md"
     >
       <div className="space-y-2">
@@ -58,7 +63,7 @@ function UpdateItemForm({
           type="text"
           defaultValue={item.name}
           required
-          disabled={pending}
+          disabled={isPending}
           placeholder="Ex: Nintendo Switch"
         />
         {state.fieldErrors?.name && (
@@ -76,7 +81,7 @@ function UpdateItemForm({
           type="text"
           defaultValue={item.description || ""}
           required
-          disabled={pending}
+          disabled={isPending}
           placeholder="Ex: Console de jeu portable"
         />
         {state.fieldErrors?.description && (
@@ -95,7 +100,7 @@ function UpdateItemForm({
           min="0"
           step="0.01"
           defaultValue={item.price || ""}
-          disabled={pending}
+          disabled={isPending}
           placeholder="Ex: 299.99"
         />
         {state.fieldErrors?.price && (
@@ -108,17 +113,17 @@ function UpdateItemForm({
           type="button"
           variant="outline"
           onClick={onCancel}
-          disabled={pending}
+          disabled={isPending}
           className="flex-1 cursor-pointer"
         >
           Annuler
         </Button>
         <Button
           type="submit"
-          disabled={pending}
+          disabled={isPending}
           className="flex-1 cursor-pointer"
         >
-          {pending ? (
+          {isPending ? (
             <>
               <Spinner className="mr-2" />
               Modification...
@@ -138,14 +143,34 @@ interface UpdateItemButtonProps {
 
 export default function UpdateItemButton({ item }: UpdateItemButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isPending, setIsPending] = useState(false);
+  const [state, setState] = useState<UpdateWishlistItemState>({
+    success: false,
+  });
 
-  const initialState: UpdateWishlistItemState = { success: false };
+  // Action wrapper qui gère directement l'appel
+  const handleFormAction = async (formData: FormData) => {
+    setIsPending(true);
+    setState({ success: false }); // Reset state
 
-  const [state, formAction] = useActionState(
-    (prevState: UpdateWishlistItemState, formData: FormData) =>
-      updateWishlistItemAction(item.wishlistId, item.id, prevState, formData),
-    initialState
-  );
+    try {
+      const result = await updateWishlistItemAction(
+        item.wishlistId,
+        item.id,
+        { success: false },
+        formData
+      );
+      setState(result);
+    } catch (error) {
+      setState({
+        success: false,
+        error:
+          error instanceof Error ? error.message : "Une erreur est survenue",
+      });
+    } finally {
+      setIsPending(false);
+    }
+  };
 
   // Gestion des effets de la server action
   React.useEffect(() => {
@@ -173,9 +198,10 @@ export default function UpdateItemButton({ item }: UpdateItemButtonProps) {
 
         <UpdateItemForm
           item={item}
-          formAction={formAction}
+          formAction={handleFormAction}
           state={state}
           onCancel={() => setIsOpen(false)}
+          isPending={isPending}
         />
       </DialogContent>
     </Dialog>
