@@ -16,8 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
-import React, { useActionState, useEffect, useState } from "react";
-import { useFormStatus } from "react-dom";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 // Type pour les profils utilisateur (réutilise celui de createWishlistForm)
@@ -38,22 +37,54 @@ export type WishlistData = {
   profileId: string;
 };
 
-// Composant pour le formulaire qui utilise useFormStatus
+// Composant pour le bouton de soumission
+function SubmitButton({
+  profiles,
+  isPending,
+}: {
+  profiles: UserProfile[];
+  isPending: boolean;
+}) {
+  return (
+    <Button
+      type="submit"
+      disabled={isPending || profiles.length === 0}
+      className="w-full cursor-pointer mt-4"
+    >
+      {isPending ? (
+        <>
+          <Spinner className="mr-2" />
+          Modification...
+        </>
+      ) : (
+        "Modifier la liste"
+      )}
+    </Button>
+  );
+}
+
+// Composant pour le contenu du formulaire
 function UpdateWishlistFormContent({
   formAction,
   state,
   profiles,
   wishlistData,
+  isPending,
 }: {
-  formAction: (payload: FormData) => void;
+  formAction: (payload: FormData) => Promise<void>;
   state: UpdateWishlistState;
   profiles: UserProfile[];
   wishlistData: WishlistData;
+  isPending: boolean;
 }) {
-  const { pending } = useFormStatus();
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    formAction(formData);
+  };
 
   return (
-    <form action={formAction} className="flex flex-col gap-4 w-full">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
       <input type="hidden" name="id" value={wishlistData.id} />
 
       <div className="space-y-2">
@@ -65,7 +96,6 @@ function UpdateWishlistFormContent({
           name="name"
           type="text"
           required
-          disabled={pending}
           defaultValue={wishlistData.name}
           placeholder="Ex: Ma liste de cadeaux"
         />
@@ -79,7 +109,6 @@ function UpdateWishlistFormContent({
         <Input
           id="description"
           name="description"
-          disabled={pending}
           defaultValue={wishlistData.description || ""}
           placeholder="Description de votre liste..."
         />
@@ -94,12 +123,7 @@ function UpdateWishlistFormContent({
         <Label htmlFor="profileId">
           Profil associé <span className="text-red-500">*</span>
         </Label>
-        <Select
-          name="profileId"
-          required
-          disabled={pending}
-          defaultValue={wishlistData.profileId}
-        >
+        <Select name="profileId" required defaultValue={wishlistData.profileId}>
           <SelectTrigger>
             <SelectValue placeholder="Choisir un profil" />
           </SelectTrigger>
@@ -117,20 +141,7 @@ function UpdateWishlistFormContent({
         )}
       </div>
 
-      <Button
-        type="submit"
-        disabled={pending || profiles.length === 0}
-        className="w-full cursor-pointer mt-4"
-      >
-        {pending ? (
-          <>
-            <Spinner className="mr-2" />
-            Modification...
-          </>
-        ) : (
-          "Modifier la liste"
-        )}
-      </Button>
+      <SubmitButton profiles={profiles} isPending={isPending} />
     </form>
   );
 }
@@ -148,14 +159,28 @@ export default function UpdateWishlistForm({
 }: UpdateWishlistFormProps) {
   const [profiles, setProfiles] = useState<UserProfile[]>([]);
   const [profilesLoading, setProfilesLoading] = useState(true);
+  const [isPending, setIsPending] = useState(false);
+  const [state, setState] = useState<UpdateWishlistState>({ success: false });
   const lastSuccessStateRef = React.useRef<UpdateWishlistState | null>(null);
 
-  const initialState: UpdateWishlistState = { success: false };
+  // Action wrapper qui gère directement l'appel
+  const handleFormAction = async (formData: FormData) => {
+    setIsPending(true);
+    setState({ success: false }); // Reset state
 
-  const [state, formAction] = useActionState(
-    updateWishlistAction,
-    initialState
-  );
+    try {
+      const result = await updateWishlistAction({ success: false }, formData);
+      setState(result);
+    } catch (error) {
+      setState({
+        success: false,
+        error:
+          error instanceof Error ? error.message : "Une erreur est survenue",
+      });
+    } finally {
+      setIsPending(false);
+    }
+  };
 
   // Charger les profils au montage du composant
   useEffect(() => {
@@ -212,10 +237,11 @@ export default function UpdateWishlistForm({
 
   return (
     <UpdateWishlistFormContent
-      formAction={formAction}
+      formAction={handleFormAction}
       state={state}
       profiles={profiles}
       wishlistData={wishlistData}
+      isPending={isPending}
     />
   );
 }

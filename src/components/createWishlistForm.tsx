@@ -16,8 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
-import React, { useActionState, useEffect, useState } from "react";
-import { useFormStatus } from "react-dom";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 // Type pour les profils utilisateur
@@ -30,20 +29,52 @@ export type UserProfile = {
   } | null;
 };
 
-// Composant pour le formulaire qui utilise useFormStatus
+// Composant pour le bouton de soumission
+function SubmitButton({
+  profiles,
+  isPending,
+}: {
+  profiles: UserProfile[];
+  isPending: boolean;
+}) {
+  return (
+    <Button
+      type="submit"
+      disabled={isPending || profiles.length === 0}
+      className="w-full cursor-pointer mt-4"
+    >
+      {isPending ? (
+        <>
+          <Spinner className="mr-2" />
+          Création...
+        </>
+      ) : (
+        "Créer la liste"
+      )}
+    </Button>
+  );
+}
+
+// Composant pour le contenu du formulaire
 function CreateWishlistFormContent({
   formAction,
   state,
   profiles,
+  isPending,
 }: {
-  formAction: (payload: FormData) => void;
+  formAction: (payload: FormData) => Promise<void>;
   state: CreateWishlistState;
   profiles: UserProfile[];
+  isPending: boolean;
 }) {
-  const { pending } = useFormStatus();
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    formAction(formData);
+  };
 
   return (
-    <form action={formAction} className="flex flex-col gap-4 w-full">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
       <div className="space-y-2">
         <Label htmlFor="name">
           Nom de la liste <span className="text-red-500">*</span>
@@ -53,7 +84,6 @@ function CreateWishlistFormContent({
           name="name"
           type="text"
           required
-          disabled={pending}
           placeholder="Ex: Ma liste de cadeaux"
         />
         {state.fieldErrors?.name && (
@@ -66,7 +96,6 @@ function CreateWishlistFormContent({
         <Input
           id="description"
           name="description"
-          disabled={pending}
           placeholder="Description de votre liste..."
         />
         {state.fieldErrors?.description && (
@@ -80,7 +109,7 @@ function CreateWishlistFormContent({
         <Label htmlFor="profileId">
           Profil associé <span className="text-red-500">*</span>
         </Label>
-        <Select name="profileId" required disabled={pending}>
+        <Select name="profileId" required>
           <SelectTrigger>
             <SelectValue placeholder="Choisir un profil" />
           </SelectTrigger>
@@ -98,20 +127,7 @@ function CreateWishlistFormContent({
         )}
       </div>
 
-      <Button
-        type="submit"
-        disabled={pending || profiles.length === 0}
-        className="w-full cursor-pointer mt-4"
-      >
-        {pending ? (
-          <>
-            <Spinner className="mr-2" />
-            Création...
-          </>
-        ) : (
-          "Créer la liste"
-        )}
-      </Button>
+      <SubmitButton profiles={profiles} isPending={isPending} />
     </form>
   );
 }
@@ -127,14 +143,28 @@ export default function CreateWishlistForm({
 }: CreateWishlistFormProps) {
   const [profiles, setProfiles] = useState<UserProfile[]>([]);
   const [profilesLoading, setProfilesLoading] = useState(true);
+  const [isPending, setIsPending] = useState(false);
+  const [state, setState] = useState<CreateWishlistState>({ success: false });
   const lastSuccessStateRef = React.useRef<CreateWishlistState | null>(null);
 
-  const initialState: CreateWishlistState = { success: false };
+  // Action wrapper qui gère directement l'appel
+  const handleFormAction = async (formData: FormData) => {
+    setIsPending(true);
+    setState({ success: false }); // Reset state
 
-  const [state, formAction] = useActionState(
-    createWishlistAction,
-    initialState
-  );
+    try {
+      const result = await createWishlistAction({ success: false }, formData);
+      setState(result);
+    } catch (error) {
+      setState({
+        success: false,
+        error:
+          error instanceof Error ? error.message : "Une erreur est survenue",
+      });
+    } finally {
+      setIsPending(false);
+    }
+  };
 
   // Charger les profils au montage du composant
   useEffect(() => {
@@ -190,9 +220,10 @@ export default function CreateWishlistForm({
 
   return (
     <CreateWishlistFormContent
-      formAction={formAction}
+      formAction={handleFormAction}
       state={state}
       profiles={profiles}
+      isPending={isPending}
     />
   );
 }
