@@ -34,6 +34,13 @@ export const DeleteWishlistItemSchema = z.object({
   itemId: ItemIdSchema,
 });
 
+// Schéma pour la mise à jour d'items avec IDs
+export const UpdateWishlistItemWithIdsSchema = z.object({
+  wishlistId: WishlistIdSchema,
+  itemId: ItemIdSchema,
+  data: UpdateWishlistItemSchema,
+});
+
 // Types TypeScript inférés automatiquement
 export type WishlistItemInput = z.infer<typeof WishlistItemSchema>;
 export type CreateWishlistItemInput = z.infer<typeof CreateWishlistItemSchema>;
@@ -42,3 +49,6 @@ export type ReplaceWishlistItemInput = z.infer<
   typeof ReplaceWishlistItemSchema
 >;
 export type DeleteWishlistItemInput = z.infer<typeof DeleteWishlistItemSchema>;
+export type UpdateWishlistItemWithIdsInput = z.infer<
+  typeof UpdateWishlistItemWithIdsSchema
+>;

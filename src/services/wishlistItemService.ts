@@ -2,6 +2,7 @@ import {
   ItemCreateData,
   wishlistItemRepository,
 } from "@/repositories/wishlistItemRepository";
+import type { UpdateWishlistItemInput } from "@/schemas";
 
 export const wishlistItemService = {
   async deleteItem(itemId: string, wishlistId: string, userId: string) {
@@ -64,6 +65,49 @@ export const wishlistItemService = {
 
     if (!result) {
       throw new Error("Erreur lors de l'ajout de l'article");
+    }
+
+    return result;
+  },
+
+  async updateItem(
+    itemId: string,
+    wishlistId: string,
+    item: UpdateWishlistItemInput,
+    userId: string
+  ) {
+    // Vérification que l'item existe et appartient à l'utilisateur
+    const existingItem = await wishlistItemRepository.getItemWithWishlist(
+      itemId
+    );
+
+    if (!existingItem) {
+      throw new Error("Article introuvable");
+    }
+
+    if (existingItem.wishlistId !== wishlistId) {
+      throw new Error("L'article n'appartient pas à cette wishlist");
+    }
+
+    if (existingItem.wishlist.userId !== userId) {
+      throw new Error("Vous n'êtes pas autorisé à modifier cet article");
+    }
+
+    // Validation des données (seulement si elles sont fournies pour l'update)
+    if (item.name !== undefined && !item.name?.trim()) {
+      throw new Error("Le nom de l'article ne peut pas être vide");
+    }
+    if (item.description !== undefined && !item.description?.trim()) {
+      throw new Error("La description de l'article ne peut pas être vide");
+    }
+    if (item.price !== undefined && item.price < 0) {
+      throw new Error("Le prix ne peut pas être négatif");
+    }
+
+    const result = await wishlistItemRepository.updateItem(itemId, item);
+
+    if (!result) {
+      throw new Error("Erreur lors de la mise à jour de l'article");
     }
 
     return result;

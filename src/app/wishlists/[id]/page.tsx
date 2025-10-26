@@ -1,7 +1,6 @@
 import { getWishlistByIdAction } from "@/actions/getWishlistById.action";
 import AddItemButton from "@/components/AddItemButton";
 import DeleteItemButton from "@/components/deleteItemButton";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
   Item,
@@ -11,7 +10,7 @@ import {
   ItemFooter,
   ItemTitle,
 } from "@/components/ui/item";
-import { Pen } from "lucide-react";
+import UpdateItemButton from "@/components/updateItemButton";
 import Image from "next/image";
 
 interface WishlistItem {
@@ -69,9 +68,7 @@ export default async function WishlistIdPage({
                     )}
                   </ItemContent>
                   <ItemActions>
-                    <Button className="cursor-pointer" size={"icon"}>
-                      <Pen />
-                    </Button>
+                    <UpdateItemButton item={item} />
                     <DeleteItemButton
                       wishlistId={item.wishlistId}
                       itemId={item.id}
