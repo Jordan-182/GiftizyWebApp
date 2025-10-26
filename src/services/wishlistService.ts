@@ -110,4 +110,26 @@ export const wishlistService = {
 
     return result;
   },
+
+  async getFriendsWishlists(userId: string) {
+    if (!userId?.trim()) {
+      throw new Error("L'identifiant de l'utilisateur est obligatoire");
+    }
+
+    try {
+      const friendsWishlists = await wishlistRepository.findByFriends(userId);
+
+      if (!friendsWishlists || friendsWishlists.length === 0) {
+        return [];
+      }
+
+      return friendsWishlists;
+    } catch (error) {
+      console.error(
+        "Erreur lors de la récupération des wishlists des amis:",
+        error
+      );
+      throw new Error("Erreur lors de la récupération des listes de vos amis");
+    }
+  },
 };

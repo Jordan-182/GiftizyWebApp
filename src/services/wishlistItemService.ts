@@ -112,4 +112,51 @@ export const wishlistItemService = {
 
     return result;
   },
+
+  async toggleItemReservation(itemId: string, userId: string) {
+    // Récupérer l'item avec ses informations de réservation
+    const item = await wishlistItemRepository.getItemWithReservation(itemId);
+
+    if (!item) {
+      throw new Error("Article introuvable");
+    }
+
+    // Vérifier que l'utilisateur n'essaie pas de réserver son propre article
+    if (item.wishlist.userId === userId) {
+      throw new Error("Vous ne pouvez pas réserver vos propres articles");
+    }
+
+    try {
+      if (item.reserved && item.reservation) {
+        // Si l'article est déjà réservé
+        if (item.reservation.reservedById === userId) {
+          // L'utilisateur annule sa propre réservation
+          await wishlistItemRepository.unreserveItem(itemId);
+          return {
+            reserved: false,
+            message: "Réservation annulée",
+            wishlistId: item.wishlistId,
+            wishlistOwnerId: item.wishlist.userId,
+          };
+        } else {
+          // L'article est réservé par quelqu'un d'autre
+          throw new Error("Cet article est déjà réservé par quelqu'un d'autre");
+        }
+      } else {
+        // L'article n'est pas réservé, on le réserve
+        await wishlistItemRepository.reserveItem(itemId, userId);
+        return {
+          reserved: true,
+          message: "Article réservé avec succès",
+          wishlistId: item.wishlistId,
+          wishlistOwnerId: item.wishlist.userId,
+        };
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error("Erreur lors de la gestion de la réservation");
+    }
+  },
 };

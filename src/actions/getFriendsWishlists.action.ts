@@ -3,7 +3,7 @@
 import { auth } from "@/lib/auth";
 import { wishlistService } from "@/services/wishlistService";
 
-export async function getWishlistByIdAction(wishlistId: string) {
+export async function getFriendsWishlistsActionRealTime() {
   try {
     // 1. Authentification
     const session = await auth.api.getSession({
@@ -13,14 +13,16 @@ export async function getWishlistByIdAction(wishlistId: string) {
       throw new Error("Non autorisé");
     }
 
-    // 2. Récupération directe sans cache pour tester (temporaire)
-    const wishlist = await wishlistService.getWishlistById(wishlistId);
-    return wishlist;
+    // 2. Récupération directe sans cache pour des données temps réel
+    const friendsWishlists = await wishlistService.getFriendsWishlists(
+      session.user.id
+    );
+    return friendsWishlists;
   } catch (error) {
     throw new Error(
       error instanceof Error
         ? error.message
-        : "Erreur lors de la récupération de la wishlist"
+        : "Erreur lors de la récupération des listes de vos amis"
     );
   }
 }

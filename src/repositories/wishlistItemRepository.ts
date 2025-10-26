@@ -41,4 +41,44 @@ export const wishlistItemRepository = {
       where: { id: itemId },
       data: item,
     }),
+
+  // Fonctions de réservation
+  reserveItem: (itemId: string, userId: string) =>
+    prisma.wishlistItem.update({
+      where: { id: itemId },
+      data: {
+        reserved: true,
+        reservation: {
+          create: {
+            reservedById: userId,
+            anonymous: false,
+          },
+        },
+      },
+      include: {
+        reservation: true,
+      },
+    }),
+
+  unreserveItem: (itemId: string) =>
+    prisma.wishlistItem.update({
+      where: { id: itemId },
+      data: {
+        reserved: false,
+        reservation: {
+          delete: true,
+        },
+      },
+    }),
+
+  getItemWithReservation: (itemId: string) =>
+    prisma.wishlistItem.findUnique({
+      where: { id: itemId },
+      include: {
+        reservation: true,
+        wishlist: {
+          select: { userId: true },
+        },
+      },
+    }),
 };
