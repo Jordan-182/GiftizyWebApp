@@ -5,8 +5,7 @@ import {
   type AddWishlistItemState,
 } from "@/actions/addWishlistItem.action";
 import { Plus } from "lucide-react";
-import React, { useActionState, useState } from "react";
-import { useFormStatus } from "react-dom";
+import React, { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
 import {
@@ -20,23 +19,29 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Spinner } from "./ui/spinner";
 
-// Composant pour le formulaire qui utilise useFormStatus
+// Composant pour le formulaire
 function AddItemForm({
   wishlistId,
   formAction,
   state,
   onCancel,
+  isPending,
 }: {
   wishlistId: string;
-  formAction: (payload: FormData) => void;
+  formAction: (payload: FormData) => Promise<void>;
   state: AddWishlistItemState;
   onCancel: () => void;
+  isPending: boolean;
 }) {
-  const { pending } = useFormStatus();
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    await formAction(formData);
+  };
 
   return (
     <form
-      action={formAction}
+      onSubmit={handleSubmit}
       className="flex flex-col gap-4 mt-4 w-full max-w-md"
     >
       <div className="space-y-2">
@@ -48,7 +53,7 @@ function AddItemForm({
           name="name"
           type="text"
           required
-          disabled={pending}
+          disabled={isPending}
           placeholder="Ex: Nintendo Switch"
         />
         {state.fieldErrors?.name && (
@@ -65,7 +70,7 @@ function AddItemForm({
           name="description"
           type="text"
           required
-          disabled={pending}
+          disabled={isPending}
           placeholder="Ex: Console de jeu portable"
         />
         {state.fieldErrors?.description && (
@@ -83,7 +88,7 @@ function AddItemForm({
           type="number"
           min="0"
           step="0.01"
-          disabled={pending}
+          disabled={isPending}
           placeholder="Ex: 299.99"
         />
         {state.fieldErrors?.price && (
@@ -96,17 +101,17 @@ function AddItemForm({
           type="button"
           variant="outline"
           onClick={onCancel}
-          disabled={pending}
+          disabled={isPending}
           className="flex-1 cursor-pointer"
         >
           Annuler
         </Button>
         <Button
           type="submit"
-          disabled={pending}
+          disabled={isPending}
           className="flex-1 cursor-pointer"
         >
-          {pending ? (
+          {isPending ? (
             <>
               <Spinner className="mr-2" />
               Ajout...
@@ -126,14 +131,31 @@ interface AddItemButtonProps {
 
 export default function AddItemButton({ wishlistId }: AddItemButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isPending, setIsPending] = useState(false);
+  const [state, setState] = useState<AddWishlistItemState>({ success: false });
 
-  const initialState: AddWishlistItemState = { success: false };
+  // Action wrapper qui gère directement l'appel
+  const handleFormAction = async (formData: FormData) => {
+    setIsPending(true);
+    setState({ success: false }); // Reset state
 
-  const [state, formAction] = useActionState(
-    (prevState: AddWishlistItemState, formData: FormData) =>
-      addWishlistItemAction(wishlistId, prevState, formData),
-    initialState
-  );
+    try {
+      const result = await addWishlistItemAction(
+        wishlistId,
+        { success: false },
+        formData
+      );
+      setState(result);
+    } catch (error) {
+      setState({
+        success: false,
+        error:
+          error instanceof Error ? error.message : "Une erreur est survenue",
+      });
+    } finally {
+      setIsPending(false);
+    }
+  };
 
   // Gestion des effets de la server action
   React.useEffect(() => {
@@ -161,9 +183,10 @@ export default function AddItemButton({ wishlistId }: AddItemButtonProps) {
 
         <AddItemForm
           wishlistId={wishlistId}
-          formAction={formAction}
+          formAction={handleFormAction}
           state={state}
           onCancel={() => setIsOpen(false)}
+          isPending={isPending}
         />
       </DialogContent>
     </Dialog>
