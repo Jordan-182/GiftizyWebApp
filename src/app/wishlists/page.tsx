@@ -1,19 +1,11 @@
-import { getWishlistsAction } from "@/actions/getWishlists.action";
 import CreateWishlistButton from "@/components/CreateWishlistButton";
-import DeleteListButton from "@/components/deleteListButton";
-import {
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemDescription,
-  ItemMedia,
-  ItemTitle,
-} from "@/components/ui/item";
-import UpdateListButton from "@/components/UpdateListButton";
+import FriendsWishlistsList from "@/components/friendsWishlistsList";
+import MyWishlistsList from "@/components/myWishlistsList";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { auth } from "@/lib/auth";
+import { Heart, List } from "lucide-react";
 import { headers } from "next/headers";
-import Image from "next/image";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async function WishlistsPage() {
@@ -25,58 +17,41 @@ export default async function WishlistsPage() {
     redirect("/auth/login");
   }
 
-  const wishlists = await getWishlistsAction();
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Mes listes</h1>
+        <h1 className="text-3xl font-bold">Mes listes</h1>{" "}
         <CreateWishlistButton />
       </div>
-      <ul className="space-y-2">
-        {wishlists.length === 0
-          ? "Vous n'avez aucune liste pour le moment"
-          : wishlists.map((list) => (
-              <li key={list.id}>
-                <Item
-                  variant={"muted"}
-                  className="max-w-sm flex justify-between"
-                >
-                  <Link href={`/wishlists/${list.id}`} className="flex gap-4">
-                    <ItemMedia>
-                      <Image
-                        src={list.profile.avatar?.url || "./logo.png"}
-                        alt={list.name}
-                        height={50}
-                        width={50}
-                      />
-                    </ItemMedia>
-                    <ItemContent>
-                      <ItemTitle>{list.name}</ItemTitle>
-                      <ItemDescription>
-                        Profil: {list.profile.name} <br />
-                        Contient {list.items.length} item(s)
-                      </ItemDescription>
-                    </ItemContent>
-                  </Link>
-                  <ItemActions>
-                    <UpdateListButton
-                      wishlistData={{
-                        id: list.id,
-                        name: list.name,
-                        description: list.description,
-                        profileId: list.profileId,
-                      }}
-                    />
-                    <DeleteListButton
-                      wishlistId={list.id}
-                      wishlistName={list.name}
-                      redirectAfterDelete={false}
-                    />
-                  </ItemActions>
-                </Item>
-              </li>
-            ))}
-      </ul>
+
+      <Card className="p-0">
+        <CardContent className="p-4">
+          <Tabs defaultValue="my-lists" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger
+                value="my-lists"
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                <List className="h-4 w-4" />
+                Mes listes
+              </TabsTrigger>
+              <TabsTrigger
+                value="friends-lists"
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                <Heart className="h-4 w-4" />
+                Listes de mes amis
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="my-lists" className="mt-6">
+              <MyWishlistsList />
+            </TabsContent>
+            <TabsContent value="friends-lists" className="mt-6">
+              <FriendsWishlistsList />
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
     </div>
   );
 }

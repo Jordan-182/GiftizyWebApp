@@ -15,15 +15,45 @@ export const wishlistRepository = {
           },
         },
         items: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            avatar: true,
+          },
+        },
       },
     }),
   findByUser: (userId: string) =>
     prisma.wishlist.findMany({
       where: { userId },
       include: {
-        items: true,
+        items: {
+          include: {
+            reservation: {
+              include: {
+                reservedBy: {
+                  select: {
+                    id: true,
+                    name: true,
+                    avatar: true,
+                  },
+                },
+              },
+            },
+          },
+        },
         profile: {
           include: {
+            avatar: true,
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
             avatar: true,
           },
         },
@@ -34,9 +64,31 @@ export const wishlistRepository = {
     prisma.wishlist.findUnique({
       where: { id },
       include: {
-        items: true,
+        items: {
+          include: {
+            reservation: {
+              include: {
+                reservedBy: {
+                  select: {
+                    id: true,
+                    name: true,
+                    avatar: true,
+                  },
+                },
+              },
+            },
+          },
+        },
         profile: {
           include: {
+            avatar: true,
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
             avatar: true,
           },
         },
@@ -61,6 +113,14 @@ export const wishlistRepository = {
             avatar: true,
           },
         },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            avatar: true,
+          },
+        },
       },
     }),
 
@@ -75,6 +135,73 @@ export const wishlistRepository = {
             avatar: true,
           },
         },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            avatar: true,
+          },
+        },
+      },
+    }),
+
+  findByFriends: (userId: string) =>
+    prisma.wishlist.findMany({
+      where: {
+        user: {
+          OR: [
+            {
+              sentFriendships: {
+                some: {
+                  receiverId: userId,
+                  status: "ACCEPTED",
+                },
+              },
+            },
+            {
+              receivedFriendships: {
+                some: {
+                  senderId: userId,
+                  status: "ACCEPTED",
+                },
+              },
+            },
+          ],
+        },
+      },
+      include: {
+        items: {
+          include: {
+            reservation: {
+              include: {
+                reservedBy: {
+                  select: {
+                    id: true,
+                    name: true,
+                    avatar: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        profile: {
+          include: {
+            avatar: true,
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            avatar: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
       },
     }),
 };
