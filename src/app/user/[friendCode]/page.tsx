@@ -44,7 +44,7 @@ export default async function UserFriendPage({
 
   return (
     <>
-      <h1>Hello, c'est la page de {retrievedUser.data?.name}</h1>
+      <h1>Hello, voici la page de {retrievedUser.data?.name}</h1>
       <Image
         src={retrievedUser.data.avatar?.url || "/logo.png"}
         alt={retrievedUser.data.name}
