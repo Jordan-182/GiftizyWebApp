@@ -4,6 +4,7 @@ import { useFriends } from "@/contexts/FriendsContext";
 import type { Avatar, Friendship } from "@/generated/prisma";
 import { RotateCw } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import DeleteFriendButton from "./deleteFriendButton";
 import { Button } from "./ui/button";
@@ -57,31 +58,38 @@ export default function FriendsList({ userId }: FriendsListProps) {
           {isLoading ? <Spinner /> : <RotateCw />}
         </Button>
       </div>
-      <ul className="space-y-2 mt-4 flex gap-2 flex-wrap justify-center">
+      <ul className="flex justify-center flex-wrap gap-2 mt-4">
         {friends.map((friendship) => {
           const friend = getFriendUser(friendship);
           return (
             <li key={friendship.id}>
-              <Item className="max-w-sm" variant={"muted"}>
-                <ItemContent>
-                  <div className="flex gap-4 items-center">
-                    <ItemMedia>
-                      <Image
-                        src={friend.avatar?.url || "/logo.png"}
-                        alt={friend.name}
-                        height={50}
-                        width={50}
-                        className="rounded-full"
-                      />
-                    </ItemMedia>
-                    <div>
-                      <ItemTitle className="font-bold">{friend.name}</ItemTitle>
-                      <p className="text-xs text-gray-500">
-                        Code ami: {friend.friendCode}
-                      </p>
+              <Item
+                className="max-w-sm min-w-2xs flex justify-between"
+                variant={"muted"}
+              >
+                <Link href={`/user/${friend.friendCode}`}>
+                  <ItemContent>
+                    <div className="flex gap-4 items-center">
+                      <ItemMedia>
+                        <Image
+                          src={friend.avatar?.url || "/logo.png"}
+                          alt={friend.name}
+                          height={50}
+                          width={50}
+                          className="rounded-full"
+                        />
+                      </ItemMedia>
+                      <div>
+                        <ItemTitle className="font-bold">
+                          {friend.name}
+                        </ItemTitle>
+                        <p className="text-xs text-gray-500">
+                          Code ami: {friend.friendCode}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </ItemContent>
+                  </ItemContent>
+                </Link>
                 <ItemActions>
                   <DeleteFriendButton friendshipId={friendship.id} />
                 </ItemActions>

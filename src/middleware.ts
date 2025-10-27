@@ -8,6 +8,7 @@ const protectedRoutes = [
   "/events",
   "/friends",
   "/wishlists",
+  "/user",
 ];
 
 export async function middleware(req: NextRequest) {

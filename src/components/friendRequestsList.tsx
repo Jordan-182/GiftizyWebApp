@@ -126,9 +126,13 @@ export default function FriendsRequestList({
         <h3 className="text-lg font-semibold mb-3">
           Demandes reçues ({receivedRequests.length})
         </h3>
-        <ul className="space-y-2 flex gap-2 flex-wrap justify-center">
+        <ul className="flex gap-2 flex-wrap justify-center">
           {receivedRequests.map((request) => (
-            <Item key={request.id} className="max-w-sm" variant={"muted"}>
+            <Item
+              key={request.id}
+              className="max-w-sm min-w-2xs"
+              variant={"muted"}
+            >
               <ItemContent>
                 <div className="flex gap-4 items-center">
                   <ItemMedia>
