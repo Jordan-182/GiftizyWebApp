@@ -52,6 +52,25 @@ export const profileRepository = {
       },
     }),
 
+  findById: (id: string) =>
+    prisma.profile.findUnique({
+      where: { id },
+      include: {
+        avatar: {
+          select: {
+            url: true,
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            friendCode: true,
+            name: true,
+          },
+        },
+      },
+    }),
+
   deleteProfile: (id: string) =>
     prisma.profile.delete({
       where: { id },

@@ -40,7 +40,7 @@ export default async function WishlistsPage() {
                 className="flex items-center gap-2 cursor-pointer"
               >
                 <Heart className="h-4 w-4" />
-                Listes de mes amis
+                Listes des amis
               </TabsTrigger>
             </TabsList>
             <TabsContent value="my-lists" className="mt-6">
