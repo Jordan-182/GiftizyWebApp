@@ -204,4 +204,43 @@ export const wishlistRepository = {
         createdAt: "desc",
       },
     }),
+
+  findByProfileId: (profileId: string) =>
+    prisma.wishlist.findMany({
+      where: { profileId },
+      include: {
+        items: {
+          include: {
+            reservation: {
+              include: {
+                reservedBy: {
+                  select: {
+                    id: true,
+                    name: true,
+                    avatar: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        profile: {
+          include: {
+            avatar: true,
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            avatar: true,
+            friendCode: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    }),
 };

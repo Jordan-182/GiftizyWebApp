@@ -132,4 +132,21 @@ export const wishlistService = {
       throw new Error("Erreur lors de la récupération des listes de vos amis");
     }
   },
+
+  async getWishlistsByProfileId(profileId: string) {
+    if (!profileId?.trim()) {
+      throw new Error("L'identifiant du profil est obligatoire");
+    }
+
+    try {
+      const wishlists = await wishlistRepository.findByProfileId(profileId);
+      return wishlists || [];
+    } catch (error) {
+      console.error(
+        "Erreur lors de la récupération des wishlists du profil:",
+        error
+      );
+      throw new Error("Erreur lors de la récupération des listes du profil");
+    }
+  },
 };

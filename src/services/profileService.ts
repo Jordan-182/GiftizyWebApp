@@ -21,6 +21,16 @@ export const profileService = {
     return profiles || [];
   },
 
+  async getProfileById(id: string) {
+    const profile = await profileRepository.findById(id);
+
+    if (!profile) {
+      throw new Error("Profil non trouvé");
+    }
+
+    return profile;
+  },
+
   async deleteProfileById(id: string) {
     const result = await profileRepository.deleteProfile(id);
     if (!result) {

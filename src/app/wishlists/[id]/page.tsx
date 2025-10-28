@@ -65,7 +65,7 @@ export default async function WishlistIdPage({
   const isOwner = wishlist.userId === session.user.id;
   return (
     <section>
-      <ReturnButton href="/wishlists" label="Retour" />
+      <ReturnButton href="/wishlists" label="Listes" />
       <div className=" mt-4">
         <div className="flex gap-4 items-center mb-1">
           <Image
@@ -77,6 +77,7 @@ export default async function WishlistIdPage({
           <div className="flex-1">
             <h1 className="text-xl">{wishlist.name}</h1>
             <h2>Pour : {wishlist.profile.name}</h2>
+            <p>Par : {wishlist.user.name}</p>
           </div>
           {isOwner && (
             <div className="flex gap-2">

@@ -25,10 +25,13 @@ export default async function MyWishlistsList() {
           </p>
         </div>
       ) : (
-        <ul className="space-y-2">
+        <ul className="flex justify-center flex-wrap gap-2">
           {wishlists.map((list) => (
             <li key={list.id}>
-              <Item variant={"muted"} className="max-w-sm flex justify-between">
+              <Item
+                variant={"muted"}
+                className="max-w-sm min-w-2xs flex justify-between"
+              >
                 <Link href={`/wishlists/${list.id}`} className="flex gap-4">
                   <ItemMedia>
                     <Image
