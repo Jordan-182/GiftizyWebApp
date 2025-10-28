@@ -100,6 +100,57 @@ export const getMyProfilesAction = cache(async () => {
   }
 });
 
+/**
+ * Récupère un profil par son ID
+ * Vérification de sécurité : seuls les amis et l'utilisateur propriétaire peuvent accéder
+ */
+export const getProfileByIdAction = cache(async (profileId: string) => {
+  try {
+    const user = await getAuthenticatedUser();
+
+    // Validation de l'ID avec Zod
+    const profileIdSchema = z.string().uuid("ID de profil invalide");
+    const validatedProfileId = profileIdSchema.parse(profileId);
+
+    // Récupérer le profil avec les informations de l'utilisateur propriétaire
+    const profile = await profileService.getProfileById(validatedProfileId);
+
+    // Vérification de sécurité : est-ce que l'utilisateur connecté peut voir ce profil ?
+
+    // 1. Si c'est son propre profil, accès autorisé
+    if (profile.user.id === user.id) {
+      return profile;
+    }
+
+    // 2. Sinon, vérifier s'ils sont amis
+    const { checkFriendshipStatusAction } = await import(
+      "./checkFriendshipStatus.action"
+    );
+    const friendshipStatus = await checkFriendshipStatusAction(profile.user.id);
+
+    if (!friendshipStatus.success || !friendshipStatus.data) {
+      throw new Error("Accès non autorisé");
+    }
+
+    // Seuls les amis confirmés peuvent voir les profils
+    if (friendshipStatus.data.status !== "friend") {
+      throw new Error("Accès non autorisé");
+    }
+
+    return profile;
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      throw new Error("ID de profil invalide");
+    }
+
+    throw new Error(
+      error instanceof Error
+        ? error.message
+        : "Erreur lors de la récupération du profil"
+    );
+  }
+});
+
 // ===============================
 // ACTIONS MUTATIONS
 // ===============================

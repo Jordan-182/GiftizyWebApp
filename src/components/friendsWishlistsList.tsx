@@ -25,10 +25,10 @@ export default async function FriendsWishlistsList() {
   }
 
   return (
-    <ul className="space-y-2">
+    <ul className="flex justify-center flex-wrap gap-2">
       {friendsWishlists.map((list) => (
         <li key={list.id}>
-          <Item variant={"muted"} className="max-w-sm">
+          <Item variant={"muted"} className="max-w-sm min-w-2xs">
             <Link href={`/wishlists/${list.id}`} className="flex gap-4 w-full">
               <ItemMedia>
                 <Image
