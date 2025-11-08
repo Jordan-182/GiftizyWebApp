@@ -69,12 +69,13 @@ export default function DeleteListButton({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
-          size="icon"
+          size="sm"
           variant="destructive"
           className="cursor-pointer"
           onClick={() => setIsOpen(true)}
         >
-          <Trash2 />
+          <Trash2 className="w-4 h-4 mr-2" />
+          Supprimer
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

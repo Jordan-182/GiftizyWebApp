@@ -28,9 +28,12 @@ export default async function FriendsWishlistsList() {
     <ul className="flex justify-center flex-wrap gap-2">
       {friendsWishlists.map((list) => (
         <li key={list.id}>
-          <Item variant={"muted"} className="max-w-sm min-w-2xs">
-            <Link href={`/wishlists/${list.id}`} className="flex gap-4 w-full">
-              <ItemMedia>
+          <Item variant={"muted"} className="w-72 h-36">
+            <Link
+              href={`/wishlists/${list.id}`}
+              className="flex gap-4 w-full h-full p-3"
+            >
+              <ItemMedia className="shrink-0">
                 <Image
                   src={list.profile.avatar?.url || "./logo.png"}
                   alt={list.name}
@@ -38,7 +41,7 @@ export default async function FriendsWishlistsList() {
                   width={50}
                 />
               </ItemMedia>
-              <ItemContent>
+              <ItemContent className="flex-1 min-w-0">
                 <ItemTitle>{list.name}</ItemTitle>
                 <ItemDescription>
                   Par: {list.user.name} <br />

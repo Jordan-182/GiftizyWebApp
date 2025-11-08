@@ -9,6 +9,7 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 import UpdateListButton from "@/components/UpdateListButton";
+import { Calendar } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -28,12 +29,12 @@ export default async function MyWishlistsList() {
         <ul className="flex justify-center flex-wrap gap-2">
           {wishlists.map((list) => (
             <li key={list.id}>
-              <Item
-                variant={"muted"}
-                className="max-w-sm min-w-2xs flex justify-between"
-              >
-                <Link href={`/wishlists/${list.id}`} className="flex gap-4">
-                  <ItemMedia>
+              <Item variant={"muted"} className="w-72 h-44">
+                <Link
+                  href={`/wishlists/${list.id}`}
+                  className="flex gap-4 flex-1 p-3"
+                >
+                  <ItemMedia className="shrink-0">
                     <Image
                       src={list.profile.avatar?.url || "./logo.png"}
                       alt={list.name}
@@ -41,15 +42,31 @@ export default async function MyWishlistsList() {
                       width={50}
                     />
                   </ItemMedia>
-                  <ItemContent>
-                    <ItemTitle>{list.name}</ItemTitle>
+                  <ItemContent className="flex-1 min-w-0">
+                    <ItemTitle className="flex items-center gap-2">
+                      {list.name}
+                      {list.isEventWishlist && (
+                        <Calendar
+                          className="w-4 h-4 text-primary"
+                          aria-label="Liste d'événement"
+                        />
+                      )}
+                    </ItemTitle>
                     <ItemDescription>
-                      Profil: {list.profile.name} <br />
+                      Pour: {list.profile.name} <br />
                       Contient {list.items.length} item(s)
+                      {list.isEventWishlist && (
+                        <>
+                          <br />
+                          <span className="text-primary text-xs font-medium">
+                            📅 Liste d&apos;événement
+                          </span>
+                        </>
+                      )}
                     </ItemDescription>
                   </ItemContent>
                 </Link>
-                <ItemActions>
+                <ItemActions className="flex flex-1 rounded-sm items-center justify-center">
                   <UpdateListButton
                     wishlistData={{
                       id: list.id,
