@@ -24,8 +24,9 @@ export default function UpdateListButton({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="cursor-pointer" size={"icon"}>
-          <Pen />
+        <Button className="cursor-pointer" size={"sm"}>
+          <Pen className="w-4 h-4 mr-2" />
+          Modifier
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
