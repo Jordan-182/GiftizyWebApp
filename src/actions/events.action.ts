@@ -91,6 +91,9 @@ export async function createEventAction(
     // 6. Invalidation sélective du cache
     revalidateTag(`user-events-${session.user.id}`);
     revalidateTag("all-events");
+    // Invalider aussi le cache des wishlists car une nouvelle wishlist d'événement a été créée
+    revalidateTag(`user-wishlists-${session.user.id}`);
+    revalidatePath("/wishlists");
 
     return { success: true };
   } catch (error) {
@@ -251,16 +254,19 @@ export async function deleteEventAction(
     // Appeler le service pour supprimer l'événement
     await eventService.deleteEvent(validatedData.id, session.user.id);
 
-    // Invalider le cache des événements
+    // Invalider le cache des événements et des wishlists
     revalidateTag(`user-events-${session.user.id}`);
     revalidateTag(`event-${validatedData.id}`);
     revalidateTag("all-events");
+    // Invalider aussi le cache des wishlists car la wishlist d'événement a été supprimée
+    revalidateTag(`user-wishlists-${session.user.id}`);
     revalidatePath("/events");
     revalidatePath(`/events/${validatedData.id}`);
+    revalidatePath("/wishlists");
 
     return {
       success: true,
-      message: "Événement supprimé avec succès",
+      message: "Événement et sa liste de cadeaux supprimés avec succès",
       shouldRedirect: true,
     };
   } catch (error) {
@@ -469,5 +475,69 @@ export async function getFriendsEventsAction() {
       error
     );
     throw error;
+  }
+}
+
+// Type pour la suppression d'invitation
+export type RemoveInvitationState = {
+  success: boolean;
+  error?: string;
+  message?: string;
+};
+
+// Supprimer une invitation à un événement
+export async function removeInvitationAction(
+  prevState: RemoveInvitationState,
+  formData: FormData
+): Promise<RemoveInvitationState> {
+  try {
+    const session = await auth.api.getSession({
+      headers: await import("next/headers").then((mod) => mod.headers()),
+    });
+
+    if (!session?.user?.id) {
+      return {
+        success: false,
+        error: "Vous devez être connecté pour supprimer une invitation",
+      };
+    }
+
+    const eventId = formData.get("eventId") as string;
+    const friendId = formData.get("friendId") as string;
+
+    if (!eventId || !friendId) {
+      return {
+        success: false,
+        error: "Données manquantes",
+      };
+    }
+
+    // Vérifier que l'utilisateur est bien l'hôte de l'événement
+    const event = await eventService.getEventById(eventId);
+    if (!event || event.hostId !== session.user.id) {
+      return {
+        success: false,
+        error: "Vous n'avez pas l'autorisation de supprimer cette invitation",
+      };
+    }
+
+    await eventService.removeInvitation(eventId, friendId);
+
+    revalidateTag(`event-${eventId}`);
+    revalidateTag(`user-events-${session.user.id}`);
+
+    return {
+      success: true,
+      message: "Invitation supprimée avec succès",
+    };
+  } catch (error) {
+    console.error("Erreur lors de la suppression de l'invitation:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Erreur lors de la suppression de l'invitation",
+    };
   }
 }

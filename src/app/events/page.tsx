@@ -1,4 +1,5 @@
 import CreateEventButton from "@/components/CreateEventButton";
+import EventInvitationsList from "@/components/eventInvitationsList";
 import FriendsEventsList from "@/components/friendsEventsList";
 import MyEventsList from "@/components/myEventsList";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,6 +24,8 @@ export default async function EventsPage() {
         <h1 className="text-3xl font-bold">Evénements</h1>
         <CreateEventButton />
       </div>
+
+      <EventInvitationsList />
 
       <Card className="p-0">
         <CardContent className="p-4">

@@ -48,13 +48,13 @@ export const eventRepository = {
           select: {
             id: true,
             name: true,
-            email: true,
           },
         },
         profile: {
           select: {
             id: true,
             name: true,
+            avatar: true,
           },
         },
         wishlist: {
@@ -68,7 +68,7 @@ export const eventRepository = {
               select: {
                 id: true,
                 name: true,
-                email: true,
+                avatar: true,
               },
             },
           },
@@ -117,34 +117,73 @@ export const eventRepository = {
       },
     }),
 
-  create: (data: CreateEventInput) => {
+  create: async (data: CreateEventInput) => {
     // Traiter la date comme une datetime locale sans conversion UTC
     const eventDate = new Date(data.date);
 
-    return prisma.event.create({
-      data: {
-        name: data.name,
-        description: data.description || null,
-        date: eventDate,
-        location: data.location || null,
-        hostId: data.hostId,
-        profileId: data.profileId || null,
-      },
-      include: {
-        host: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
+    return prisma.$transaction(async (tx) => {
+      // 1. Créer l'événement
+      const event = await tx.event.create({
+        data: {
+          name: data.name,
+          description: data.description || null,
+          date: eventDate,
+          location: data.location || null,
+          hostId: data.hostId,
+          profileId: data.profileId || null,
+        },
+        include: {
+          host: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+          profile: {
+            select: {
+              id: true,
+              name: true,
+            },
           },
         },
-        profile: {
+      });
+
+      // 2. Déterminer le profil à utiliser pour la wishlist
+      let wishlistProfileId = data.profileId;
+
+      // Si aucun profil n'est spécifié, utiliser le profil principal de l'utilisateur
+      if (!wishlistProfileId) {
+        const mainProfile = await tx.profile.findFirst({
+          where: {
+            userId: data.hostId,
+            isMainProfile: true,
+          },
           select: {
             id: true,
-            name: true,
           },
+        });
+
+        if (!mainProfile) {
+          throw new Error("Aucun profil principal trouvé pour l'utilisateur");
+        }
+
+        wishlistProfileId = mainProfile.id;
+      }
+
+      // 3. Créer automatiquement une wishlist affiliée à l'événement
+      await tx.wishlist.create({
+        data: {
+          name: `${event.name}`,
+          description: `Liste de cadeaux pour l'événement ${event.name}`,
+          isEventWishlist: true,
+          userId: data.hostId,
+          profileId: wishlistProfileId,
+          eventId: event.id,
         },
-      },
+      });
+
+      return event;
     });
   },
 
@@ -180,10 +219,21 @@ export const eventRepository = {
     });
   },
 
-  delete: (id: string) =>
-    prisma.event.delete({
-      where: { id },
-    }),
+  delete: async (id: string) => {
+    return prisma.$transaction(async (tx) => {
+      // 1. Supprimer d'abord la wishlist associée à l'événement (si elle existe)
+      await tx.wishlist.deleteMany({
+        where: {
+          eventId: id,
+        },
+      });
+
+      // 2. Supprimer l'événement (les invitations seront supprimées automatiquement grâce à onDelete: Cascade)
+      return tx.event.delete({
+        where: { id },
+      });
+    });
+  },
 
   // Vérifier si un événement appartient à un utilisateur
   findByIdAndUser: (id: string, userId: string) =>
@@ -322,6 +372,17 @@ export const eventRepository = {
       },
       orderBy: {
         date: "asc",
+      },
+    }),
+
+  // Supprimer une invitation
+  deleteInvitation: (eventId: string, friendId: string) =>
+    prisma.eventInvitation.delete({
+      where: {
+        eventId_friendId: {
+          eventId,
+          friendId,
+        },
       },
     }),
 };

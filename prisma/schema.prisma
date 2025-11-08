@@ -20,7 +20,7 @@ model Wishlist {
   eventId         String?        @unique
   user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   profile         Profile        @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  event           Event?         @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  event           Event?         @relation(fields: [eventId], references: [id], onDelete: Cascade)
   items           WishlistItem[]
 
   @@map("wishlists")

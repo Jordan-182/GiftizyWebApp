@@ -35,13 +35,21 @@ export const eventService = {
       throw new Error("La date de l'événement ne peut pas être dans le passé");
     }
 
-    const result = await eventRepository.create(data);
+    try {
+      const result = await eventRepository.create(data);
 
-    if (!result) {
-      throw new Error("Erreur lors de la création de l'événement");
+      if (!result) {
+        throw new Error("Erreur lors de la création de l'événement");
+      }
+
+      return result;
+    } catch (error) {
+      throw new Error(
+        error instanceof Error
+          ? error.message
+          : "Erreur lors de la création de l'événement et de sa wishlist"
+      );
     }
-
-    return result;
   },
 
   async getEventsByUser(userId: string) {
@@ -193,5 +201,17 @@ export const eventService = {
   async getFriendsEvents(userId: string) {
     const events = await eventRepository.findFriendsEvents(userId);
     return events || [];
+  },
+
+  async removeInvitation(eventId: string, friendId: string) {
+    // Vérifier que l'invitation existe
+    const invitation = await eventRepository.findInvitation(eventId, friendId);
+    if (!invitation) {
+      throw new Error("Invitation non trouvée");
+    }
+
+    // Supprimer l'invitation
+    const result = await eventRepository.deleteInvitation(eventId, friendId);
+    return result;
   },
 };

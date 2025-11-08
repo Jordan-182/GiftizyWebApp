@@ -66,19 +66,22 @@ export default async function WishlistIdPage({
   return (
     <section>
       <ReturnButton href="/wishlists" label="Listes" />
-      <div className=" mt-4">
-        <div className="flex gap-4 items-center mb-1">
+      <div className="mt-4">
+        <div className="flex flex-col gap-4 items-center mb-1">
           <Image
             src={wishlist.profile.avatar?.url || "/default-avatar.png"}
             alt={wishlist.profile.name}
-            height={80}
-            width={80}
+            height={100}
+            width={100}
           />
           <div className="flex-1">
             <h1 className="text-xl">{wishlist.name}</h1>
             <h2>Pour : {wishlist.profile.name}</h2>
             <p>Par : {wishlist.user.name}</p>
           </div>
+          {wishlist.description && (
+            <p className="text-center">Descripiton: {wishlist.description}</p>
+          )}
           {isOwner && (
             <div className="flex gap-2">
               <UpdateListButton
@@ -96,7 +99,6 @@ export default async function WishlistIdPage({
             </div>
           )}
         </div>
-        {wishlist.description && <p>Descripiton: {wishlist.description}</p>}
       </div>
       <p className="mt-4">
         {isOwner ? (
