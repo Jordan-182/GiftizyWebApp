@@ -110,7 +110,7 @@ function CreateEventFormContent({
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
       <div className="space-y-2">
         <Label htmlFor="name">
-          Nom de l'événement <span className="text-red-500">*</span>
+          Nom de l&apos;événement <span className="text-red-500">*</span>
         </Label>
         <Input
           id="name"
