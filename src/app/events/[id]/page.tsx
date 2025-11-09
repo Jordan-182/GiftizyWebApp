@@ -1,6 +1,7 @@
 import { getEventByIdAction } from "@/actions/events.action";
 import DeleteEventButton from "@/components/deleteEventButton";
 import InviteFriendsButton from "@/components/inviteFriendsButton";
+import LeaveEventButton from "@/components/leaveEventButton";
 import RemoveInvitationButton from "@/components/removeInvitationButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import UpdateEventButton from "@/components/updateEventButton";
@@ -94,6 +95,7 @@ export default async function EventIdPage({
             </div>
           )}
 
+          {/* Actions pour l'hôte */}
           {session.user.id === event.hostId && (
             <div className="pt-4 border-t space-y-3">
               <UpdateEventButton
@@ -125,6 +127,18 @@ export default async function EventIdPage({
                 eventId={event.id}
                 eventName={event.name}
                 redirectAfterDelete={true}
+                className="w-full cursor-pointer"
+                showText={true}
+              />
+            </div>
+          )}
+
+          {/* Actions pour les invités acceptés */}
+          {!isHost && hasAcceptedInvitation && (
+            <div className="pt-4 border-t">
+              <LeaveEventButton
+                eventId={event.id}
+                eventName={event.name}
                 className="w-full cursor-pointer"
                 showText={true}
               />

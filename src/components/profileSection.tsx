@@ -1,5 +1,6 @@
 import type { Avatar, Profile } from "@/generated/prisma";
 import Image from "next/image";
+import Link from "next/link";
 import CreateProfileModal from "./CreateProfileModal";
 import DeleteProfileButton from "./deleteProfileButton";
 import { Item, ItemActions, ItemContent, ItemTitle } from "./ui/item";
@@ -30,21 +31,26 @@ export default function ProfileSection({
         ) : (
           profiles.map((profile: ProfileWithAvatar) => (
             <li key={profile.id}>
-              <Item variant={"muted"}>
-                {profile.avatar?.url && (
-                  <Image
-                    src={profile.avatar?.url}
-                    alt="Avatar du profil"
-                    height={50}
-                    width={50}
-                  />
-                )}
-                <ItemContent className="gap-0">
-                  <ItemTitle className="text-lg font-bold">
-                    {profile.name}
-                  </ItemTitle>
-                  {profile.isMainProfile && <p>Profil principal</p>}
-                </ItemContent>
+              <Item variant={"muted"} className="flex justify-between">
+                <Link
+                  href={`/user/${profile.friendCode}/profiles/${profile.id}`}
+                  className="flex gap-4 items-center"
+                >
+                  {profile.avatar?.url && (
+                    <Image
+                      src={profile.avatar?.url}
+                      alt="Avatar du profil"
+                      height={50}
+                      width={50}
+                    />
+                  )}
+                  <ItemContent className="gap-0">
+                    <ItemTitle className="text-lg font-bold">
+                      {profile.name}
+                    </ItemTitle>
+                    {profile.isMainProfile && <p>Profil principal</p>}
+                  </ItemContent>
+                </Link>
                 <ItemActions className="h-[50px] py-2">
                   {profile.isMainProfile ? null : (
                     <DeleteProfileButton profileId={profile.id} />
