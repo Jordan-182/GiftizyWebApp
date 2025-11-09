@@ -32,6 +32,19 @@ export default async function EventIdPage({
     redirect("/events");
   }
 
+  // Vérifier les permissions d'accès
+  const isHost = session.user.id === event.hostId;
+  const hasAcceptedInvitation = event.invitations.some(
+    (invitation) =>
+      invitation.friendId === session.user.id &&
+      invitation.status === "ACCEPTED"
+  );
+
+  // Rediriger si l'utilisateur n'est ni l'hôte ni un invité accepté
+  if (!isHost && !hasAcceptedInvitation) {
+    redirect("/events");
+  }
+
   const formatDate = (date: Date) => {
     const formatted = new Intl.DateTimeFormat("fr-FR", {
       dateStyle: "full",

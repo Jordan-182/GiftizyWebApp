@@ -20,12 +20,13 @@ export async function middleware(req: NextRequest) {
   const isLoggedIn = !!sessionCookie;
   const isOnProtectedRoute = protectedRoutes.includes(nextUrl.pathname);
   const isOnAuthRoute = nextUrl.pathname.startsWith("/auth");
+  const isOnLandingPage = nextUrl.pathname === "/";
 
   if (isOnProtectedRoute && !isLoggedIn) {
     return NextResponse.redirect(new URL("/auth/login", req.url));
   }
 
-  if (isOnAuthRoute && isLoggedIn) {
+  if ((isOnAuthRoute || isOnLandingPage) && isLoggedIn) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 

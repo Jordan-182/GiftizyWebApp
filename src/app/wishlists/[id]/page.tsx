@@ -43,6 +43,15 @@ interface WishlistItem {
   } | null;
 }
 
+interface EventInvitation {
+  friendId: string;
+  status: "PENDING" | "ACCEPTED" | "DECLINED";
+  friend: {
+    id: string;
+    name: string;
+  };
+}
+
 export default async function WishlistIdPage({
   params,
 }: {
@@ -63,6 +72,28 @@ export default async function WishlistIdPage({
 
   // Vérifier si l'utilisateur est le propriétaire de la liste
   const isOwner = wishlist.userId === session.user.id;
+
+  // Si c'est une wishlist d'événement, vérifier les permissions d'accès
+  if (wishlist.isEventWishlist && wishlist.eventId) {
+    // Pour les wishlists d'événements, seuls l'hôte et les invités acceptés peuvent accéder
+    if (!isOwner) {
+      // Si l'utilisateur n'est pas le propriétaire, vérifier s'il a une invitation acceptée
+      const event = wishlist.event;
+      if (!event) {
+        redirect("/wishlists");
+      }
+
+      const hasAcceptedInvitation = event.invitations?.some(
+        (invitation: EventInvitation) =>
+          invitation.friendId === session.user.id &&
+          invitation.status === "ACCEPTED"
+      );
+
+      if (!hasAcceptedInvitation) {
+        redirect("/wishlists");
+      }
+    }
+  }
   return (
     <section>
       <ReturnButton href="/wishlists" label="Listes" />

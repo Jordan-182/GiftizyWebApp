@@ -92,6 +92,20 @@ export const wishlistRepository = {
             avatar: true,
           },
         },
+        event: {
+          include: {
+            invitations: {
+              include: {
+                friend: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     }),
 
@@ -197,6 +211,20 @@ export const wishlistRepository = {
             name: true,
             email: true,
             avatar: true,
+          },
+        },
+        event: {
+          include: {
+            invitations: {
+              include: {
+                friend: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
           },
         },
       },
