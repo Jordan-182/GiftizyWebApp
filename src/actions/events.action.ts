@@ -541,3 +541,81 @@ export async function removeInvitationAction(
     };
   }
 }
+
+// Type pour quitter un événement
+export type LeaveEventState = {
+  success: boolean;
+  error?: string;
+  message?: string;
+  shouldRedirect?: boolean;
+};
+
+// Quitter un événement (pour un invité accepté)
+export async function leaveEventAction(
+  prevState: LeaveEventState,
+  formData: FormData
+): Promise<LeaveEventState> {
+  try {
+    const session = await auth.api.getSession({
+      headers: await import("next/headers").then((mod) => mod.headers()),
+    });
+
+    if (!session?.user?.id) {
+      return {
+        success: false,
+        error: "Vous devez être connecté pour quitter un événement",
+      };
+    }
+
+    const eventId = formData.get("eventId") as string;
+
+    if (!eventId) {
+      return {
+        success: false,
+        error: "Données manquantes",
+      };
+    }
+
+    // Vérifier que l'utilisateur a bien une invitation acceptée pour cet événement
+    const event = await eventService.getEventById(eventId);
+    if (!event) {
+      return {
+        success: false,
+        error: "Événement non trouvé",
+      };
+    }
+
+    const invitation = event.invitations.find(
+      (inv) => inv.friendId === session.user.id && inv.status === "ACCEPTED"
+    );
+
+    if (!invitation) {
+      return {
+        success: false,
+        error: "Vous n'êtes pas participant à cet événement",
+      };
+    }
+
+    // Supprimer l'invitation (quitter l'événement)
+    await eventService.removeInvitation(eventId, session.user.id);
+
+    revalidateTag(`event-${eventId}`);
+    revalidateTag(`user-events-${session.user.id}`);
+    revalidateTag("all-events");
+
+    return {
+      success: true,
+      message: "Vous avez quitté l'événement avec succès",
+      shouldRedirect: true,
+    };
+  } catch (error) {
+    console.error("Erreur lors de la sortie de l'événement:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Erreur lors de la sortie de l'événement",
+    };
+  }
+}
