@@ -43,6 +43,15 @@ interface WishlistItem {
   } | null;
 }
 
+interface EventInvitation {
+  friendId: string;
+  status: "PENDING" | "ACCEPTED" | "DECLINED";
+  friend: {
+    id: string;
+    name: string;
+  };
+}
+
 export default async function WishlistIdPage({
   params,
 }: {
@@ -75,7 +84,7 @@ export default async function WishlistIdPage({
       }
 
       const hasAcceptedInvitation = event.invitations?.some(
-        (invitation: any) =>
+        (invitation: EventInvitation) =>
           invitation.friendId === session.user.id &&
           invitation.status === "ACCEPTED"
       );

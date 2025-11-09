@@ -4,6 +4,23 @@ import type {
   UpdateWishlistInput,
 } from "@/schemas/wishlist.schema";
 
+interface EventInvitation {
+  friendId: string;
+  status: "PENDING" | "ACCEPTED" | "DECLINED";
+  friend: {
+    id: string;
+    name: string;
+  };
+}
+
+interface WishlistWithEvent {
+  id: string;
+  isEventWishlist: boolean;
+  event?: {
+    invitations?: EventInvitation[];
+  } | null;
+}
+
 export const wishlistService = {
   async createWishlist(data: CreateWishlistInput, userId: string) {
     // Validation des données métier
@@ -124,20 +141,22 @@ export const wishlistService = {
       }
 
       // Filtrer les wishlists d'événements selon les permissions
-      const filteredWishlists = friendsWishlists.filter((wishlist: any) => {
-        // Si ce n'est pas une wishlist d'événement, l'inclure
-        if (!wishlist.isEventWishlist || !wishlist.event) {
-          return true;
+      const filteredWishlists = friendsWishlists.filter(
+        (wishlist: WishlistWithEvent) => {
+          // Si ce n'est pas une wishlist d'événement, l'inclure
+          if (!wishlist.isEventWishlist || !wishlist.event) {
+            return true;
+          }
+
+          // Pour les wishlists d'événements, vérifier si l'utilisateur a une invitation acceptée
+          const hasAcceptedInvitation = wishlist.event.invitations?.some(
+            (invitation: EventInvitation) =>
+              invitation.friendId === userId && invitation.status === "ACCEPTED"
+          );
+
+          return hasAcceptedInvitation;
         }
-
-        // Pour les wishlists d'événements, vérifier si l'utilisateur a une invitation acceptée
-        const hasAcceptedInvitation = wishlist.event.invitations?.some(
-          (invitation: any) =>
-            invitation.friendId === userId && invitation.status === "ACCEPTED"
-        );
-
-        return hasAcceptedInvitation;
-      });
+      );
 
       return filteredWishlists;
     } catch (error) {
