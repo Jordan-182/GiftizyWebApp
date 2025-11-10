@@ -214,4 +214,9 @@ export const eventService = {
     const result = await eventRepository.deleteInvitation(eventId, friendId);
     return result;
   },
+
+  async getCommonEvents(userId1: string, userId2: string) {
+    const events = await eventRepository.findCommonEvents(userId1, userId2);
+    return events || [];
+  },
 };

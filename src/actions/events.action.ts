@@ -619,3 +619,24 @@ export async function leaveEventAction(
     };
   }
 }
+
+// Obtenir les événements en commun avec un autre utilisateur
+export async function getCommonEventsAction(friendUserId: string) {
+  try {
+    const session = await auth.api.getSession({
+      headers: await import("next/headers").then((mod) => mod.headers()),
+    });
+
+    if (!session?.user?.id) {
+      throw new Error("Non autorisé");
+    }
+
+    return await eventService.getCommonEvents(session.user.id, friendUserId);
+  } catch (error) {
+    console.error(
+      "Erreur lors de la récupération des événements en commun:",
+      error
+    );
+    throw error;
+  }
+}
