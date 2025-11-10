@@ -1,4 +1,5 @@
 import { checkFriendshipStatusAction } from "@/actions/checkFriendshipStatus.action";
+import { getCommonEventsAction } from "@/actions/events.action";
 import { getUserByFriendCodeAction } from "@/actions/getUserByFriendCode.action";
 import { getWishlistsByUserAction } from "@/actions/getWishlists.action";
 import { getProfilesAction } from "@/actions/profiles.actions";
@@ -57,6 +58,9 @@ export default async function UserFriendPage({
   if (!allowedStatuses.includes(friendshipStatus.data.status)) {
     redirect("/friends");
   }
+
+  // Récupérer les événements en commun
+  const commonEvents = await getCommonEventsAction(retrievedUser.data.id);
 
   return (
     <>
@@ -203,9 +207,67 @@ export default async function UserFriendPage({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ul className="space-y-2">
-            <li>Liste des évènements communs</li>
-          </ul>
+          {commonEvents.length === 0 ? (
+            <p>
+              Vous n&apos;avez aucun événement en commun avec{" "}
+              {retrievedUser.data.name} pour le moment
+            </p>
+          ) : (
+            <ul className="space-y-2">
+              {commonEvents.map((event) => (
+                <li key={event.id}>
+                  <Link href={`/events/${event.id}`}>
+                    <Item variant={"muted"}>
+                      <ItemMedia>
+                        <Image
+                          src={event.profile?.avatar?.url || "/logo.png"}
+                          alt={event.profile?.name || event.name}
+                          width={50}
+                          height={50}
+                        />
+                      </ItemMedia>
+                      <ItemContent>
+                        <ItemTitle>{event.name}</ItemTitle>
+                        <ItemDescription className="flex flex-col">
+                          {event.description && (
+                            <span>{event.description}</span>
+                          )}
+                          <span>
+                            Date:{" "}
+                            {event.date instanceof Date
+                              ? event.date.toLocaleDateString("fr-FR", {
+                                  weekday: "long",
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "numeric",
+                                })
+                              : new Date(event.date).toLocaleDateString(
+                                  "fr-FR",
+                                  {
+                                    weekday: "long",
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                  }
+                                )}
+                          </span>
+                          {event.location && (
+                            <span>Lieu: {event.location}</span>
+                          )}
+                          <span>
+                            Organisé par:{" "}
+                            {event.host.id === session.user.id
+                              ? "Vous"
+                              : event.host.name}
+                          </span>
+                        </ItemDescription>
+                      </ItemContent>
+                    </Item>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
         </CardContent>
       </Card>
     </>
