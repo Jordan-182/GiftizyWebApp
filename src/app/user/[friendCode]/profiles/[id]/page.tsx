@@ -1,3 +1,4 @@
+import { getCommonEventsWithProfileAction } from "@/actions/events.action";
 import { getWishlistsByProfileIdAction } from "@/actions/getWishlists.action";
 import { getProfileByIdAction } from "@/actions/profiles.actions";
 import {
@@ -14,10 +15,109 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item";
+import { Skeleton } from "@/components/ui/skeleton";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 
-export default async function UserProfilePage({
+// Force le rendu dynamique car cette page utilise l'authentification
+export const dynamic = "force-dynamic";
+
+function ProfileHeaderSkeleton() {
+  return (
+    <Card className="flex flex-col justify-center items-center gap-2 mb-4">
+      <Skeleton className="h-[120px] w-[120px] rounded-full" />
+      <div className="text-center space-y-2">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-6 w-40" />
+        <Skeleton className="h-4 w-32" />
+      </div>
+    </Card>
+  );
+}
+
+function ProfileWishlistsSkeleton() {
+  return (
+    <Card className="mb-4">
+      <CardHeader>
+        <CardTitle>
+          <h2>Listes</h2>
+        </CardTitle>
+        <CardDescription>
+          <Skeleton className="h-4 w-72" />
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ul className="space-y-2">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <li key={i}>
+              <div className="p-3 rounded-lg border">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-[50px] w-[50px] rounded" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-5 w-40" />
+                    <Skeleton className="h-4 w-64" />
+                  </div>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ProfileEventsSkeleton() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>
+          <h2>Evènements</h2>
+        </CardTitle>
+        <CardDescription>
+          <Skeleton className="h-4 w-56" />
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ul className="space-y-2">
+          {Array.from({ length: 1 }).map((_, i) => (
+            <li key={i}>
+              <div className="p-3 rounded-lg border">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-[50px] w-[50px] rounded" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-5 w-36" />
+                    <div className="space-y-1">
+                      <Skeleton className="h-4 w-48" />
+                      <Skeleton className="h-4 w-56" />
+                      <Skeleton className="h-4 w-32" />
+                      <Skeleton className="h-4 w-28" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+    </Card>
+  );
+}
+
+function UserProfilePageSkeleton() {
+  return (
+    <>
+      <ProfileHeaderSkeleton />
+      <ProfileWishlistsSkeleton />
+      <ProfileEventsSkeleton />
+    </>
+  );
+}
+
+async function UserProfilePageContent({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -25,6 +125,11 @@ export default async function UserProfilePage({
   const { id } = await params;
   const profile = await getProfileByIdAction(id);
   const wishlists = await getWishlistsByProfileIdAction(id);
+  const commonEvents = await getCommonEventsWithProfileAction(id);
+
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
   return (
     <>
       <Card className="flex flex-col justify-center items-center gap-2 mb-4">
@@ -108,11 +213,81 @@ export default async function UserProfilePage({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ul className="space-y-2">
-            <li>Liste des évènements communs</li>
-          </ul>
+          {commonEvents.length === 0 ? (
+            <p>
+              Vous n&apos;avez aucun événement en commun avec {profile.name}{" "}
+              pour le moment
+            </p>
+          ) : (
+            <ul className="space-y-2">
+              {commonEvents.map((event) => (
+                <li key={event.id}>
+                  <Link href={`/events/${event.id}`}>
+                    <Item variant={"muted"}>
+                      <ItemMedia>
+                        <Image
+                          src={event.profile?.avatar?.url || "/logo.png"}
+                          alt={event.profile?.name || event.name}
+                          width={50}
+                          height={50}
+                        />
+                      </ItemMedia>
+                      <ItemContent>
+                        <ItemTitle>{event.name}</ItemTitle>
+                        <ItemDescription className="flex flex-col">
+                          {event.description && (
+                            <span>{event.description}</span>
+                          )}
+                          <span>
+                            Date:{" "}
+                            {event.date instanceof Date
+                              ? event.date.toLocaleDateString("fr-FR", {
+                                  weekday: "long",
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "numeric",
+                                })
+                              : new Date(event.date).toLocaleDateString(
+                                  "fr-FR",
+                                  {
+                                    weekday: "long",
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                  }
+                                )}
+                          </span>
+                          {event.location && (
+                            <span>Lieu: {event.location}</span>
+                          )}
+                          <span>
+                            Organisé par:{" "}
+                            {event.host.id === session?.user.id
+                              ? "Vous"
+                              : event.host.name}
+                          </span>
+                        </ItemDescription>
+                      </ItemContent>
+                    </Item>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
         </CardContent>
       </Card>
     </>
+  );
+}
+
+export default function UserProfilePage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  return (
+    <Suspense fallback={<UserProfilePageSkeleton />}>
+      <UserProfilePageContent params={params} />
+    </Suspense>
   );
 }

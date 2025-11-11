@@ -482,4 +482,95 @@ export const eventRepository = {
         date: "asc",
       },
     }),
+
+  // Récupérer les événements en commun entre un utilisateur et un profil spécifique
+  findCommonEventsWithProfile: (userId: string, profileId: string) =>
+    prisma.event.findMany({
+      where: {
+        OR: [
+          // Cas 1: L'utilisateur est hôte et le profil est associé à l'événement
+          {
+            hostId: userId,
+            profileId: profileId,
+          },
+          // Cas 2: Le propriétaire du profil est hôte et l'utilisateur est invité (accepté)
+          {
+            profile: {
+              id: profileId,
+            },
+            invitations: {
+              some: {
+                friendId: userId,
+                status: "ACCEPTED",
+              },
+            },
+          },
+          // Cas 3: L'utilisateur est hôte avec ce profil spécifique
+          {
+            hostId: userId,
+            profileId: profileId,
+          },
+          // Cas 4: Le profil appartient à un utilisateur qui est hôte et notre utilisateur est invité
+          {
+            profile: {
+              id: profileId,
+              user: {
+                events: {
+                  some: {
+                    invitations: {
+                      some: {
+                        friendId: userId,
+                        status: "ACCEPTED",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        ],
+      },
+      include: {
+        host: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+          },
+        },
+        profile: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+          },
+        },
+        wishlist: {
+          include: {
+            items: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
+                reserved: true,
+              },
+            },
+          },
+        },
+        invitations: {
+          include: {
+            friend: {
+              select: {
+                id: true,
+                name: true,
+                avatar: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        date: "asc",
+      },
+    }),
 };

@@ -17,13 +17,142 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item";
+import { Skeleton } from "@/components/ui/skeleton";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
-export default async function UserFriendPage({
+export const dynamic = "force-dynamic";
+
+function UserHeaderSkeleton() {
+  return (
+    <Card className="flex flex-col justify-center items-center gap-2 mb-4">
+      <Skeleton className="h-[120px] w-[120px] rounded-full" />
+      <div className="text-center space-y-2">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-4 w-32" />
+      </div>
+    </Card>
+  );
+}
+
+function ProfilesSectionSkeleton() {
+  return (
+    <Card className="mb-4">
+      <CardHeader>
+        <CardTitle>
+          <h2>Profils</h2>
+        </CardTitle>
+        <CardDescription>
+          <Skeleton className="h-4 w-64" />
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ul className="space-y-2">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <li key={i}>
+              <div className="p-3 rounded-lg border">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-[50px] w-[50px] rounded" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-5 w-32" />
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-40" />
+                  </div>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+    </Card>
+  );
+}
+
+function WishlistsSectionSkeleton() {
+  return (
+    <Card className="mb-4">
+      <CardHeader>
+        <CardTitle>
+          <h2>Listes</h2>
+        </CardTitle>
+        <CardDescription>
+          <Skeleton className="h-4 w-72" />
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ul className="space-y-2">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <li key={i}>
+              <div className="p-3 rounded-lg border">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-[50px] w-[50px] rounded" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-5 w-40" />
+                    <Skeleton className="h-4 w-64" />
+                  </div>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+    </Card>
+  );
+}
+
+function EventsSectionSkeleton() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>
+          <h2>Evènements</h2>
+        </CardTitle>
+        <CardDescription>
+          <Skeleton className="h-4 w-56" />
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ul className="space-y-2">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <li key={i}>
+              <div className="p-3 rounded-lg border">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-[50px] w-[50px] rounded" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-5 w-36" />
+                    <div className="space-y-1">
+                      <Skeleton className="h-4 w-48" />
+                      <Skeleton className="h-4 w-32" />
+                      <Skeleton className="h-4 w-40" />
+                      <Skeleton className="h-4 w-28" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+    </Card>
+  );
+}
+
+function UserPageSkeleton() {
+  return (
+    <>
+      <UserHeaderSkeleton />
+      <ProfilesSectionSkeleton />
+      <WishlistsSectionSkeleton />
+      <EventsSectionSkeleton />
+    </>
+  );
+}
+
+async function UserPageContent({
   params,
 }: {
   params: Promise<{ friendCode: string }>;
@@ -271,5 +400,17 @@ export default async function UserFriendPage({
         </CardContent>
       </Card>
     </>
+  );
+}
+
+export default function UserFriendPage({
+  params,
+}: {
+  params: Promise<{ friendCode: string }>;
+}) {
+  return (
+    <Suspense fallback={<UserPageSkeleton />}>
+      <UserPageContent params={params} />
+    </Suspense>
   );
 }
