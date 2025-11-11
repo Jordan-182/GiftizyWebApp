@@ -10,7 +10,7 @@ export default function GetStartedButton() {
   if (isPending) {
     return (
       <Button size="lg" className="opacity-50">
-        Get Started
+        C&apos;est parti!
       </Button>
     );
   }
@@ -18,9 +18,9 @@ export default function GetStartedButton() {
   const href = session ? "/dashboard" : "/auth/login";
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <Button size="lg" asChild>
-        <Link href={href}>Get Started</Link>
+    <div className="flex flex-col items-center gap-4 font-bold">
+      <Button size="lg" asChild className="font-bold">
+        <Link href={href}>C&apos;est parti!</Link>
       </Button>
 
       {session && (
