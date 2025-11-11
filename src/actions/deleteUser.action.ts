@@ -31,7 +31,7 @@ export async function deleteUserAction({ userId }: { userId: string }) {
       await auth.api.signOut({
         headers: headersList,
       });
-      redirect("/auth/login");
+      redirect("/");
     }
     revalidatePath("/admin/dashboard");
     return { error: null };
