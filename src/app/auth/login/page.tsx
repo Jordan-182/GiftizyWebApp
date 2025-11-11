@@ -25,7 +25,10 @@ export default async function LoginPage() {
           <LoginForm />
           <p className="text-muted-foreground text-sm">
             Pas encore inscrit?{" "}
-            <Link href="/auth/register" className="hover:text-foreground">
+            <Link
+              href="/auth/register"
+              className="hover:text-foreground italic"
+            >
               Créer un compte
             </Link>
           </p>

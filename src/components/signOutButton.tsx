@@ -25,7 +25,7 @@ export default function SignOutButton() {
         },
         onSuccess: () => {
           toast.success("Vous êtes déconnecté");
-          router.push("/auth/login");
+          router.push("/");
         },
       },
     });
