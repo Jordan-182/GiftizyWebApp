@@ -219,4 +219,12 @@ export const eventService = {
     const events = await eventRepository.findCommonEvents(userId1, userId2);
     return events || [];
   },
+
+  async getCommonEventsWithProfile(userId: string, profileId: string) {
+    const events = await eventRepository.findCommonEventsWithProfile(
+      userId,
+      profileId
+    );
+    return events || [];
+  },
 };

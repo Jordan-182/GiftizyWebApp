@@ -13,12 +13,79 @@ import {
   ItemFooter,
   ItemTitle,
 } from "@/components/ui/item";
+import { Skeleton } from "@/components/ui/skeleton";
 import UpdateItemButton from "@/components/updateItemButton";
 import UpdateListButton from "@/components/UpdateListButton";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import Image from "next/image";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
+
+export const dynamic = "force-dynamic";
+
+function WishlistHeaderSkeleton() {
+  return (
+    <div className="flex flex-col gap-4 items-center mb-1">
+      <Skeleton className="h-[100px] w-[100px] rounded-full" />
+      <div className="flex-1 text-center space-y-2">
+        <Skeleton className="h-6 w-48 mx-auto" />
+        <Skeleton className="h-5 w-32 mx-auto" />
+        <Skeleton className="h-5 w-40 mx-auto" />
+      </div>
+      <Skeleton className="h-4 w-64" />
+      <div className="flex gap-2">
+        <Skeleton className="h-10 w-24" />
+        <Skeleton className="h-10 w-24" />
+      </div>
+    </div>
+  );
+}
+
+function WishlistItemsSkeleton() {
+  return (
+    <Card className="mt-4 p-4">
+      <div className="space-y-4">
+        <Skeleton className="h-10 w-32" />
+        <ul className="space-y-2">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <li key={i}>
+              <div className="border rounded-lg p-4 space-y-3">
+                <div className="flex justify-between items-start">
+                  <div className="space-y-2 flex-1">
+                    <Skeleton className="h-5 w-48" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-20" />
+                  </div>
+                  <div className="flex gap-2">
+                    <Skeleton className="h-8 w-16" />
+                    <Skeleton className="h-8 w-16" />
+                  </div>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </Card>
+  );
+}
+
+function WishlistPageSkeleton() {
+  return (
+    <section>
+      <div className="flex items-center gap-2 mb-4">
+        <Skeleton className="h-9 w-20" />
+        <Skeleton className="h-4 w-16" />
+      </div>
+      <div className="mt-4">
+        <WishlistHeaderSkeleton />
+      </div>
+      <Skeleton className="h-16 w-full mt-4" />
+      <WishlistItemsSkeleton />
+    </section>
+  );
+}
 
 interface WishlistItem {
   id: string;
@@ -52,7 +119,7 @@ interface EventInvitation {
   };
 }
 
-export default async function WishlistIdPage({
+async function WishlistPageContent({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -226,5 +293,17 @@ export default async function WishlistIdPage({
         )}
       </Card>
     </section>
+  );
+}
+
+export default function WishlistIdPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  return (
+    <Suspense fallback={<WishlistPageSkeleton />}>
+      <WishlistPageContent params={params} />
+    </Suspense>
   );
 }

@@ -17,6 +17,17 @@ export const friendService = {
     return requests;
   },
 
+  // Récupère uniquement les demandes d'amis reçues (pour les notifications du dashboard)
+  async getReceivedPendingFriendRequests(userId: string) {
+    const requests = await friendRepository.getReceivedPendingFriendRequests(
+      userId
+    );
+    if (!requests || requests.length === 0) {
+      return [];
+    }
+    return requests;
+  },
+
   async createFriendRequest(userId: string, friendId: string) {
     const friend = await friendRepository.findByFriendCode(friendId);
     if (!friend) {

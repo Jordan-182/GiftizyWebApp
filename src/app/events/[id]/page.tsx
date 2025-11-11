@@ -4,14 +4,125 @@ import InviteFriendsButton from "@/components/inviteFriendsButton";
 import LeaveEventButton from "@/components/leaveEventButton";
 import RemoveInvitationButton from "@/components/removeInvitationButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import UpdateEventButton from "@/components/updateEventButton";
 import { auth } from "@/lib/auth";
 import { Check, Clock, X } from "lucide-react";
 import { headers } from "next/headers";
 import Image from "next/image";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
-export default async function EventIdPage({
+export const dynamic = "force-dynamic";
+
+function EventHeaderSkeleton() {
+  return (
+    <Card className="mb-4">
+      <CardHeader>
+        <Skeleton className="h-[100px] w-[100px] rounded-full mx-auto border-4 border-primary" />
+        <div className="text-center">
+          <Skeleton className="h-8 w-48 mx-auto" />
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div>
+          <Skeleton className="h-6 w-24 mb-2" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-3/4" />
+        </div>
+        <div>
+          <Skeleton className="h-6 w-32 mb-2" />
+          <Skeleton className="h-4 w-40" />
+        </div>
+        <div>
+          <Skeleton className="h-6 w-28 mb-2" />
+          <Skeleton className="h-4 w-56" />
+        </div>
+        <div>
+          <Skeleton className="h-6 w-16 mb-2" />
+          <Skeleton className="h-4 w-32" />
+        </div>
+        <div className="pt-4 border-t space-y-3">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ParticipantsSkeleton() {
+  return (
+    <Card className="gap-2 mb-4">
+      <CardHeader>
+        <CardTitle>Participants</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <Skeleton className="h-4 w-4" />
+              <Skeleton className="h-4 w-24" />
+            </div>
+            <div className="space-y-2 ml-6">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="flex items-center gap-3 justify-between"
+                >
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="h-8 w-8 rounded-full" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                  <Skeleton className="h-8 w-16" />
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="mt-6 pt-4 border-t">
+            <Skeleton className="h-10 w-full" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function WishlistSkeleton() {
+  return (
+    <Card className="gap-2">
+      <CardHeader>
+        <CardTitle>Liste de cadeaux</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <Skeleton className="h-5 w-32 mb-2" />
+              <Skeleton className="h-4 w-48" />
+            </div>
+          </div>
+          <Skeleton className="h-4 w-40" />
+          <div className="pt-4 border-t">
+            <Skeleton className="h-10 w-full" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function EventPageSkeleton() {
+  return (
+    <>
+      <EventHeaderSkeleton />
+      <ParticipantsSkeleton />
+      <WishlistSkeleton />
+    </>
+  );
+}
+
+async function EventPageContent({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -386,5 +497,17 @@ export default async function EventIdPage({
         </CardContent>
       </Card>
     </>
+  );
+}
+
+export default function EventIdPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  return (
+    <Suspense fallback={<EventPageSkeleton />}>
+      <EventPageContent params={params} />
+    </Suspense>
   );
 }

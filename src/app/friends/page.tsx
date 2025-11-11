@@ -10,6 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FriendsProvider } from "@/contexts/FriendsContext";
 import { auth } from "@/lib/auth";
@@ -17,8 +18,87 @@ import { friendService } from "@/services/friendService";
 import { UserCheck, UserPlus } from "lucide-react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
-export default async function FriendsPage() {
+// Force le rendu dynamique car cette page utilise l'authentification
+export const dynamic = "force-dynamic";
+
+function FriendsListSkeleton() {
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-6 w-32" />
+        <Skeleton className="h-9 w-24" />
+      </div>
+      <div className="space-y-3">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div
+            key={i}
+            className="flex items-center gap-4 p-3 rounded-lg border"
+          >
+            <Skeleton className="h-12 w-12 rounded-full" />
+            <div className="flex-1 space-y-2">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-3 w-24" />
+            </div>
+            <Skeleton className="h-8 w-20" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function FriendRequestsSkeleton() {
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-6 w-40" />
+        <Skeleton className="h-5 w-16" />
+      </div>
+      <div className="space-y-3">
+        {Array.from({ length: 2 }).map((_, i) => (
+          <div
+            key={i}
+            className="flex items-center gap-4 p-3 rounded-lg border border-blue-200 bg-blue-50"
+          >
+            <Skeleton className="h-12 w-12 rounded-full" />
+            <div className="flex-1 space-y-2">
+              <Skeleton className="h-4 w-36" />
+              <Skeleton className="h-3 w-28" />
+            </div>
+            <div className="flex gap-2">
+              <Skeleton className="h-8 w-20" />
+              <Skeleton className="h-8 w-20" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function TabsContentSkeleton() {
+  return (
+    <div className="mt-6 space-y-4">
+      <Skeleton className="h-4 w-48" />
+      <div className="space-y-3">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="flex items-center gap-4 p-3 rounded-lg">
+            <Skeleton className="h-12 w-12 rounded-full" />
+            <div className="flex-1 space-y-2">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-3 w-24" />
+            </div>
+            <Skeleton className="h-8 w-20" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+async function FriendsPageContent() {
   const headersList = await headers();
   const session = await auth.api.getSession({
     headers: headersList,
@@ -91,5 +171,36 @@ export default async function FriendsPage() {
         </Card>
       </div>
     </FriendsProvider>
+  );
+}
+
+function FriendsPageSkeleton() {
+  return (
+    <div className="space-y-8">
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-9 w-32" />
+        <Skeleton className="h-10 w-10" />
+      </div>
+
+      <Card className="p-0">
+        <CardContent className="p-4">
+          <div className="space-y-6">
+            <div className="flex w-full border-b border-border">
+              <Skeleton className="h-10 w-24 mr-4" />
+              <Skeleton className="h-10 w-28" />
+            </div>
+            <TabsContentSkeleton />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+export default function FriendsPage() {
+  return (
+    <Suspense fallback={<FriendsPageSkeleton />}>
+      <FriendsPageContent />
+    </Suspense>
   );
 }
