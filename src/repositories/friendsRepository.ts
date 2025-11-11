@@ -74,6 +74,25 @@ export const friendRepository = {
       },
     }),
 
+  // Récupère uniquement les demandes d'amis reçues (pour les notifications)
+  getReceivedPendingFriendRequests: (userId: string) =>
+    prisma.friendship.findMany({
+      where: {
+        status: "PENDING",
+        receiverId: userId, // Seulement les demandes reçues
+      },
+      include: {
+        sender: {
+          select: {
+            id: true,
+            name: true,
+            friendCode: true,
+            avatar: true,
+          },
+        },
+      },
+    }),
+
   createFriendRequest: (userId: string, friendId: string) =>
     prisma.friendship.create({
       data: {

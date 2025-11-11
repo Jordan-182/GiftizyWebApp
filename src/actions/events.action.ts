@@ -640,3 +640,27 @@ export async function getCommonEventsAction(friendUserId: string) {
     throw error;
   }
 }
+
+// Obtenir les événements en commun avec un profil spécifique
+export async function getCommonEventsWithProfileAction(profileId: string) {
+  try {
+    const session = await auth.api.getSession({
+      headers: await import("next/headers").then((mod) => mod.headers()),
+    });
+
+    if (!session?.user?.id) {
+      throw new Error("Non autorisé");
+    }
+
+    return await eventService.getCommonEventsWithProfile(
+      session.user.id,
+      profileId
+    );
+  } catch (error) {
+    console.error(
+      "Erreur lors de la récupération des événements en commun avec le profil:",
+      error
+    );
+    throw error;
+  }
+}
