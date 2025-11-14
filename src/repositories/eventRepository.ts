@@ -12,7 +12,6 @@ export const eventRepository = {
           select: {
             id: true,
             name: true,
-            email: true,
           },
         },
         profile: {
@@ -32,7 +31,7 @@ export const eventRepository = {
               select: {
                 id: true,
                 name: true,
-                email: true,
+                avatar: true,
               },
             },
           },
@@ -86,7 +85,6 @@ export const eventRepository = {
           select: {
             id: true,
             name: true,
-            email: true,
           },
         },
         profile: {
@@ -106,7 +104,7 @@ export const eventRepository = {
               select: {
                 id: true,
                 name: true,
-                email: true,
+                avatar: true,
               },
             },
           },
@@ -137,7 +135,6 @@ export const eventRepository = {
             select: {
               id: true,
               name: true,
-              email: true,
             },
           },
           profile: {
@@ -196,7 +193,9 @@ export const eventRepository = {
           description: data.description || null,
         }),
         ...(data.date && { date: new Date(data.date) }),
-        ...(data.location !== undefined && { location: data.location || null }),
+        ...(data.location !== undefined && {
+          location: data.location || null,
+        }),
         ...(data.profileId !== undefined && {
           profileId: data.profileId || null,
         }),
@@ -206,7 +205,65 @@ export const eventRepository = {
           select: {
             id: true,
             name: true,
-            email: true,
+          },
+        },
+        profile: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        wishlist: {
+          include: {
+            items: true,
+          },
+        },
+        invitations: {
+          include: {
+            friend: {
+              select: {
+                id: true,
+                name: true,
+                avatar: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  },
+
+  delete: (id: string) =>
+    prisma.event.delete({
+      where: { id },
+    }),
+
+  // Obtenir tous les événements (hôte + invité accepté) pour l'utilisateur avec un role ajouté
+  findUpcomingEvents: (userId: string) =>
+    prisma.event.findMany({
+      where: {
+        OR: [
+          // Événements où l'utilisateur est l'hôte
+          { hostId: userId },
+          // Événements où l'utilisateur est invité et a accepté
+          {
+            invitations: {
+              some: {
+                friendId: userId,
+                status: "ACCEPTED",
+              },
+            },
+          },
+        ],
+        date: {
+          gte: new Date(), // Seulement les événements futurs
+        },
+      },
+      include: {
+        host: {
+          select: {
+            id: true,
+            name: true,
           },
         },
         profile: {
@@ -216,120 +273,8 @@ export const eventRepository = {
           },
         },
       },
-    });
-  },
-
-  delete: async (id: string) => {
-    return prisma.$transaction(async (tx) => {
-      // 1. Supprimer d'abord la wishlist associée à l'événement (si elle existe)
-      await tx.wishlist.deleteMany({
-        where: {
-          eventId: id,
-        },
-      });
-
-      // 2. Supprimer l'événement (les invitations seront supprimées automatiquement grâce à onDelete: Cascade)
-      return tx.event.delete({
-        where: { id },
-      });
-    });
-  },
-
-  // Vérifier si un événement appartient à un utilisateur
-  findByIdAndUser: (id: string, userId: string) =>
-    prisma.event.findFirst({
-      where: {
-        id,
-        hostId: userId,
-      },
-    }),
-
-  // Gestion des invitations
-  createInvitation: (eventId: string, friendId: string) =>
-    prisma.eventInvitation.create({
-      data: {
-        eventId,
-        friendId,
-        status: "PENDING",
-      },
-      include: {
-        event: {
-          select: {
-            id: true,
-            name: true,
-            date: true,
-            location: true,
-          },
-        },
-        friend: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-      },
-    }),
-
-  updateInvitationStatus: (
-    eventId: string,
-    friendId: string,
-    status: "ACCEPTED" | "DECLINED"
-  ) =>
-    prisma.eventInvitation.update({
-      where: {
-        eventId_friendId: {
-          eventId,
-          friendId,
-        },
-      },
-      data: {
-        status,
-      },
-    }),
-
-  findInvitationsByUser: (userId: string) =>
-    prisma.eventInvitation.findMany({
-      where: {
-        friendId: userId,
-        status: {
-          in: ["PENDING", "ACCEPTED"],
-        },
-      },
-      include: {
-        event: {
-          include: {
-            host: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-              },
-            },
-            profile: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-        },
-      },
       orderBy: {
-        event: {
-          date: "asc",
-        },
-      },
-    }),
-
-  // Vérifier si une invitation existe déjà
-  findInvitation: (eventId: string, friendId: string) =>
-    prisma.eventInvitation.findUnique({
-      where: {
-        eventId_friendId: {
-          eventId,
-          friendId,
-        },
+        date: "asc",
       },
     }),
 
@@ -349,7 +294,6 @@ export const eventRepository = {
           select: {
             id: true,
             name: true,
-            email: true,
           },
         },
         profile: {
@@ -364,7 +308,7 @@ export const eventRepository = {
               select: {
                 id: true,
                 name: true,
-                email: true,
+                avatar: true,
               },
             },
           },
@@ -444,7 +388,6 @@ export const eventRepository = {
           select: {
             id: true,
             name: true,
-            avatar: true,
           },
         },
         profile: {
@@ -454,77 +397,110 @@ export const eventRepository = {
             avatar: true,
           },
         },
-        wishlist: {
-          include: {
-            items: {
-              select: {
-                id: true,
-                name: true,
-                price: true,
-                reserved: true,
-              },
-            },
-          },
-        },
-        invitations: {
-          include: {
-            friend: {
-              select: {
-                id: true,
-                name: true,
-                avatar: true,
-              },
-            },
-          },
-        },
       },
       orderBy: {
         date: "asc",
       },
     }),
 
-  // Récupérer les événements en commun entre un utilisateur et un profil spécifique
+  // Quitter un événement (pour les invités)
+  leaveEvent: (eventId: string, userId: string) =>
+    prisma.eventInvitation.delete({
+      where: {
+        eventId_friendId: {
+          eventId,
+          friendId: userId,
+        },
+      },
+    }),
+
+  // Méthodes manquantes nécessaires pour eventService
+  findInvitationsByUser: (userId: string) =>
+    prisma.eventInvitation.findMany({
+      where: {
+        friendId: userId,
+        status: "PENDING",
+      },
+      include: {
+        event: {
+          include: {
+            host: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+            profile: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    }),
+
+  findByIdAndUser: (eventId: string, userId: string) =>
+    prisma.event.findFirst({
+      where: {
+        id: eventId,
+        hostId: userId,
+      },
+    }),
+
+  findInvitation: (eventId: string, friendId: string) =>
+    prisma.eventInvitation.findUnique({
+      where: {
+        eventId_friendId: {
+          eventId,
+          friendId,
+        },
+      },
+    }),
+
+  createInvitation: (eventId: string, friendId: string) =>
+    prisma.eventInvitation.create({
+      data: {
+        eventId,
+        friendId,
+        status: "PENDING",
+      },
+    }),
+
+  updateInvitationStatus: (
+    eventId: string,
+    friendId: string,
+    status: "ACCEPTED" | "DECLINED"
+  ) =>
+    prisma.eventInvitation.update({
+      where: {
+        eventId_friendId: {
+          eventId,
+          friendId,
+        },
+      },
+      data: {
+        status,
+      },
+    }),
+
   findCommonEventsWithProfile: (userId: string, profileId: string) =>
     prisma.event.findMany({
       where: {
         OR: [
-          // Cas 1: L'utilisateur est hôte et le profil est associé à l'événement
+          // Événements où l'utilisateur est hôte avec ce profil
           {
             hostId: userId,
             profileId: profileId,
           },
-          // Cas 2: Le propriétaire du profil est hôte et l'utilisateur est invité (accepté)
+          // Événements où l'utilisateur est invité (accepté) avec ce profil
           {
-            profile: {
-              id: profileId,
-            },
+            profileId: profileId,
             invitations: {
               some: {
                 friendId: userId,
                 status: "ACCEPTED",
-              },
-            },
-          },
-          // Cas 3: L'utilisateur est hôte avec ce profil spécifique
-          {
-            hostId: userId,
-            profileId: profileId,
-          },
-          // Cas 4: Le profil appartient à un utilisateur qui est hôte et notre utilisateur est invité
-          {
-            profile: {
-              id: profileId,
-              user: {
-                events: {
-                  some: {
-                    invitations: {
-                      some: {
-                        friendId: userId,
-                        status: "ACCEPTED",
-                      },
-                    },
-                  },
-                },
               },
             },
           },
@@ -535,7 +511,6 @@ export const eventRepository = {
           select: {
             id: true,
             name: true,
-            avatar: true,
           },
         },
         profile: {
@@ -543,29 +518,6 @@ export const eventRepository = {
             id: true,
             name: true,
             avatar: true,
-          },
-        },
-        wishlist: {
-          include: {
-            items: {
-              select: {
-                id: true,
-                name: true,
-                price: true,
-                reserved: true,
-              },
-            },
-          },
-        },
-        invitations: {
-          include: {
-            friend: {
-              select: {
-                id: true,
-                name: true,
-                avatar: true,
-              },
-            },
           },
         },
       },

@@ -19,7 +19,6 @@ export const wishlistRepository = {
           select: {
             id: true,
             name: true,
-            email: true,
             avatar: true,
           },
         },
@@ -53,7 +52,6 @@ export const wishlistRepository = {
           select: {
             id: true,
             name: true,
-            email: true,
             avatar: true,
           },
         },
@@ -88,7 +86,6 @@ export const wishlistRepository = {
           select: {
             id: true,
             name: true,
-            email: true,
             avatar: true,
           },
         },
@@ -131,7 +128,6 @@ export const wishlistRepository = {
           select: {
             id: true,
             name: true,
-            email: true,
             avatar: true,
           },
         },
@@ -153,7 +149,6 @@ export const wishlistRepository = {
           select: {
             id: true,
             name: true,
-            email: true,
             avatar: true,
           },
         },
@@ -209,7 +204,6 @@ export const wishlistRepository = {
           select: {
             id: true,
             name: true,
-            email: true,
             avatar: true,
           },
         },
@@ -261,7 +255,6 @@ export const wishlistRepository = {
           select: {
             id: true,
             name: true,
-            email: true,
             avatar: true,
             friendCode: true,
           },
