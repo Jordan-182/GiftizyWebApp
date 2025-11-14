@@ -28,7 +28,7 @@ export default async function FriendsWishlistsList() {
     <ul className="flex justify-center flex-wrap gap-2">
       {friendsWishlists.map((list) => (
         <li key={list.id}>
-          <Item variant={"muted"} className="w-72 h-36">
+          <Item variant={"muted"} className="w-72 h-30">
             <Link
               href={`/wishlists/${list.id}`}
               className="flex gap-4 w-full h-full p-3"
@@ -46,7 +46,6 @@ export default async function FriendsWishlistsList() {
                 <ItemDescription>
                   Par: {list.user.name} <br />
                   Pour: {list.profile.name} <br />
-                  Contient {list.items.length} item(s)
                 </ItemDescription>
               </ItemContent>
             </Link>
