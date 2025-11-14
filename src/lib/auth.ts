@@ -241,31 +241,15 @@ export const auth = betterAuth({
         avatarUrl = avatar?.url ?? null;
       }
       return {
-        session: {
-          createdAt: session.createdAt,
-          updatedAt: session.updatedAt,
-          expiresAt: session.expiresAt,
-          token: session.token,
-          ipAddress: session.ipAddress,
-          userAgent: session.userAgent,
-          userId: session.userId,
-        },
         user: {
           id: user.id,
-          createdAt: user.createdAt,
-          updatedAt: user.updatedAt,
           name: user.name,
           email: user.email,
-          emailVerified: user.emailVerified,
-          image: user.image,
           avatarId: user.avatarId,
           avatarUrl,
           birthDate: user.birthDate,
           friendCode: user.friendCode,
           role: user.role,
-          banExpires: user.banExpires,
-          banReason: user.banReason,
-          banned: user.banned,
         },
         account: account
           ? {
