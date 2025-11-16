@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="min-h-screen -mx-8 -mt-29 -mb-8">
+    <div className="min-h-screen w-screen -mx-8 -mt-29 -mb-8 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-linear-to-br from-primary/5 via-background to-accent/5">
         <div className="absolute inset-0 bg-grid-slate-100 mask-[linear-gradient(0deg,white,rgba(255,255,255,0.6))] dark:bg-grid-slate-700/25"></div>
