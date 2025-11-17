@@ -20,8 +20,11 @@ export default function Home() {
                 />
               </div>
             </div>
-            <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl">
-              <span className="bg-linear-to-r from-primary to-accent bg-clip-text text-transparent">
+            <h1
+              className="text-6xl font-thin text-foreground sm:text-6xl lg:text-7xl font-modak"
+              style={{ fontWeight: 300 }}
+            >
+              <span className="bg-linear-to-r from-primary to-accent bg-clip-text text-transparent ">
                 Giftizy
               </span>
             </h1>
@@ -41,13 +44,13 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="py-24 sm:py-32 bg-primary text-primary-foreground">
+      <section className="py-24 sm:py-32 bg-foreground text-primary-foreground">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-base font-semibold leading-7 text-primary-foreground/80">
               Fonctionnalités
             </h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-primary-foreground sm:text-4xl">
+            <p className="mt-2 text-3xl font-bold tracking-tight text-primary sm:text-4xl">
               Tout ce dont vous avez besoin pour des cadeaux parfaits
             </p>
             <p className="mt-6 text-lg leading-8 text-primary-foreground/80">
@@ -56,12 +59,12 @@ export default function Home() {
             </p>
           </div>
           <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
-            <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
-              <div className="flex flex-col items-center text-center">
+            <dl className="mx-auto grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
+              <div className="flex flex-col items-center text-center ">
                 <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-lg bg-primary-foreground/10">
                   <Gift className="h-8 w-8 text-primary-foreground" />
                 </div>
-                <dt className="text-xl font-semibold leading-7 text-primary-foreground">
+                <dt className="text-xl font-semibold leading-7 text-primary">
                   Listes de souhaits personnalisées
                 </dt>
                 <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-primary-foreground/80">
@@ -75,7 +78,7 @@ export default function Home() {
                 <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-lg bg-primary-foreground/10">
                   <Users className="h-8 w-8 text-primary-foreground" />
                 </div>
-                <dt className="text-xl font-semibold leading-7 text-primary-foreground">
+                <dt className="text-xl font-semibold leading-7 text-primary">
                   Partage entre amis et famille
                 </dt>
                 <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-primary-foreground/80">
@@ -90,7 +93,7 @@ export default function Home() {
                 <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-lg bg-primary-foreground/10">
                   <Calendar className="h-8 w-8 text-primary-foreground" />
                 </div>
-                <dt className="text-xl font-semibold leading-7 text-primary-foreground">
+                <dt className="text-xl font-semibold leading-7 text-primary">
                   Événements et occasions
                 </dt>
                 <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-primary-foreground/80">
@@ -123,9 +126,10 @@ export default function Home() {
           <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
             <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-3">
               <div className="relative">
-                <div className="absolute -top-4 -left-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-lg">
+                <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-lg">
                   1
                 </div>
+
                 <h3 className="text-xl font-semibold leading-7 text-foreground mb-4 ml-8">
                   Créez votre compte
                 </h3>
@@ -135,7 +139,7 @@ export default function Home() {
                 </p>
               </div>
               <div className="relative">
-                <div className="absolute -top-4 -left-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-lg">
+                <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-lg">
                   2
                 </div>
                 <h3 className="text-xl font-semibold leading-7 text-foreground mb-4 ml-8">
@@ -147,7 +151,7 @@ export default function Home() {
                 </p>
               </div>
               <div className="relative">
-                <div className="absolute -top-4 -left-4 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-lg">
+                <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-lg">
                   3
                 </div>
                 <h3 className="text-xl font-semibold leading-7 text-foreground mb-4 ml-8">
@@ -164,13 +168,13 @@ export default function Home() {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-24 sm:py-32 bg-primary text-primary-foreground">
+      <section className="py-24 sm:py-32 bg-foreground text-primary-foreground">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-base font-semibold leading-7 text-primary-foreground/80">
               Pourquoi Giftizy ?
             </h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-primary-foreground sm:text-4xl">
+            <p className="mt-2 text-3xl font-bold tracking-tight text-primary sm:text-4xl">
               Les avantages qui font la différence
             </p>
           </div>
@@ -178,10 +182,10 @@ export default function Home() {
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
               <div className="flex gap-4">
                 <div className="flex-none">
-                  <Heart className="h-6 w-6 text-primary-foreground" />
+                  <Heart className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold leading-7 text-primary-foreground">
+                  <h3 className="text-lg font-semibold leading-7 text-primary">
                     Plus de cadeaux ratés
                   </h3>
                   <p className="mt-2 text-base leading-7 text-primary-foreground/80">
@@ -192,10 +196,10 @@ export default function Home() {
               </div>
               <div className="flex gap-4">
                 <div className="flex-none">
-                  <Star className="h-6 w-6 text-primary-foreground" />
+                  <Star className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold leading-7 text-primary-foreground">
+                  <h3 className="text-lg font-semibold leading-7 text-primary">
                     Surprises préservées
                   </h3>
                   <p className="mt-2 text-base leading-7 text-primary-foreground/80">
@@ -206,10 +210,10 @@ export default function Home() {
               </div>
               <div className="flex gap-4">
                 <div className="flex-none">
-                  <Shield className="h-6 w-6 text-primary-foreground" />
+                  <Shield className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold leading-7 text-primary-foreground">
+                  <h3 className="text-lg font-semibold leading-7 text-primary">
                     Sécurisé et privé
                   </h3>
                   <p className="mt-2 text-base leading-7 text-primary-foreground/80">
@@ -220,10 +224,10 @@ export default function Home() {
               </div>
               <div className="flex gap-4">
                 <div className="flex-none">
-                  <Users className="h-6 w-6 text-primary-foreground" />
+                  <Users className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold leading-7 text-primary-foreground">
+                  <h3 className="text-lg font-semibold leading-7 text-primary">
                     Famille connectée
                   </h3>
                   <p className="mt-2 text-base leading-7 text-primary-foreground/80">
