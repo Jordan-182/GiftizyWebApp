@@ -125,39 +125,39 @@ export default function Home() {
           </div>
           <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
             <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-3">
-              <div className="relative">
+              <div className="relative flex flex-col items-center px-4">
                 <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-lg">
                   1
                 </div>
 
-                <h3 className="text-xl font-semibold leading-7 text-foreground mb-4 ml-8">
+                <h3 className="text-xl font-semibold leading-7 text-foreground mb-4">
                   Créez votre compte
                 </h3>
-                <p className="text-base leading-7 text-muted-foreground ml-8">
+                <p className="text-base leading-7 text-muted-foreground max-w-md">
                   Inscrivez-vous en quelques secondes avec votre email ou votre
                   compte Google. C&apos;est gratuit et sécurisé.
                 </p>
               </div>
-              <div className="relative">
+              <div className="relative flex flex-col items-center px-4">
                 <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-lg">
                   2
                 </div>
-                <h3 className="text-xl font-semibold leading-7 text-foreground mb-4 ml-8">
+                <h3 className="text-xl font-semibold leading-7 text-foreground mb-4">
                   Ajoutez vos envies
                 </h3>
-                <p className="text-base leading-7 text-muted-foreground ml-8">
+                <p className="text-base leading-7 text-muted-foreground max-w-md">
                   Créez vos premières listes de souhaits et ajoutez tout ce qui
                   vous fait envie.
                 </p>
               </div>
-              <div className="relative">
+              <div className="relative flex flex-col items-center px-4">
                 <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-lg">
                   3
                 </div>
-                <h3 className="text-xl font-semibold leading-7 text-foreground mb-4 ml-8">
+                <h3 className="text-xl font-semibold leading-7 text-foreground mb-4">
                   Partagez avec vos proches
                 </h3>
-                <p className="text-base leading-7 text-muted-foreground ml-8">
+                <p className="text-base leading-7 text-muted-foreground max-w-md">
                   Invitez vos amis et famille, découvrez leurs listes et
                   réservez des cadeaux en toute discrétion.
                 </p>

@@ -59,7 +59,7 @@ export default function Header() {
   }
 
   return isMobile ? (
-    <header className="py-4 bg-primary fixed top-0 w-full text-secondary z-100 shadow-lg">
+    <header className="py-4 bg-foreground fixed top-0 w-full text-secondary z-100 shadow-lg">
       <div
         className={`flex items-center max-w-5xl px-8 mx-auto ${
           session ? "justify-between" : "justify-center"
