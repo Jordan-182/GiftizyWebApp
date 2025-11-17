@@ -1,6 +1,7 @@
 import GetStartedButton from "@/components/GetStartedButton";
 import { Calendar, Gift, Heart, Shield, Star, Users } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -256,8 +257,8 @@ export default function Home() {
               <GetStartedButton />
             </div>
             <p className="mt-4 text-sm text-muted-foreground">
-              Gratuit • Aucune carte bancaire requise • Configuration en 2
-              minutes
+              &copy; Giftizy 2025 -{" "}
+              <Link href={"/legals"}>Mentions légales</Link>
             </p>
           </div>
         </div>
