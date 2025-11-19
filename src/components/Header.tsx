@@ -83,7 +83,7 @@ export default function Header() {
             </DrawerTrigger>
             <DrawerContent className="h-auto pt-21">
               <DrawerHeader>
-                <DrawerTitle className="text-center text-xl font-extrabold">
+                <DrawerTitle className="text-center font-modak text-3xl font-light">
                   Giftizy
                 </DrawerTitle>
               </DrawerHeader>

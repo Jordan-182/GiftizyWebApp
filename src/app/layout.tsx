@@ -25,6 +25,18 @@ export const metadata: Metadata = {
   title: "Giftizy",
   description:
     "L'application qui révolutionne l'art d'offrir en permettant de créer, partager et gérer vos listes de souhaits avec vos proches.",
+  metadataBase: new URL(
+    process.env.NODE_ENV === "production"
+      ? "https://giftizy-omega.vercel.app/"
+      : `http://localhost:${process.env.PORT || 3000}`
+  ),
+  openGraph: {
+    title: "Giftizy",
+    description:
+      "L'application qui révolutionne l'art d'offrir en permettant de créer, partager et gérer vos listes de souhaits avec vos proches.",
+    type: "website",
+    locale: "fr_FR",
+  },
 };
 
 export default function RootLayout({
