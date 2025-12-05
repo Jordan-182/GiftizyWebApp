@@ -15,7 +15,6 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 
 # Generate prisma client with correct engine for Alpine
-ENV PRISMA_CLI_BINARY_TARGETS="linux-musl-openssl-3.0.x,native"
 RUN pnpm exec prisma generate
 RUN pnpm run build
 
@@ -36,6 +35,7 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/src/generated ./src/generated
 
 # Copy entrypoint script
 COPY ./docker/entrypoint.sh /entrypoint.sh
