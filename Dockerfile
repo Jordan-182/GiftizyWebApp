@@ -42,6 +42,9 @@ COPY --from=builder /app/src/generated ./src/generated
 COPY ./docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
+# Change ownership of /app to appuser
+RUN chown -R appuser:appgroup /app
+
 USER appuser
 EXPOSE 3000
 ENV PORT=3000
