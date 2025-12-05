@@ -29,3 +29,4 @@ echo "✅ Environment variables loaded successfully"
 
 echo "🚀 Starting application..."
 exec "$@"
+# Force rebuild
