@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-echo "🔧 Generating environment variables from Docker Swarm secrets..."
+echo "🔧 Loading environment variables from Docker Swarm secrets..."
 
 # Function to read a secret if it exists
 read_secret() {
@@ -13,26 +13,19 @@ read_secret() {
   fi
 }
 
-# Generate env file
-cat <<EOF > .env.production
-NEXT_PUBLIC_API_URL="$(read_secret giftizy_next_public_api_url)"
-APP_NAME="$(read_secret giftizy_app_name)"
+# Export environment variables directly
+export NEXT_PUBLIC_API_URL="$(read_secret giftizy_next_public_api_url)"
+export APP_NAME="$(read_secret giftizy_app_name)"
+export BETTER_AUTH_SECRET="$(read_secret giftizy_better_auth_secret)"
+export BETTER_AUTH_URL="$(read_secret giftizy_better_auth_url)"
+export DATABASE_URL="$(read_secret giftizy_database_url)"
+export ADMIN_EMAILS="$(read_secret giftizy_admin_emails)"
+export GOOGLE_CLIENT_ID="$(read_secret giftizy_google_client_id)"
+export GOOGLE_CLIENT_SECRET="$(read_secret giftizy_google_client_secret)"
+export NODEMAILER_USER="$(read_secret giftizy_nodemailer_user)"
+export NODEMAILER_APP_PASSWORD="$(read_secret giftizy_nodemailer_app_password)"
 
-BETTER_AUTH_SECRET="$(read_secret giftizy_better_auth_secret)"
-BETTER_AUTH_URL="$(read_secret giftizy_better_auth_url)"
-
-DATABASE_URL="$(read_secret giftizy_database_url)"
-
-ADMIN_EMAILS="$(read_secret giftizy_admin_emails)"
-
-GOOGLE_CLIENT_ID="$(read_secret giftizy_google_client_id)"
-GOOGLE_CLIENT_SECRET="$(read_secret giftizy_google_client_secret)"
-
-NODEMAILER_USER="$(read_secret giftizy_nodemailer_user)"
-NODEMAILER_APP_PASSWORD="$(read_secret giftizy_nodemailer_app_password)"
-EOF
-
-echo "✅ .env.production generated successfully"
+echo "✅ Environment variables loaded successfully"
 
 echo "🚀 Starting application..."
 exec "$@"
