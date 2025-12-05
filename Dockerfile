@@ -3,16 +3,17 @@
 FROM node:22-alpine AS builder
 WORKDIR /app
 
-# Install build deps
-COPY package.json package-lock.json* pnpm-lock.yaml* ./
-RUN npm ci
+# Install pnpm and build deps
+RUN corepack enable pnpm
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 
 # Copy sources
 COPY . .
 
 # Generate prisma client & build
-RUN npx prisma generate
-RUN npm run build
+RUN pnpm exec prisma generate
+RUN pnpm run build
 
 # Production image
 FROM node:22-alpine AS runner
