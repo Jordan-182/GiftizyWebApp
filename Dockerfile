@@ -1,10 +1,10 @@
 # Dockerfile (multi-stage) - optimized for Next.js w/ Prisma
 # Build stage
-FROM node:22-alpine AS builder
+FROM node:22-slim AS builder
 WORKDIR /app
 
 # Install system dependencies for Prisma
-RUN apk add --no-cache openssl libc6-compat
+RUN apt-get update && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
 
 # Install pnpm and build deps
 RUN corepack enable pnpm
@@ -19,12 +19,12 @@ RUN pnpm exec prisma generate
 RUN pnpm run build
 
 # Production image
-FROM node:22-alpine AS runner
+FROM node:22-slim AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 
 # Install runtime dependencies for Prisma
-RUN apk add --no-cache openssl libc6-compat
+RUN apt-get update && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
 
 # Create a non-root user
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
