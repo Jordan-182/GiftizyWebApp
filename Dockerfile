@@ -3,6 +3,9 @@
 FROM node:22-alpine AS builder
 WORKDIR /app
 
+# Install system dependencies for Prisma
+RUN apk add --no-cache openssl libc6-compat
+
 # Install pnpm and build deps
 RUN corepack enable pnpm
 COPY package.json pnpm-lock.yaml ./
@@ -11,7 +14,8 @@ RUN pnpm install --frozen-lockfile
 # Copy sources
 COPY . .
 
-# Generate prisma client & build
+# Generate prisma client with correct engine for Alpine
+ENV PRISMA_CLI_BINARY_TARGETS="linux-musl-openssl-3.0.x,native"
 RUN pnpm exec prisma generate
 RUN pnpm run build
 
@@ -19,6 +23,9 @@ RUN pnpm run build
 FROM node:22-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
+
+# Install runtime dependencies for Prisma
+RUN apk add --no-cache openssl libc6-compat
 
 # Create a non-root user
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
