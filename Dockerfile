@@ -27,7 +27,8 @@ ENV NODE_ENV=production
 RUN apt-get update && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
 
 # Create a non-root user
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+RUN groupadd --system --gid 1001 appgroup \
+  && useradd --system --uid 1001 --gid appgroup --shell /bin/bash --create-home appuser
 
 # Copy built artifacts + node_modules (only prod)
 COPY --from=builder /app/.next ./.next
