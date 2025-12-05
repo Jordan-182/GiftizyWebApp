@@ -28,5 +28,9 @@ export NODEMAILER_APP_PASSWORD="$(read_secret giftizy_nodemailer_app_password)"
 echo "✅ Environment variables loaded successfully"
 
 echo "🚀 Starting application..."
-exec "$@"
-# Force rebuild
+# If no arguments provided, default to npm start
+if [ $# -eq 0 ]; then
+  exec npm start
+else
+  exec "$@"
+fi

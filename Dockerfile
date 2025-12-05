@@ -45,4 +45,4 @@ RUN chmod +x /entrypoint.sh
 USER appuser
 EXPOSE 3000
 ENV PORT=3000
-CMD ["/entrypoint.sh"]
+CMD ["/entrypoint.sh", "npm", "start"]
